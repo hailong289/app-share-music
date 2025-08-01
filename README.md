@@ -57,7 +57,6 @@ app-core/
 │   ├── tailwind.config.js   # TailwindCSS v4 configuration
 │   ├── vite.config.ts       # Vite configuration
 │   └── eslint.config.js     # ESLint configuration
-├── Makefile                 # Docker commands helper
 ├── start.sh                 # Application startup script
 └── README.md
 ```
@@ -66,7 +65,7 @@ app-core/
 
 ### Yêu cầu hệ thống
 - Node.js >= 18.x
-- Docker & Docker Compose (cho MongoDB)
+- MongoDB (cài đặt local hoặc sử dụng MongoDB Atlas)
 - npm hoặc yarn
 
 ### Quick Start (Khuyến nghị)
@@ -82,13 +81,12 @@ app-core/
    npm run install:all
    ```
 
-3. **Chạy ứng dụng với Docker:**
+3. **Chạy ứng dụng:**
    ```bash
    ./start.sh
    ```
 
    Script này sẽ:
-   - Khởi động MongoDB với Docker
    - Cài đặt dependencies nếu chưa có
    - Khởi động Backend và Frontend
    - Hiển thị thông tin kết nối
@@ -127,10 +125,6 @@ APP_PORT=3000
 APP_API_URL=http://localhost:5001/api
 ```
 
-#### 4. Khởi động MongoDB với Docker
-```bash
-make dev-up
-```
 
 #### 5. Chạy ứng dụng
 
@@ -151,7 +145,6 @@ npm run dev
 - **Backend**: http://localhost:5001 (Express server)
 - **API**: http://localhost:5001/api
 - **MongoDB**: mongodb://localhost:27017/mern-ts-app
-- **Mongo Express**: http://localhost:8081 (Web UI)
 
 ## 📚 API Endpoints
 
@@ -202,7 +195,6 @@ npm run dev
 
 ### Architecture Features ✅
 - Modular project structure
-- Docker setup với Makefile commands
 - Environment configuration templates
 - Automated startup script (`start.sh`)
 - TypeScript configuration với path mapping
@@ -274,35 +266,7 @@ npm run build  # Vite build với TypeScript compilation
 npm run preview # Preview production build
 ```
 
-## 🐳 Docker Commands
-
-Dự án sử dụng Makefile để quản lý Docker commands:
-
-```bash
-# Xem tất cả commands có sẵn
-make help
-
-# Development environment
-make dev-up      # Khởi động MongoDB (no auth)
-make dev-down    # Dừng development environment
-make restart     # Restart development environment
-
-# Monitoring  
-make logs        # Xem container logs
-make status      # Xem trạng thái containers
-make mongo-cli   # Kết nối MongoDB CLI
-
-# Cleanup
-make clean       # Dọn dẹp tất cả containers/volumes
-```
-
-**Services:**
-- **MongoDB**: mongodb://localhost:27017/mern-ts-app
-- **Mongo Express**: http://localhost:8081 (Web UI)
-- Development mode: Không cần authentication
-- Production mode: admin/password123 (planned)
-
-## 📞 Support
+##  Support
 
 Nếu gặp vấn đề, vui lòng tạo issue trên GitHub hoặc liên hệ developer.
 
@@ -398,52 +362,6 @@ export class UserService extends BaseService<IUser> {
 }
 ```
 
-## 🐳 Docker Setup
-
-Dự án đã được cấu hình để chạy MongoDB bằng Docker với Makefile helpers.
-
-### Quick Start với Docker
-
-1. **Khởi động MongoDB với Docker:**
-   ```bash
-   # Development mode (không authentication)
-   make dev-up
-   ```
-
-2. **Chạy ứng dụng:**
-   ```bash
-   ./start.sh  # Automated startup script
-   ```
-
-### Docker Commands
-
-```bash
-# Xem tất cả commands có sẵn
-make help
-
-# Khởi động development environment
-make dev-up
-
-# Dừng development environment  
-make dev-down
-
-# Xem logs
-make logs
-
-# Kết nối MongoDB CLI
-make mongo-cli
-
-# Dọn dẹp tất cả
-make clean
-```
-
-### Services
-
-- **MongoDB**: Port 27017
-- **Mongo Express** (Web UI): http://localhost:8081
-- **Development**: Không cần authentication
-- **Production**: Có authentication (admin/password123)
-
 ## 🎯 Next Steps
 
 Dự án đã có architecture hoàn chỉnh, các bước tiếp theo:
@@ -464,10 +382,8 @@ Dự án đã có architecture hoàn chỉnh, các bước tiếp theo:
 - [ ] Add internationalization (i18n)
 
 ### DevOps Tasks
-- [ ] Add Docker Compose file cho production
 - [ ] Setup CI/CD pipeline
 - [ ] Add environment-specific configurations
-- [ ] Implement health checks cho containers
 - [ ] Add backup strategies cho MongoDB
 
 ## 🎯 Development Scripts
