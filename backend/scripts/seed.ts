@@ -1,0 +1,38 @@
+#!/usr/bin/env node
+/**
+ * Database Seeder Script
+ *
+ * Usage:
+ *   npm run seed        - Run all seeders
+ *   npm run seed:clear  - Clear all data
+ */
+import logger from '../src/utils/logger';
+import { DatabaseSeeder } from '../src/database/seeder';
+
+async function main() {
+    const seeder = new DatabaseSeeder();
+    const command = process.argv[2] || 'seed';
+
+    try {
+        switch (command) {
+            case 'clear':
+                await seeder.clear();
+                logger.info('Database cleared successfully!');
+                break;
+
+            case 'seed':
+            case 'run':
+            default:
+                await seeder.run();
+                logger.info('Database seeded successfully!');
+                break;
+        }
+
+        process.exit(0);
+    } catch (error) {
+        logger.error('Seeder failed:', error);
+        process.exit(1);
+    }
+}
+
+main();

@@ -10,7 +10,9 @@
     "watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node -r tsconfig-paths/register' src/server.ts",
     "build": "ttsc",
     "start": "node dist/server.ts",
-    "test": "jest"
+    "test": "jest",
+    "seed": "ts-node -r tsconfig-paths/register scripts/seed.ts",
+    "seed:clear": "ts-node -r tsconfig-paths/register scripts/seed.ts clear"
   },
   "keywords": [
     "app-share-music-backend",

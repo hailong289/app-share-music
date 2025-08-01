@@ -6,28 +6,33 @@ const UserSchema: Schema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Name is required'],
+      required: true,
       trim: true,
-      maxlength: [50, 'Name cannot be more than 50 characters'],
+      maxlength: 50,
     },
     email: {
       type: String,
-      required: [true, 'Email is required'],
+      required: true,
       unique: true,
       lowercase: true,
-      match: [
-        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-        'Please provide a valid email',
-      ],
+    },
+    bio: {
+      type: String,
+      trim: true,
+      maxlength: 1000,
+    },
+    image_url: {
+      type: String,
+      trim: true,
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
-      minlength: [6, 'Password must be at least 6 characters'],
+      required: true,
+      minlength: 6,
     },
     role: {
       type: String,
-      enum: ['user', 'admin'],
+      enum: ['user', 'admin', 'artist'],
       default: 'user',
     },
     isActive: {
@@ -60,4 +65,6 @@ UserSchema.methods.toJSON = function () {
   return userObject;
 };
 
-export const User = mongoose.model<IUser>('User', UserSchema);
+const User = mongoose.model<IUser>('User', UserSchema);
+
+export default User;
