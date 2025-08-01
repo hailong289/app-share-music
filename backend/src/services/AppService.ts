@@ -84,6 +84,24 @@ export class AppService {
   }
 
   /**
+   * Health check endpoint handler
+   */
+  async healthCheck(req: any, res: any): Promise<void> {
+    try {
+      const healthStatus = await this.checkHealth();
+      const statusCode = healthStatus.status === 'healthy' ? 200 : 503;
+      res.status(statusCode).json(healthStatus);
+    } catch (error) {
+      logger.error('Health check failed:', error);
+      res.status(503).json({
+        status: 'unhealthy',
+        timestamp: new Date().toISOString(),
+        error: 'Health check failed'
+      });
+    }
+  }
+
+  /**
    * Initialize application services
    */
   async initializeApp(): Promise<void> {

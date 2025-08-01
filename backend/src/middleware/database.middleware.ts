@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Database } from '../config/database';
+import { Connection } from '@/database/connection';
 import logger from '../utils/logger';
 
 export class DatabaseMiddleware {
@@ -7,9 +7,9 @@ export class DatabaseMiddleware {
    * Middleware to check if database is connected before processing routes
    */
   public static checkDatabaseConnection = (req: Request, res: Response, next: NextFunction): void => {
-    const database = Database.getInstance();
+    const conn = Connection.getInstance();
 
-    if (!database.isConnectedToDatabase()) {
+    if (!conn.isConnectedToDatabase()) {
       logger.warn(`Database not connected for ${req.method} ${req.path}`);
 
       res.status(503).json({
@@ -28,9 +28,9 @@ export class DatabaseMiddleware {
    * but logs a warning
    */
   public static warnDatabaseConnection = (req: Request, res: Response, next: NextFunction): void => {
-    const database = Database.getInstance();
+    const conn = Connection.getInstance();
 
-    if (!database.isConnectedToDatabase()) {
+    if (!conn.isConnectedToDatabase()) {
       logger.warn(`Warning: Database not connected for ${req.method} ${req.path}`);
     }
 

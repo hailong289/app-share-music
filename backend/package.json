@@ -1,16 +1,19 @@
 {
-  "name": "mern-backend",
+  "name": "app-share-music-backend",
   "version": "1.0.0",
-  "description": "MERN Stack Backend with TypeScript",
+  "description": "Api for sharing music",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "npx ts-node -r tsconfig-paths/register src/server.ts",
+    "clear-logs": "node scripts/clear-logs.js",
+    "predev": "npx tsc --noEmit && npm run clear-logs",
+    "dev": "npx ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/server.ts",
+    "watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node -r tsconfig-paths/register' src/server.ts",
     "build": "ttsc",
     "start": "node dist/server.ts",
     "test": "jest"
   },
   "keywords": [
-    "mern",
+    "app-share-music-backend",
     "typescript",
     "express",
     "mongodb"

@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Response, Request, NextFunction } from 'express';
 import logger from '../utils/logger';
 
 export interface ApiResponse<T = any> {
@@ -133,7 +133,7 @@ export class BaseController {
   /**
    * Send internal server error
    */
-  protected sendInternalError(
+  public sendInternalError(
     res: Response,
     error: any,
     message: string = 'Internal server error'
@@ -171,10 +171,10 @@ export class BaseController {
   /**
    * Handle async controller methods and catch errors
    */
-  protected asyncHandler = (fn: Function) => {
-    return (req: any, res: Response, next: any) => {
-      Promise.resolve(fn(req, res, next)).catch((error) => {
-        this.sendInternalError(res, error);
+  protected asyncHandler = (fn: (req: Request, res: Response, next?: NextFunction) => Promise<void>) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+      return Promise.resolve(fn(req, res, next)).catch((error) => {
+        return this.sendInternalError(res, error);
       });
     };
   };

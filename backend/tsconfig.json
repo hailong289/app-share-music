@@ -47,7 +47,10 @@
       ],
       "@types/*": [
         "src/types/*"
-      ]
+      ],
+      "@database/*": [
+        "src/database/*"
+      ],
     },
     "plugins": [
       {

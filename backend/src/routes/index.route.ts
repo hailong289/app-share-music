@@ -1,4 +1,4 @@
-import { Router, Response, Request } from 'express';
+import { Router, Response, Request, NextFunction } from 'express';
 import { appService } from '../services';
 import routerApi from './api.route';
 import logger from '@utils/logger';
@@ -9,16 +9,28 @@ class RoutesSetup {
     router.use('/api', routerApi);
 
     // Health check route
-    router.get('/health', (req: Request, res: Response) => {
-      return appService.healthCheck(req, res);
+    router.get('/health', async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        await appService.healthCheck(req, res);
+      } catch (error) {
+        next(error);
+      }
     });
 
-    router.use('*', (req: Request, res: Response) => {
-      logger.warn(`404 Not Found: ${req.method} ${req.path} - ${req.ip}`);
-      res.status(404).json({
-        success: false,
-        message: 'Route not found'
-      });
+    router.use('*', (req: Request, res: Response, next: NextFunction) => {
+      if (res.headersSent) {
+        return;
+      }
+      try {
+        // Log 404 errors
+        logger.warn(`404 Not Found: ${req.method} ${req.path} - ${req.ip}`);
+        res.status(404).json({
+          success: false,
+          message: 'Route not found'
+        });
+      } catch (error) {
+        next(error);
+      }
     });
   }
 }

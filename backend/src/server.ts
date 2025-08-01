@@ -1,10 +1,11 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
-import { Database } from '@config/database';
+import { Connection } from '@database/connection';
 import logger from './utils/logger';
 import MiddlewareSetup from '@middleware/index.middleware';
 import RoutesSetup from '@routes/index.route';
+import { BaseController } from './controllers/BaseController';
 
 dotenv.config();
 
@@ -26,11 +27,7 @@ class App {
     // Lỗi toàn bộ ứng dụng
     this.app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
       logger.error('Global error handler:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error',
-        ...(process.env.NODE_ENV === 'development' && { error: error.message })
-      });
+      return (new BaseController()).sendInternalError(res, error);
     });
   }
 
@@ -51,8 +48,8 @@ class App {
       
       // Kết nối đến cơ sở dữ liệu
       try {
-        const database = Database.getInstance();
-        await database.connect();
+        const conn = Connection.getInstance();
+        await conn.connectDB();
         logger.info('Database connected successfully');
       } catch (dbError) {
         logger.error('Failed to connect to database:', dbError);
