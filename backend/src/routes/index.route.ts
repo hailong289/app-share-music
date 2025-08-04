@@ -2,6 +2,7 @@ import { Router, Response, Request, NextFunction } from 'express';
 import { appService } from '../services';
 import routerApi from './api.route';
 import logger from '@utils/logger';
+import routerUpload from './upload.route';
 
 class RoutesSetup {
   public static init(router: Router): void {
