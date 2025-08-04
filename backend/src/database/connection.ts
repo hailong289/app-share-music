@@ -22,9 +22,14 @@ export class Connection {
     public async connectDB(): Promise<void> {
         try {
             const dbConfig = getDatabaseConfig();
-            let mongoUri = `${dbConfig.connection}://${dbConfig.host}:${dbConfig.port}/${dbConfig.name}`;
-            if (dbConfig.pass) {
-                mongoUri = `${dbConfig.connection}://${dbConfig.host}:${dbConfig.pass}@${dbConfig.port}/${dbConfig.name}`;
+            let mongoUri = '';
+            if (dbConfig.dns) {
+                mongoUri = dbConfig.dns;
+            } else {
+                mongoUri = `${dbConfig.connection}://${dbConfig.host}:${dbConfig.port}/${dbConfig.name}`;
+                if (dbConfig.pass) {
+                    mongoUri = `${dbConfig.connection}://${dbConfig.host}:${dbConfig.pass}@${dbConfig.port}/${dbConfig.name}`;
+                }
             }
 
             await mongoose.connect(mongoUri, {

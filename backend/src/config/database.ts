@@ -7,6 +7,7 @@ const configDatabase = {
     port: process.env.DB_PORT || 27017, 
     name: process.env.DB_NAME || 'app-share-music',
     pass: process.env.DB_PASS || '',
+    dns: process.env.DB_DNS || '',
   },
   production: {
     connection: process.env.DB_CONNECTION_PROD || 'mongodb',
@@ -14,6 +15,7 @@ const configDatabase = {
     port: process.env.DB_PORT_PROD || 27017,
     name: process.env.DB_NAME_PROD || 'app-share-music',
     pass: process.env.DB_PASS_PROD || '',
+    dns: process.env.DB_DNS_PROD || '',
   },
 }
 

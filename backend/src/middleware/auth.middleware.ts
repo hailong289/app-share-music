@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { JWTUtil, JWTPayload } from '../utils/jwt';
-import { User } from '../models/User';
 import logger from '../utils/logger';
+import { User } from '@/models';
 
 export interface AuthenticatedRequest extends Request {
   user?: JWTPayload;

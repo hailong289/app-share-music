@@ -1,5 +1,5 @@
 import { FilterQuery } from 'mongoose';
-import { User } from '../models/User';
+import { User } from '@/models';
 import { BaseService } from './BaseService';
 import logger from '../utils/logger';
 import { IUser } from '../types/user.type';

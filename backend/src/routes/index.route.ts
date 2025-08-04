@@ -17,22 +17,6 @@ class RoutesSetup {
         next(error);
       }
     });
-
-    router.use('*', (req: Request, res: Response, next: NextFunction) => {
-      if (res.headersSent) {
-        return;
-      }
-      try {
-        // Log 404 errors
-        logger.warn(`404 Not Found: ${req.method} ${req.path} - ${req.ip}`);
-        res.status(404).json({
-          success: false,
-          message: 'Route not found'
-        });
-      } catch (error) {
-        next(error);
-      }
-    });
   }
 }
 
