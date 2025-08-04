@@ -27,5 +27,9 @@
     "tanstack-query"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.1.0",
+    "multer": "^2.0.2"
+  }
 }
