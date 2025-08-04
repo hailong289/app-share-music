@@ -8,6 +8,7 @@ const configDatabase = {
     name: process.env.DB_NAME || 'app-share-music',
     pass: process.env.DB_PASS || '',
     dns: process.env.DB_DNS || '',
+    query: process.env.DB_QUERY || '',
   },
   production: {
     connection: process.env.DB_CONNECTION_PROD || 'mongodb',
@@ -16,6 +17,7 @@ const configDatabase = {
     name: process.env.DB_NAME_PROD || 'app-share-music',
     pass: process.env.DB_PASS_PROD || '',
     dns: process.env.DB_DNS_PROD || '',
+    query: process.env.DB_QUERY_PROD || '',
   },
 }
 
