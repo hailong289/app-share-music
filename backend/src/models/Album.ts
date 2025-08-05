@@ -26,6 +26,5 @@ const AlbumSchema: Schema = new Schema({
 // Create indexes
 AlbumSchema.index({ artist_id: 1 });
 AlbumSchema.index({ title: 1 });
-AlbumSchema.index({ release_date: -1 });
 
 export default mongoose.model<IAlbum>('Album', AlbumSchema);

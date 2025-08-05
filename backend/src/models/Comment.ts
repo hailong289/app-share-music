@@ -25,8 +25,7 @@ const CommentSchema: Schema = new Schema({
 });
 
 // Create indexes
-CommentSchema.index({ song_id: 1, created_at: -1 });
+CommentSchema.index({ song_id: 1 });
 CommentSchema.index({ user_id: 1 });
-CommentSchema.index({ created_at: -1 });
 
 export default mongoose.model<IComment>('Comment', CommentSchema);

@@ -45,9 +45,9 @@ class UploadController extends BaseController {
         try {
             const fileId = req.params.id;
             // TODO: Implement file deletion logic
-            this.sendSuccess(res, null, 'File deleted successfully');
+            return this.sendSuccess(res, null, 'File deleted successfully');
         } catch (error) {
-            this.sendInternalError(res, error, 'Failed to delete file');
+            return this.sendInternalError(res, error, 'Failed to delete file');
         }
     };
 }

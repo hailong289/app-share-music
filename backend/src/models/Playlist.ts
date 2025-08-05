@@ -32,6 +32,5 @@ const PlaylistSchema: Schema = new Schema({
 PlaylistSchema.index({ user_id: 1 });
 PlaylistSchema.index({ name: 1 });
 PlaylistSchema.index({ is_public: 1 });
-PlaylistSchema.index({ created_at: -1 });
 
 export default mongoose.model<IPlaylist>('Playlist', PlaylistSchema);

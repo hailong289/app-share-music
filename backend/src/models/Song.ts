@@ -36,6 +36,6 @@ const SongSchema: Schema = new Schema({
 SongSchema.index({ title: 1 });
 SongSchema.index({ artist_id: 1 });
 SongSchema.index({ album_id: 1 });
-SongSchema.index({ album_id: 1, track_number: 1 });
+SongSchema.index({ track_number: 1 });
 
 export default mongoose.model<ISong>('Song', SongSchema);

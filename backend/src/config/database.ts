@@ -1,5 +1,6 @@
+import dotenv from 'dotenv';
 type EnvType = 'local' | 'production';
-
+dotenv.config();
 const configDatabase = {
   local: {
     connection: process.env.DB_CONNECTION || 'mongodb',
@@ -15,7 +16,7 @@ const configDatabase = {
     host: process.env.DB_HOST_PROD || 'localhost',
     port: process.env.DB_PORT_PROD || 27017,
     name: process.env.DB_NAME_PROD || 'app-share-music',
-    pass: process.env.DB_PASS_PROD || '',
+    pass: process.env.DB_PASSWORD_PROD || '',
     dns: process.env.DB_DNS_PROD || '',
     query: process.env.DB_QUERY_PROD || '',
   },

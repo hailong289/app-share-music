@@ -19,21 +19,19 @@ export class AuthMiddleware {
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         res.status(401).json({
           success: false,
-          message: 'Access token is required'
+          message: 'Xác thực không thành công!'
         });
         return;
       }
       
       const token = authHeader.substring(7); // Remove 'Bearer ' prefix
       
-      const decoded = JWTUtil.verifyToken(token);
-      
-      // Verify user still exists and is active
+      const decoded = await JWTUtil.verifyTokenJwt(token);
       const user = await User.findById(decoded.id);
       if (!user || !user.isActive) {
         res.status(401).json({
           success: false,
-          message: 'User no longer exists or is inactive'
+          message: 'Tài khoản không còn tồn tại hoặc đã bị vô hiệu hóa'
         });
         return;
       }
@@ -41,10 +39,9 @@ export class AuthMiddleware {
       req.user = decoded;
       next();
     } catch (error) {
-      logger.error('Authentication error:', error);
       res.status(401).json({
         success: false,
-        message: 'Invalid token'
+        message: 'Token không hợp lệ hoặc đã hết hạn'
       });
     }
   }
@@ -54,7 +51,7 @@ export class AuthMiddleware {
       if (!req.user) {
         res.status(401).json({
           success: false,
-          message: 'Authentication required'
+          message: 'Xác thực không thành công!'
         });
         return;
       }
@@ -62,7 +59,7 @@ export class AuthMiddleware {
       if (!roles.includes(req.user.role)) {
         res.status(403).json({
           success: false,
-          message: 'Insufficient permissions'
+          message: 'Bạn không có quyền truy cập vào tài nguyên này'
         });
         return;
       }

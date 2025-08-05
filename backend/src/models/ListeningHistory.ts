@@ -19,8 +19,7 @@ const ListeningHistorySchema: Schema = new Schema({
 });
 
 // Create indexes
-ListeningHistorySchema.index({ user_id: 1, listened_at: -1 });
+ListeningHistorySchema.index({ user_id: 1 });
 ListeningHistorySchema.index({ song_id: 1 });
-ListeningHistorySchema.index({ listened_at: -1 });
 
 export default mongoose.model<IListeningHistory>('ListeningHistory', ListeningHistorySchema);

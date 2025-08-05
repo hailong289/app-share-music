@@ -19,8 +19,7 @@ const DownloadSchema: Schema = new Schema({
 });
 
 // Create indexes
-DownloadSchema.index({ user_id: 1, downloaded_at: -1 });
+DownloadSchema.index({ user_id: 1 });
 DownloadSchema.index({ song_id: 1 });
-DownloadSchema.index({ downloaded_at: -1 });
 
 export default mongoose.model<IDownload>('Download', DownloadSchema);

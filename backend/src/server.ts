@@ -50,10 +50,7 @@ class App {
       try {
         const conn = Connection.getInstance();
         await conn.connectDB();
-        logger.info('Database connected successfully');
-      } catch (dbError) {
-        logger.error('Failed to connect to database:', dbError);
-      }
+      } catch (dbError) {}
       
     } catch (error) {
       logger.error('Failed to start server:', error);

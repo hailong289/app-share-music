@@ -15,7 +15,7 @@ const SongGenreSchema: Schema = new Schema({
 });
 
 
-SongGenreSchema.index({ song_id: 1, genre_id: 1 }, { unique: true });
+SongGenreSchema.index({ song_id: 1 }, { unique: true });
 SongGenreSchema.index({ genre_id: 1 });
 
 export default mongoose.model<ISongGenre>('SongGenre', SongGenreSchema);

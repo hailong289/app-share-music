@@ -25,9 +25,8 @@ const ShareSchema: Schema = new Schema({
 });
 
 // Create indexes
-ShareSchema.index({ user_id: 1, shared_at: -1 });
+ShareSchema.index({ user_id: 1 });
 ShareSchema.index({ song_id: 1 });
 ShareSchema.index({ platform: 1 });
-ShareSchema.index({ shared_at: -1 });
 
 export default mongoose.model<IShare>('Share', ShareSchema);

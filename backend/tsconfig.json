@@ -51,6 +51,9 @@
       "@database/*": [
         "src/database/*"
       ],
+      "@requests/*": [
+        "src/requests/*"
+      ]
     },
     "plugins": [
       {

@@ -19,29 +19,6 @@ export interface AppStats {
 
 export class AppService {
   [x: string]: any;
-  /**
-   * Get application statistics
-   */
-  async getAppStats(): Promise<AppStats> {
-    try {
-      const userStats = await userService.getUserStats();
-      
-      const systemStats = {
-        uptime: process.uptime(),
-        environment: process.env.NODE_ENV || 'development',
-        version: process.env.npm_package_version || '1.0.0',
-        node_version: process.version
-      };
-
-      return {
-        users: userStats,
-        system: systemStats
-      };
-    } catch (error) {
-      logger.error('Error getting app statistics:', error);
-      throw error;
-    }
-  }
 
   /**
    * Get application health status

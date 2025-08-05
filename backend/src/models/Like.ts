@@ -20,7 +20,5 @@ const LikeSchema: Schema = new Schema({
 
 // Create compound unique index to prevent duplicate likes
 LikeSchema.index({ user_id: 1, song_id: 1 }, { unique: true });
-LikeSchema.index({ song_id: 1 });
-LikeSchema.index({ liked_at: -1 });
 
 export default mongoose.model<ILike>('Like', LikeSchema);
