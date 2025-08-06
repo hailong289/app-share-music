@@ -21,6 +21,7 @@ class App {
     // routes setup
     RoutesSetup.init(this.app);
     this.initializeErrorHandling();
+    this.initializeDatabase();
   }
 
   private initializeErrorHandling(): void {
@@ -29,6 +30,15 @@ class App {
       logger.error('Global error handler:', error);
       return (new BaseController()).sendInternalError(res, error);
     });
+  }
+
+  private async initializeDatabase(): Promise<void> {
+    try {
+      const conn = Connection.getInstance();
+      await conn.connectDB();
+    } catch (dbError) {
+      logger.error('Database connection failed:', dbError);
+    }
   }
 
   public async start(): Promise<void> {
@@ -40,27 +50,35 @@ class App {
         fs.mkdirSync(logsDir, { recursive: true });
       }
       
-      // Bắt đầu server
-      this.app.listen(this.port, () => {
-        logger.info(`Server is running on: ${process.env.APP_URL || `http://localhost:${this.port}`}`);
-        logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-      });
-      
-      // Kết nối đến cơ sở dữ liệu
-      try {
-        const conn = Connection.getInstance();
-        await conn.connectDB();
-      } catch (dbError) {}
+      // Chỉ start server khi không phải Vercel
+      if (!process.env.VERCEL) {
+        this.app.listen(this.port, () => {
+          logger.info(`Server is running on: ${process.env.APP_URL || `http://localhost:${this.port}`}`);
+          logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+        });
+      }
       
     } catch (error) {
       logger.error('Failed to start server:', error);
-      process.exit(1);
+      if (!process.env.VERCEL) {
+        process.exit(1);
+      }
     }
   }
 }
 
-// Bắt đầu ứng dụng
-const app = new App();
-app.start();
+// Tạo instance
+const appInstance = new App();
 
-export default App;
+// Chỉ start khi chạy trực tiếp (không phải import)
+if (require.main === module) {
+  appInstance.start();
+}
+
+// Export handler function cho Vercel (REQUIRED)
+export default (req: Request, res: Response) => {
+  return appInstance.app(req, res);
+};
+
+// Export app cho local development
+export { appInstance };

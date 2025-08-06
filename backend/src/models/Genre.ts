@@ -16,7 +16,4 @@ const GenreSchema: Schema = new Schema({
   },
 });
 
-// Create indexes
-GenreSchema.index({ name: 1 });
-
 export default mongoose.model<IGenre>('Genre', GenreSchema);

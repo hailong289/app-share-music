@@ -1,0 +1,41 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "dist/server.js",
+      "use": "@vercel/node",
+      "config": { "includeFiles": ["dist/**"] }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "dist/server.js"
+    }
+  ],
+  "env": {
+    "APP_NAME": "mern-ts-app",
+    "APP_ENV": "development",
+    "APP_PORT": "5001",
+    "APP_URL": "http://localhost:5001",
+    "APP_DB_URI": "mongodb://localhost:27017/mern-ts-app",
+    "APP_JWT_SECRET": "your_jwt_secret",
+    "APP_LOG_LEVEL": "info",
+    "NODE_ENV": "production",
+    "DB_CONNECTION": "mongodb",
+    "DB_HOST": "localhost",
+    "DB_PORT": "27017",
+    "DB_NAME": "app-share-music",
+    "DB_USER": "longdh2dev",
+    "DB_PASSWORD": "hailong30100128",
+    "DB_DNS": "",
+    "DB_QUERY": "",
+    "DB_CONNECTION_PROD": "mongodb+srv",
+    "DB_HOST_PROD": "longdev.yxk8xva.mongodb.net",
+    "DB_NAME_PROD": "app-share-music",
+    "DB_USER_PROD": "longdh2dev",
+    "DB_PASSWORD_PROD": "hailong30100128",
+    "DB_QUERY_PROD": "?retryWrites=true&w=majority&appName=longdev",
+    "DB_DNS_PROD": "mongodb+srv://longdh2dev:hailong30100128@longdev.yxk8xva.mongodb.net/app-share-music"
+  }
+}
