@@ -8,8 +8,8 @@
     "predev": "npx tsc --noEmit && npm run clear-logs",
     "dev": "npx ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/server.ts",
     "watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node -r tsconfig-paths/register' src/server.ts",
-    "build": "ttsc",
-    "start": "node dist/server.ts",
+    "build": "tsc && tsc-alias",
+    "start": "node dist/server.js",
     "test": "jest",
     "seed": "ts-node -r tsconfig-paths/register scripts/seed.ts",
     "seed:clear": "ts-node -r tsconfig-paths/register scripts/seed.ts clear"
@@ -47,9 +47,8 @@
     "nodemon": "^3.0.2",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
-    "ttypescript": "^1.5.15",
-    "typescript": "^5.3.3",
-    "typescript-transform-paths": "^3.5.5"
+    "typescript": "^5.3.3"
   }
 }

@@ -23,8 +23,7 @@
     "express",
     "mongodb",
     "tailwindcss",
-    "daisyui",
-    "tanstack-query"
+    "daisyui"
   ],
   "author": "",
   "license": "MIT",
