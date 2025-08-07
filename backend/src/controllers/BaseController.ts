@@ -179,7 +179,7 @@ export class BaseController {
   protected asyncHandler = (fn: (req: Request, res: Response, next?: NextFunction) => Promise<void>) => {
     return (req: Request, res: Response, next: NextFunction) => {
       return Promise.resolve(fn(req, res, next)).catch((error) => {
-        return this.sendInternalError(res, error);
+        return this.sendInternalError(res, error); // các lỗi nghiêm trọng sẽ được gửi về đây
       });
     };
   };

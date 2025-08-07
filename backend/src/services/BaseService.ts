@@ -34,10 +34,8 @@ export abstract class BaseService<T extends Document> {
     try {
       const document = new this.model(data);
       const savedDocument = await document.save();
-      logger.info(`${this.model.modelName} created:`, { id: savedDocument._id });
       return savedDocument;
     } catch (error) {
-      logger.error(`Error creating ${this.model.modelName}:`, error);
       throw error;
     }
   }
@@ -50,7 +48,6 @@ export abstract class BaseService<T extends Document> {
       const document = await this.model.findById(id, null, options);
       return document;
     } catch (error) {
-      logger.error(`Error finding ${this.model.modelName} by ID:`, error);
       throw error;
     }
   }
@@ -76,7 +73,6 @@ export abstract class BaseService<T extends Document> {
       const documents = await this.model.find(filter, null, options);
       return documents;
     } catch (error) {
-      logger.error(`Error finding ${this.model.modelName}s:`, error);
       throw error;
     }
   }
@@ -116,7 +112,6 @@ export abstract class BaseService<T extends Document> {
         }
       };
     } catch (error) {
-      logger.error(`Error finding ${this.model.modelName}s with pagination:`, error);
       throw error;
     }
   }
@@ -131,12 +126,8 @@ export abstract class BaseService<T extends Document> {
   ): Promise<T | null> {
     try {
       const document = await this.model.findByIdAndUpdate(id, update, options);
-      if (document) {
-        logger.info(`${this.model.modelName} updated:`, { id: document._id });
-      }
       return document;
     } catch (error) {
-      logger.error(`Error updating ${this.model.modelName}:`, error);
       throw error;
     }
   }
@@ -151,12 +142,8 @@ export abstract class BaseService<T extends Document> {
   ): Promise<T | null> {
     try {
       const document = await this.model.findOneAndUpdate(filter, update, options);
-      if (document) {
-        logger.info(`${this.model.modelName} updated:`, { id: document._id });
-      }
       return document;
     } catch (error) {
-      logger.error(`Error updating ${this.model.modelName}:`, error);
       throw error;
     }
   }
@@ -167,12 +154,8 @@ export abstract class BaseService<T extends Document> {
   async deleteById(id: string): Promise<T | null> {
     try {
       const document = await this.model.findByIdAndDelete(id);
-      if (document) {
-        logger.info(`${this.model.modelName} deleted:`, { id: document._id });
-      }
       return document;
     } catch (error) {
-      logger.error(`Error deleting ${this.model.modelName}:`, error);
       throw error;
     }
   }
@@ -185,7 +168,6 @@ export abstract class BaseService<T extends Document> {
       const count = await this.model.countDocuments(filter);
       return count;
     } catch (error) {
-      logger.error(`Error counting ${this.model.modelName}s:`, error);
       throw error;
     }
   }
@@ -198,7 +180,6 @@ export abstract class BaseService<T extends Document> {
       const document = await this.model.findOne(filter).select('_id');
       return !!document;
     } catch (error) {
-      logger.error(`Error checking ${this.model.modelName} existence:`, error);
       throw error;
     }
   }
@@ -212,7 +193,6 @@ export abstract class BaseService<T extends Document> {
       logger.info(`${documents.length} ${this.model.modelName}s created`);
       return documents as unknown as T[];
     } catch (error) {
-      logger.error(`Error creating multiple ${this.model.modelName}s:`, error);
       throw error;
     }
   }

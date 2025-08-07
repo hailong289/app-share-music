@@ -17,7 +17,7 @@ export interface CreateUserData {
 export interface UpdateUserData {
   name?: string;
   email?: string;
-  role?: 'user' | 'admin';
+  role?: 'user' | 'admin' | 'artist';
   isActive?: boolean;
 }
 

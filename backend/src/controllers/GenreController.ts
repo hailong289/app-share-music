@@ -1,52 +1,62 @@
+import { genreService } from "@/services/music/GenreService";
 import { BaseController } from "./BaseController";
 import { Response, Request, NextFunction } from 'express';
 
 
 class GenreController extends BaseController {
+
     /**
      * name
      */
-    public index(req: Request, res: Response) {
-       return this.sendSuccess(res, [], 'Lấy danh sách thể loại thành công');
-    }
+    public index = this.asyncHandler(async (req: Request, res: Response) => {
+        const genres = await genreService.findGenres();
+        return this.sendSuccess(res, genres, 'Lấy danh sách thể loại thành công');
+    });
+
     /**
      * getById
      */
-    public async detail(req: Request, res: Response) {
-        return this.sendSuccess(res, [], 'Lấy thể loại thành công');
-    }
+    public detail = this.asyncHandler(async (req: Request, res: Response) => {
+        const genreId = req.params.id;
+        const genre = await genreService.findGenreById(genreId);
+        if (!genre) {
+            return this.sendNotFound(res, 'Thể loại không tồn tại');
+        }
+        return this.sendSuccess(res, genre, 'Lấy thể loại thành công');
+    });
+
     /**
      * create
      */
-    public create(req: Request, res: Response) {
-        const { name } = req.body;
-        if (!name) {
-            return this.sendValidationError(res, [{ field: 'name', message: 'Name is required' }], 'Validation failed');
-        }
-        
-    }
+    public create = this.asyncHandler(async (req: Request, res: Response) => {
+        const { name, description } = req.body;
+        const genre = await genreService.createGenre({ name, description });
+        return this.sendSuccess(res, genre, 'Tạo thể loại thành công');
+    });
+
     /**
      * update
      */
-    public update(req: Request, res: Response) {
-        const { id, name } = req.body;
-        if (!id) {
-            return this.sendValidationError(res, [{ field: 'id', message: 'ID is required' }], 'Validation failed');
+    public update = this.asyncHandler(async (req: Request, res: Response) => {
+        const { name, description } = req.body;
+        const genre = await genreService.updateGenreById(req.params.id, { name, description });
+        if (!genre) {
+            return this.sendNotFound(res, 'Thể loại không tồn tại');
         }
-        if (!name) {
-            return this.sendValidationError(res, [{ field: 'name', message: 'Name is required' }], 'Validation failed');
-        }
-
-    }
+        return this.sendSuccess(res, genre, 'Cập nhật thể loại thành công');
+    });
 
     /**
      * delete
      */
-    public delete(req: Request, res: Response) {
+    public delete = this.asyncHandler(async (req: Request, res: Response) => {
         const { id } = req.params;
-        if (!id) {
-            return this.sendValidationError(res, [{ field: 'id', message: 'ID is required' }], 'Validation failed');
+        const genre = await genreService.deleteGenreById(id);
+        if (!genre) {
+            return this.sendNotFound(res, 'Thể loại không tồn tại');
         }
-    }
-    
+        return this.sendSuccess(res, genre, 'Xóa thể loại thành công');
+    });
 }
+
+export default new GenreController();

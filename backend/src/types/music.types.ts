@@ -86,3 +86,9 @@ export interface IDownload extends Document {
   song_id: Types.ObjectId;
   downloaded_at: Date;
 }
+
+export interface IGenre extends Document {
+  _id: Types.ObjectId;
+  name: string;
+  description?: string;
+}
