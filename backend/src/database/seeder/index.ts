@@ -146,29 +146,22 @@ class DatabaseSeeder {
 
             switch (entityType.toLowerCase()) {
                 case 'users':
-                    await User.deleteMany({});
                     await seedUsers();
                     break;
                 case 'genres':
-                    await Genre.deleteMany({});
                     await seedGenres();
                     break;
                 case 'albums':
-                    await Album.deleteMany({});
                     const users = await User.find({});
                     await seedAlbums(users);
                     break;
                 case 'songs':
-                    await Song.deleteMany({});
-                    await SongGenre.deleteMany({});
                     const allUsers = await User.find({});
                     const allAlbums = await Album.find({});
                     const allGenres = await Genre.find({});
                     await seedSongs(allUsers, allAlbums, allGenres);
                     break;
                 case 'playlists':
-                    await Playlist.deleteMany({});
-                    await PlaylistSong.deleteMany({});
                     const playlistUsers = await User.find({});
                     const playlistSongs = await Song.find({});
                     await seedPlaylists(playlistUsers, playlistSongs);
@@ -182,7 +175,7 @@ class DatabaseSeeder {
             logger.error(`Error seeding ${entityType}:`, error);
             throw error;
         } finally {
-            await this.disconnectFromDatabase();
+            // await this.disconnectFromDatabase();
         }
     }
 }

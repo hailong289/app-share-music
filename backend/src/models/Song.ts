@@ -1,6 +1,19 @@
 import mongoose, { Schema } from 'mongoose';
 import { ISong } from '../types/music.types';
 
+/**
+ * Bảng bài hát
+ * @typedef Song
+ * @property {string} title - Tiêu đề bài hát
+ * @property {ObjectId} album_id - ID của album chứa bài hát (nếu có)
+ * @property {ObjectId} playlist_id - ID của playlist chứa bài hát (nếu có)
+ * @property {ObjectId} artist_id - ID của nghệ sĩ thể hiện bài hát
+ * @property {number} duration - Thời lượng bài hát tính bằng giây
+ * @property {string} audio_url - URL của tệp âm thanh bài hát
+ * @property {number} [track_number] - Số thứ tự của bài hát trong album (nếu có)
+ * @property {Date} created_at - Ngày tạo bài hát
+ * @property {Date} updated_at - Ngày cập nhật bài hát
+ */
 const SongSchema: Schema = new Schema({
   title: {
     type: String,
@@ -31,6 +44,16 @@ const SongSchema: Schema = new Schema({
     type: Number,
     min: 1,
   },
+  total_likes: {
+    type: Number,
+    default: 0,
+  },
+  total_downloads: {
+    type: Number,
+    default: 0,
+  }
+}, {
+  timestamps: true, // Automatically manage created_at and updated_at fields
 });
 
 SongSchema.index({ title: 1 });

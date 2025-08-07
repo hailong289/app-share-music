@@ -1,6 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
 import { IGenre } from '../types/music.types';
 
+/**
+ * Bảng thể loại nhạc
+ * @typedef Genre
+ */
 const GenreSchema: Schema = new Schema({
   name: {
     type: String,

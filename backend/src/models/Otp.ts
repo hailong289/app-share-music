@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
 
+/**
+ * Bảng OTP (One Time Password)
+ * @typedef Otp
+ */
 const otpSchema = new mongoose.Schema({
     email: {
         type: String,

@@ -1,6 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
 import { IDownload } from '../types/music.types';
 
+/**
+ *  Bảng tải xuống nhạc
+ *  @typedef Download
+ */
 const DownloadSchema: Schema = new Schema({
   user_id: {
     type: Schema.Types.ObjectId,

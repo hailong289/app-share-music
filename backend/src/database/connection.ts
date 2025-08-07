@@ -23,18 +23,26 @@ export class Connection {
         try {
             const dbConfig = getDatabaseConfig();
             let mongoUri = '';
+
             if (dbConfig.dns) {
+                // Sử dụng DNS chuỗi kết nối (MongoDB Atlas)
                 mongoUri = dbConfig.dns;
             } else {
-                mongoUri = `${dbConfig.connection}://${dbConfig.host}:${dbConfig.port}/${dbConfig.name}`;
+                // Tạo chuỗi kết nối từ các thành phần
                 if (dbConfig.pass) {
-                    mongoUri = `${dbConfig.connection}://${dbConfig.host}:${dbConfig.pass}@${dbConfig.port}/${dbConfig.name}`;
+                    // Nếu có mật khẩu, cần xây dựng chuỗi kết nối với thông tin xác thực
+                    mongoUri = `${dbConfig.connection}://${dbConfig.user}:${dbConfig.pass}@${dbConfig.host}:${dbConfig.port}/${dbConfig.name}`;
+                } else {
+                    // Không có mật khẩu
+                    mongoUri = `${dbConfig.connection}://${dbConfig.host}:${dbConfig.port}/${dbConfig.name}`;
                 }
             }
 
             if (dbConfig.query) {
                 mongoUri += dbConfig.query;
             }
+
+            logger.info(`Connecting to MongoDB at: ${mongoUri.replace(/:[^:]*@/, ':****@')}`);
 
             await mongoose.connect(mongoUri, {
                 serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s

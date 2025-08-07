@@ -2,6 +2,19 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { IUser } from '../types/user.type';
 
+/**
+ * Bảng người dùng
+ * @typedef User
+ * @property {string} name - Tên người dùng
+ * @property {string} email - Email người dùng
+ * @property {string} bio - Tiểu sử người dùng
+ * @property {string} image_url - URL hình ảnh đại diện người dùng
+ * @property {string} password - Mật khẩu người dùng
+ * @property {string} role - Vai trò của người dùng (user, admin, artist)
+ * @property {boolean} isActive - Trạng thái hoạt động của người dùng
+ * @property {Date} created_at - Ngày tạo người dùng
+ * @property {Date} updated_at - Ngày cập nhật người dùng
+ */
 const UserSchema: Schema = new Schema(
   {
     name: {

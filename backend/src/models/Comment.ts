@@ -1,6 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
 import { IComment } from '../types/music.types';
 
+/**
+ * Bảng bình luận cho bài hát
+ * @typedef Comment
+ */
 const CommentSchema: Schema = new Schema({
   user_id: {
     type: Schema.Types.ObjectId,

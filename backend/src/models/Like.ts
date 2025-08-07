@@ -1,6 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
 import { ILike } from '../types/music.types';
 
+/**
+ * Bảng thích bài hát
+ * @typedef Like
+ */
 const LikeSchema: Schema = new Schema({
   user_id: {
     type: Schema.Types.ObjectId,

@@ -1,6 +1,14 @@
 import mongoose, { Schema } from 'mongoose';
 import { IAlbum } from '../types/music.types';
 
+/**
+ * Bảng album
+ * @typedef Album
+ *  @property {string} title - Tên album
+ *  @property {ObjectId} artist_id - ID của nghệ sĩ sở hữu album
+ *  @property {Date} release_date - Ngày phát hành album
+ *  @property {string} cover_url - URL của bìa album
+ */
 const AlbumSchema: Schema = new Schema({
   title: {
     type: String,
@@ -21,6 +29,8 @@ const AlbumSchema: Schema = new Schema({
     type: String,
     trim: true,
   },
+}, {
+  timestamps: true, 
 });
 
 // Create indexes

@@ -1,6 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
 import { IListeningHistory } from '../types/music.types';
 
+/**
+ * Bảng lịch sử nghe nhạc
+ * @typedef ListeningHistory
+ */
 const ListeningHistorySchema: Schema = new Schema({
   user_id: {
     type: Schema.Types.ObjectId,

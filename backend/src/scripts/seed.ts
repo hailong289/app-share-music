@@ -20,6 +20,15 @@ async function main() {
                 logger.info('Database cleared successfully!');
                 break;
 
+            case 'seed:specific':
+                const entityType = process.argv[3];
+                if (!entityType) {
+                    throw new Error('Entity type must be specified for seeding specific entities');
+                }
+                await seeder.seedSpecific(entityType);
+                logger.info(`Specific entity type "${entityType}" seeded successfully!`);
+                break;
+
             case 'seed':
             case 'run':
             default:
