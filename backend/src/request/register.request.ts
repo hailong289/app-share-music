@@ -1,8 +1,14 @@
 import { body, validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
+import BaseRequest from './base.request';
 
-class RegisterRequest {
-  public static validate() {
+class RegisterRequest extends BaseRequest {
+
+  constructor() {
+    super(RegisterRequest.rule);
+  }
+
+  public static rule() {
     return [
       body('name')
         .trim()
@@ -23,28 +29,15 @@ class RegisterRequest {
       body('password')
         .isLength({ min: 6 })
         .withMessage('Mật khẩu phải có ít nhất 6 ký tự'),
-      // .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-      // .withMessage('Mật khẩu phải chứa ít nhất một chữ cái viết thường, một chữ cái viết hoa và một số')
+
       body('role')
         .optional()
         .isIn(['user', 'admin', 'artist'])
         .withMessage('Vai trò không hợp lệ'),
-
     ];
-  }
-  public static handleValidationErrors(req: Request, res: Response, next: NextFunction) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        status: 'error',
-        errors: errors.array().map(err => ({
-          field: err.type === 'field' ? err.path : undefined,
-          message: err.msg
-        }))
-      });
-    }
-    next();
   }
 }
 
-export default RegisterRequest;
+const registerRequest = new RegisterRequest();
+
+export default registerRequest;
