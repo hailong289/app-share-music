@@ -1,20 +1,26 @@
-import { Queue } from '@upstash/queue';
-import { Redis } from '@upstash/redis';
+import logger from "@/utils/logger";
+import Bull from "bull";
 
 class AppQueue {
     private static instance: AppQueue;
-    private queue: Queue;
-    private redis: Redis;
+    private queueKey: string = 'defaultQueue';
+    private queue: Bull.Queue;
 
-    constructor() {
-        this.redis = new Redis({
-            url: process.env.UPSTASH_REDIS_REST_URL || 'https://bold-seahorse-17302.upstash.io',
-            token: process.env.UPSTASH_REDIS_REST_TOKEN || 'AUOWAAIjcDFkZjY1MGVlM2U5ZDQ0MTlmODJiMmMyMGEwMmZmMTkzNHAxMA',
-        });
-        this.queue = new Queue({ redis: this.redis });
+    private constructor() {
+        try {
+            this.queue = new Bull(this.queueKey, {
+                redis: {
+                    host: 'redis-16626.crce194.ap-seast-1-1.ec2.redns.redis-cloud.com',
+                    port: 16626,
+                    password: '44YKrzr2xXJpxGTk3UOsVWxOBXqgSx6t', // Replace with your Redis password
+                }
+            });
+        } catch (error) {
+            logger.error('Error initializing queue:', error);
+            throw new Error('Failed to initialize queue');
+        }
     }
 
-    // Singleton pattern
     public static getInstance(): AppQueue {
         if (!AppQueue.instance) {
             AppQueue.instance = new AppQueue();
@@ -22,29 +28,122 @@ class AppQueue {
         return AppQueue.instance;
     }
 
-    public getQueue(): Queue {
+    public async start(): Promise<void> {
+        await this.processJobs();
+    }
+
+    public async addJob(jobClass: any, params?: any): Promise<void> {
+        try {
+            let jobInstance;
+            let className;
+            let constructorArgs: any[] = [];
+            
+            if (typeof jobClass === 'function') {
+                className = jobClass.name;
+                if (params) {
+                    constructorArgs = Object.values(params);
+                    jobInstance = new jobClass(...constructorArgs);
+                } else {
+                    jobInstance = new jobClass();
+                }
+            } else {
+                className = jobClass.constructor.name;
+                jobInstance = jobClass;
+            }
+            
+            await this.queue.add({
+                name: className,
+                data: {
+                    constructorArgs: constructorArgs,
+                    jobData: jobInstance.toJSON ? jobInstance.toJSON() : {
+                        to: jobInstance.to,
+                        subject: jobInstance.subject,
+                        body: jobInstance.body
+                    }
+                }
+            });
+        } catch (error) {
+            logger.error('Error adding job to the queue:', error);
+        }
+    }
+
+    public async processJobs(): Promise<void> {
+        this.queue.process(async (job) => {
+            const jobHandlerName = job.data.name;
+            try {
+                const jobInstance = await this.getJobHandle(jobHandlerName, job.data.data);
+                if (!jobInstance || typeof jobInstance.handle !== 'function') {
+                    throw new Error(`Job handler ${jobHandlerName} does not have a handle method`);
+                }
+                await jobInstance.handle();
+                console.log(`Job ${job.id} processed successfully`);
+            } catch (error) {
+                logger.error(`Failed to load job handler: ${jobHandlerName}`, error);
+                throw error;
+            }
+        });
+
+        this.queue.on('completed', (job) => {
+            this.removeJob(job.id as string); // Remove job after completion
+        });
+
+        this.queue.on('failed', async (job, err) => {
+            logger.error(`Job failed: ${job.id}, Error: ${err.message}`);
+            try {
+                const jobHandlerName = job.data.name;
+                const jobInstance = await this.getJobHandle(jobHandlerName, job.data.data);
+                if (jobInstance && typeof jobInstance.failed === 'function') {
+                    await jobInstance.failed(err);
+                }
+            } catch (retryError) {}
+        });
+    }
+
+    public getQueue(): Bull.Queue {
         return this.queue;
     }
 
-    public getRedis(): Redis {
-        return this.redis;
+    public getQueueKey(): string {
+        return this.queueKey;
     }
 
-    public async start(): Promise<void> {
-        try {
-            console.log('Queue service started successfully');
-        } catch (error) {
-            console.error('Failed to start queue service:', error);
+    public async close(): Promise<void> {
+        await this.queue.close();
+    }
+
+    public async clear(): Promise<void> {
+        await this.queue.empty();
+    }
+
+    public async removeJob(jobId: string): Promise<void> {
+        const job = await this.queue.getJob(jobId);
+        if (job) {
+            await job.remove();
+        } else {
+            console.log(`Job not found: ${jobId}`);
         }
     }
 
-    public async stop(): Promise<void> {
-        try {
-            console.log('Queue service stopped successfully');
-        } catch (error) {
-            console.error('Failed to stop queue service:', error);
+    public async getJob(jobId: string): Promise<Bull.Job | null> {
+        return await this.queue.getJob(jobId);
+    }
+
+    public async getJobHandle(name: string, data: any): Promise<any> {
+        const jobModule = await import(`@/queues/jobs/${name}`);
+        const JobHandlerClass = jobModule.default;
+        const { constructorArgs, jobData } = data;     
+        let jobInstance;
+        if (constructorArgs && Array.isArray(constructorArgs) && constructorArgs.length > 0) {
+            jobInstance = new JobHandlerClass(...constructorArgs);
+        } else if (jobData) {
+            // Tạo instance từ jobData nếu không có constructorArgs
+            jobInstance = new JobHandlerClass(jobData.to, jobData.subject, jobData.body);
+        } else {
+            jobInstance = new JobHandlerClass();
         }
+
+        return jobInstance;
     }
 }
 
-export default AppQueue;
+export const appQueue = AppQueue.getInstance();

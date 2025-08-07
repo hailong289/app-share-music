@@ -53,7 +53,10 @@
       ],
       "@requests/*": [
         "src/requests/*"
-      ]
+      ],
+      "@queues/*": [
+        "src/queues/*"
+      ],
     },
     "plugins": [
       {

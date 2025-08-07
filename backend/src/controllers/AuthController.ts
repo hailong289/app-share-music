@@ -3,6 +3,9 @@ import { userService } from "@/services/UserService";
 import { BaseController } from "./BaseController";
 import { validationResult } from "express-validator/lib/validation-result";
 import { pick } from '@/utils/data';
+import OtpService from '@/services/OtpService';
+import { appQueue } from '@/queues';
+import EmailJob from '@/queues/jobs/EmailJob';
 
 class AuthController extends BaseController {
     /**
@@ -27,13 +30,6 @@ class AuthController extends BaseController {
 
     public register = this.asyncHandler(async (req, res) => {
         try {
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                return this.sendValidationError(res, errors.array().map(err => ({
-                    field: err.type === 'field' ? err.path : undefined,
-                    message: err.msg
-                })), 'Dữ liệu không hợp lệ');
-            }
             const { name, email, password, bio, image_url, role } = req.body;
             const result = await userService.createUser({
                 name,
@@ -55,6 +51,30 @@ class AuthController extends BaseController {
             console.error('Registration error:', error);
             return this.sendError(res, 'Đăng ký thất bại', 400);
         }
+    });
+
+    public sendOtp = this.asyncHandler(async (req, res) => {
+        const { email } = req.body;
+        const otp = await OtpService.createOtp(email);
+        if (!otp) {
+            return this.sendError(res, 'Gửi OTP thất bại', 400);
+        }
+        await appQueue.addJob(EmailJob, {
+            to: email,
+            subject: 'Xác thực OTP',
+            body: `Mã OTP của bạn là: ${otp}. Nó sẽ hết hạn sau 5 phút.`
+        });
+        // Gửi phản hồi thành công
+        return this.sendSuccess(res, {}, 'Gửi OTP thành công vui lòng kiểm tra email của bạn, mã OTP sẽ hết hạn sau 5 phút');
+    });
+
+    public verifyOtp = this.asyncHandler(async (req, res) => {
+        const { email, otp } = req.body;
+        const result = await OtpService.verifyOtp(email, otp);
+        if (!result) {
+            return this.sendError(res, 'Mã OTP không hợp lệ hoặc đã hết hạn', 400);
+        }
+        return this.sendSuccess(res, {}, 'Xác thực OTP thành công');
     });
 }
 

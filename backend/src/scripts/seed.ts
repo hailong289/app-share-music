@@ -6,8 +6,8 @@
  *   npm run seed        - Run all seeders
  *   npm run seed:clear  - Clear all data
  */
-import logger from '../src/utils/logger';
-import { DatabaseSeeder } from '../src/database/seeder';
+import logger from '../utils/logger';
+import { DatabaseSeeder } from '../database/seeder';
 
 async function main() {
     const seeder = new DatabaseSeeder();
