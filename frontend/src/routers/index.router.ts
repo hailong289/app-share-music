@@ -1,11 +1,16 @@
+// src/router/router.tsx
 import React from 'react'
-import HomePage from '../pages/HomePage'
-import CreatePage from '../pages/CreatePage'
-import NoteDetailPage from '../pages/NoteDetailPage'
-import AboutPage from '../pages/AboutPage'
-import ContactPage from '../pages/ContactPage'
-import ProfilePage from '../pages/ProfilePage'
+// import AuthCallbackPage from '../pages/auth-callback/AuthCallbackPage'
+// import { AuthenticateWithRedirectCallback } from '@clerk/clerk-react'
+// import AdminPage from '../pages/admin/AdminPage'
+// import NotFoundPage from '../pages/404/NotFoundPage'
+
 import { createBrowserRouter, type RouteObject } from 'react-router'
+import ChatPage from '@/pages/chat/ChatPage'
+import MainLayout from '@/layout/MainLayout'
+import HomePage from '@/pages/home/HomePage'
+import NotFoundPage from '@/pages/404/NotFoundPage'
+import AlbumPage from '@/pages/album/AlbumPage'
 
 // Định nghĩa cấu trúc route
 export interface RouterConfig {
@@ -17,38 +22,44 @@ export interface RouterConfig {
 }
 
 const routeConfigs: RouterConfig[] = [
+  // {
+  //   path: '/auth-callback',
+  //   name: 'Auth Callback',
+  //   component: AuthCallbackPage
+  // },
+  // {
+  //   path: '/admin',
+  //   name: 'Admin',
+  //   component: AdminPage
+  // },
   {
     path: '/',
-    name: 'Home',
-    component: HomePage
-  },
-  {
-    path: '/create',
-    name: 'Create Note',
-    component: CreatePage,
-    isProtected: true // Demo protected route
-  },
-  {
-    path: '/note/:id',
-    name: 'Note Detail',
-    component: NoteDetailPage
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: AboutPage
-  },
-  {
-    path: '/contact',
-    name: 'Contact',
-    component: ContactPage
-  },
-  {
-    path: '/profile',
-    name: 'Profile',
-    component: ProfilePage,
+    name: 'Main Layout',
+    component: MainLayout,
+    children: [
+      {
+        path: '/',
+        name: 'Home',
+        component: HomePage
+      },
+      {
+        path: '/chat',
+        name: 'Chat',
+        component: ChatPage
+      },
+      {
+        path: '/albums/:albumId',
+        name: 'Album Detail',
+        component: AlbumPage
+      },
+      {
+        path: '*',
+        name: 'Not Found',
+        component: NotFoundPage
+      }
+    ]
   }
-];
+]
 
 // Hàm helper để tạo routes từ config
 const createRoutesFromConfig = (configs: RouterConfig[]): RouteObject[] => {
