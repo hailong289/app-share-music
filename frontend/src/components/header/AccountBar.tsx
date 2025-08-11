@@ -5,12 +5,12 @@ import { Link } from "react-router-dom";
 import { buttonVariants } from "../ui/button";
 
 const AccountBar = () => {
-  const { logout } = useAuthStore();
+  const { logout, user } = useAuthStore();
   const handleLogout = () => {
     logout();
   };
   const isPending = false;
-  const srcImage = "/bases/post_malone.jpg";
+
   return (
     <div
       className="flex-none flex flex-row gap-2 items-center justify-center"
@@ -52,7 +52,7 @@ const AccountBar = () => {
             className={`w-10 rounded-full ${isPending ? "skeleton" : ""}`}
           >
             {!isPending && (
-              <img alt="Tailwind CSS Navbar component" src={srcImage} />
+              <img alt="Tailwind CSS Navbar component" src={user?.image_url} />
             )}
           </div>
         </div>
@@ -69,7 +69,7 @@ const AccountBar = () => {
               className="justify-between hover:bg-zinc-200 rounded-md"
             >
               Account
-              <ExternalLink />
+              <ExternalLink size={15} />
             </Link>
           </li>
           <li>

@@ -4,10 +4,11 @@ import { cn } from "@/lib/utils";
 import { buttonVariants, Button } from "../ui/button";
 import SearchBar from "./SearchBar";
 import AccountBar from "./AccountBar";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 const Topbar = (props) => {
   const {isMobile = false} = props;
-  const isAdmin = true;
+  const {isAdmin, user} = useAuthStore();
 
   return (
     <div
@@ -42,7 +43,18 @@ const Topbar = (props) => {
             Admin Dashboard
           </Link>
         )}
-        <AccountBar />
+        {
+          user ? (
+            <AccountBar />
+          ) : (
+            <Link
+              to={"/login"}
+              className={cn(buttonVariants({ variant: "outline" }))}
+            >
+              Login
+            </Link>
+          )
+        }
       </div>
     </div>
   );

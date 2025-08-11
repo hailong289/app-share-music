@@ -2,7 +2,7 @@ import axios, { type AxiosResponse } from "axios";
 
 
 const axiosClient = axios.create({
-    baseURL: import.meta.env.APP_API_URL || 'http://localhost:3000/api',
+    baseURL: import.meta.env.APP_API_URL || 'http://localhost:5001/api',
     headers: {
         'Content-Type': 'application/json',
     },

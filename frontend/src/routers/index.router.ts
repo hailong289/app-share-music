@@ -11,6 +11,7 @@ import MainLayout from '@/layout/MainLayout'
 import HomePage from '@/pages/home/HomePage'
 import NotFoundPage from '@/pages/404/NotFoundPage'
 import AlbumPage from '@/pages/album/AlbumPage'
+import Login from '@/pages/auth/Login'
 
 // Định nghĩa cấu trúc route
 export interface RouterConfig {
@@ -32,6 +33,11 @@ const routeConfigs: RouterConfig[] = [
   //   name: 'Admin',
   //   component: AdminPage
   // },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
+  },
   {
     path: '/',
     name: 'Main Layout',
