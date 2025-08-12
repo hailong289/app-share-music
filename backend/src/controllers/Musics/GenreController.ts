@@ -1,5 +1,5 @@
 import { genreService } from "@/services/music/GenreService";
-import { BaseController } from "./BaseController";
+import { BaseController } from "../BaseController";
 import { Response, Request, NextFunction } from 'express';
 
 
