@@ -749,6 +749,141 @@
 			]
 		},
 		{
+			"name": "Songs",
+			"item": [
+				{
+					"name": "Lấy danh sách nhạc",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Tạo nhạc",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "Nơi này có anh",
+									"type": "text"
+								},
+								{
+									"key": "duration",
+									"value": "5000",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "lyrics",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/longd/Downloads/NoiNayCoAnh-SonTungMTP-4772041.mp3"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:5001/api/songs",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"songs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Xóa nhạc",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5001/api/songs/689c8b3b1929023b370f2fdd",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"songs",
+								"689c8b3b1929023b370f2fdd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lấy 1 bài hát",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5001/api/songs/689c8c5338d8b36f815e50c1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"songs",
+								"689c8c5338d8b36f815e50c1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Upload ",
 			"request": {
 				"auth": {
