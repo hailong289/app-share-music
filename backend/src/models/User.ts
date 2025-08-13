@@ -66,6 +66,16 @@ UserSchema.pre<IUser>('save', async function (next) {
   next();
 });
 
+UserSchema.pre('insertMany', async function (next, docs) {
+  for (const user of docs) {
+    if (user.password) {
+      const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '12');
+      user.password = await bcrypt.hash(user.password as string, saltRounds);
+    }
+  }
+  next();
+});
+
 // So sánh mật khẩu
 UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password as string);

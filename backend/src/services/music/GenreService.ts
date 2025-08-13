@@ -2,6 +2,7 @@ import { IGenre } from "@/types/music.types";
 import { BaseService } from "../BaseService";
 import { Genre } from "@/models";
 import { FilterQuery } from "mongoose";
+import SessionsGender from "@/models/Sessions";
 
 class GenreService extends BaseService<IGenre> {
     public constructor() {
@@ -55,6 +56,16 @@ class GenreService extends BaseService<IGenre> {
      */
     public async deleteGenreById(id: string): Promise<IGenre | null> {
         return await this.deleteById(id);
+    }
+
+    public async createSessionGenre(data: Partial<any>) {
+        const sessionGenre = new SessionsGender({
+            name: data.name,
+            genre_id: data._id,
+            context_type: 'playlist',
+            order_index: data.order_index || 0,
+        });
+        return await sessionGenre.save();
     }
 }
 

@@ -56,7 +56,7 @@ export interface ILike extends Document {
 export interface IGenre extends Document {
   _id: Types.ObjectId;
   name: string;
-  description?: string;
+  description: string;
 }
 
 export interface ISongGenre extends Document {
@@ -87,8 +87,15 @@ export interface IDownload extends Document {
   downloaded_at: Date;
 }
 
-export interface IGenre extends Document {
+export interface ISession extends Document {
   _id: Types.ObjectId;
-  name: string;
-  description?: string;
+  context_id: Types.ObjectId | null; // Reference to Genre or null for Home
+  context_type: 'home' | 'genre';
 }
+
+export interface ISessionItem extends Document {
+  item_id: Types.ObjectId;
+  item_type: 'playlist' | 'album';
+  session_id: Types.ObjectId;
+}
+

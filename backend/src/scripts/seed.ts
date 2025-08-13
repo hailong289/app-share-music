@@ -12,7 +12,6 @@ import { DatabaseSeeder } from '../database/seeder';
 async function main() {
     const seeder = new DatabaseSeeder();
     const command = process.argv[2] || 'seed';
-
     try {
         switch (command) {
             case 'clear':
@@ -31,7 +30,6 @@ async function main() {
 
             case 'seed':
             case 'run':
-            default:
                 await seeder.run();
                 logger.info('Database seeded successfully!');
                 break;

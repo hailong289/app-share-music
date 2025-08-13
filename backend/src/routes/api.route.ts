@@ -7,6 +7,7 @@ import GenreController from '@/controllers/Musics/GenreController';
 import AlbumController from '@/controllers/Musics/AlbumController';
 import SongController from '@/controllers/Musics/SongController';
 import PlaylistController from '@/controllers/Musics/PlayListController';
+import SessionsController from '@/controllers/Musics/SessionsController';
 
 const routerApi = Router();
 
@@ -19,19 +20,55 @@ routerApi.use('/auth', routerAuth);
 routerApi.use('/upload', routerUpload);
 
 // genre routes
-routerApi.get('/genres', GenreController.index);
-routerApi.get('/genres/:id', GenreController.detail);
-routerApi.post('/genres', GenreController.create);
-routerApi.patch('/genres/:id', GenreController.update);
-routerApi.delete('/genres/:id', GenreController.delete);
+const genderRouter = Router();
+// genderRouter.use(AuthMiddleware.authorize('admin'));
+genderRouter.get('/', GenreController.index);
+genderRouter.get('/:id', GenreController.detail);
+genderRouter.post('/', GenreController.create);
+genderRouter.patch('/:id', GenreController.update);
+genderRouter.delete('/:id', GenreController.delete);
+routerApi.use('/genres', genderRouter);
+
+// Session routes quản lý các phiên ví dụ
+// | Section (Session)       | Ví dụ tiêu đề             | Nội dung                                      |
+// | ----------------------- | ------------------------- | --------------------------------------------- |
+// | **Recently played**     | Gần đây bạn nghe          | Các playlist/album/bài hát bạn vừa nghe       |
+// | **Made For You**        | Dành riêng cho bạn        | Daily Mix, Discover Weekly, Release Radar     |
+// | **Your top mixes**      | Top Mix của bạn           | Mix theo ca sĩ/genre bạn nghe nhiều           |
+// | **Trending now**        | Đang thịnh hành           | Playlist/album đang hot ở khu vực của bạn     |
+// | **Because you like...** | Vì bạn thích Taylor Swift | Playlist/album liên quan đến nghệ sĩ/genre đó |
+// | **Throwback**           | Hoài niệm                 | Các playlist nhạc cũ                          |
+const sessionRouter = Router();
+// sessionRouter.use(AuthMiddleware.authorize('admin'));
+sessionRouter.get('/', SessionsController.index);
+sessionRouter.get('/:id', SessionsController.show);
+sessionRouter.post('/', SessionsController.create);
+sessionRouter.patch('/:id', SessionsController.update);
+sessionRouter.delete('/:id', SessionsController.delete);
+routerApi.use('/sessions', sessionRouter);
 
 // album routes
-routerApi.get('/albums', AlbumController.index);
-routerApi.get('/albums/:id', AlbumController.show);
-routerApi.post('/albums', AlbumController.create);
-routerApi.put('/albums/:id', AlbumController.update);
-routerApi.delete('/albums/:id', AlbumController.delete);
-routerApi.get('/artist/albums', AlbumController.getAlbumsByArtistId);
+const albumRouter = Router();
+// albumRouter.use(AuthMiddleware.authorize('admin', 'artist'));
+albumRouter.get('/', AlbumController.index);
+albumRouter.get('/:id', AlbumController.show);
+albumRouter.post('/', AlbumController.create);
+albumRouter.put('/:id', AlbumController.update);
+albumRouter.delete('/:id', AlbumController.delete);
+albumRouter.get('/artist/albums', AlbumController.getAlbumsByArtistId);
+routerApi.use('/albums', albumRouter);
+
+
+// Playlist routes
+const playlistRouter = Router();
+// playlistRouter.use(AuthMiddleware.authorize('admin', 'user'));
+playlistRouter.get('/', PlaylistController.index);
+playlistRouter.post('/', PlaylistController.create);
+playlistRouter.patch('/:playlistId', PlaylistController.update);
+playlistRouter.delete('/:playlistId', PlaylistController.delete);
+playlistRouter.get('/:playlistId', PlaylistController.show);
+routerApi.use('/playlists', AuthMiddleware.authenticate, playlistRouter);
+
 
 // song routes
 routerApi.get('/songs', SongController.index);
@@ -40,10 +77,5 @@ routerApi.post('/songs', SongController.create);
 routerApi.put('/songs/:id', SongController.update);
 routerApi.delete('/songs/:id', SongController.delete);
 
-// Playlist routes
-routerApi.post('/playlists', PlaylistController.create);
-routerApi.put('/playlists/:playlistId', PlaylistController.update);
-routerApi.delete('/playlists/:playlistId', PlaylistController.delete);
-routerApi.get('/playlists/:playlistId', PlaylistController.show);
 
 export default routerApi;

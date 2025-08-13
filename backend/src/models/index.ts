@@ -16,3 +16,6 @@ export { default as Like } from './Like';
 export { default as Comment } from './Comment';
 export { default as Share } from './Share';
 export { default as Download } from './Download';
+// Session Models
+export { default as Sessions } from './Sessions';
+export { default as SessionItems } from './SessionItems';

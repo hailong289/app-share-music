@@ -4,6 +4,16 @@ import { BaseController } from "../BaseController";
 class PlaylistController extends BaseController {
 
   /**
+   * Get all playlists
+   * @route GET /playlists
+   */
+  public index = this.asyncHandler(async (req, res) => {
+    const playlists = await playListService.getAllPlaylists();
+    return this.sendSuccess(res, playlists, 'Lấy danh sách playlist thành công');
+  });
+
+
+  /**
    * Get playlists by user ID
    * @route GET /playlists/user/:userId
    */
@@ -17,9 +27,8 @@ class PlaylistController extends BaseController {
    * Create a new playlist
    * @route POST /playlists
    */
-  public create = this.asyncHandler(async (req, res) => {
-    const playlistData = req.body;
-    const playlist = await playListService.createPlaylist(playlistData);
+  public create = this.asyncHandler(async (req: any, res) => {
+    const playlist = await playListService.createPlaylist(req.body);
     return this.sendCreated(res, playlist);
   });
 

@@ -32,6 +32,10 @@ class PlayListService extends BaseService<IPlaylist> {
     return this.find({ is_public: true });
   }
 
+  public async getAllPlaylists(): Promise<IPlaylist[]> {
+    return this.find({});
+  }
+
 
 }
 

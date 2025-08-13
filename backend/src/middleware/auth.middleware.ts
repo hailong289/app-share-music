@@ -15,7 +15,7 @@ export class AuthMiddleware {
   ): Promise<void> {
     try {
       const authHeader = req.headers.authorization;
-      
+
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         res.status(401).json({
           success: false,
@@ -23,9 +23,9 @@ export class AuthMiddleware {
         });
         return;
       }
-      
+
       const token = authHeader.substring(7); // Remove 'Bearer ' prefix
-      
+
       const decoded = await JWTUtil.verifyTokenJwt(token);
       const user = await User.findById(decoded.id);
       if (!user || !user.isActive) {
@@ -35,8 +35,8 @@ export class AuthMiddleware {
         });
         return;
       }
-      
-      req.user = decoded;
+
+      req.body.user_id = String(user._id); // Attach user to request body
       next();
     } catch (error) {
       res.status(401).json({
@@ -45,7 +45,7 @@ export class AuthMiddleware {
       });
     }
   }
-  
+
   public static authorize(...roles: string[]) {
     return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
       if (!req.user) {
@@ -55,7 +55,7 @@ export class AuthMiddleware {
         });
         return;
       }
-      
+
       if (!roles.includes(req.user.role)) {
         res.status(403).json({
           success: false,
@@ -63,7 +63,7 @@ export class AuthMiddleware {
         });
         return;
       }
-      
+
       next();
     };
   }
