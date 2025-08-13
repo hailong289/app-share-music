@@ -36,7 +36,10 @@ export class AuthMiddleware {
         return;
       }
 
-      req.body.user_id = String(user._id); // Attach user to request body
+      req.user = decoded;
+      if (req.body) {
+         req.body.user_id = String(user._id);
+      }
       next();
     } catch (error) {
       res.status(401).json({

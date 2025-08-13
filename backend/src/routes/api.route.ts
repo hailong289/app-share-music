@@ -8,6 +8,7 @@ import AlbumController from '@/controllers/Musics/AlbumController';
 import SongController from '@/controllers/Musics/SongController';
 import PlaylistController from '@/controllers/Musics/PlayListController';
 import SessionsController from '@/controllers/Musics/SessionsController';
+import UploadMiddleware from '@/middleware/upload.middleware';
 
 const routerApi = Router();
 
@@ -71,11 +72,13 @@ routerApi.use('/playlists', AuthMiddleware.authenticate, playlistRouter);
 
 
 // song routes
-routerApi.get('/songs', SongController.index);
-routerApi.get('/songs/:id', SongController.show);
-routerApi.post('/songs', SongController.create);
-routerApi.put('/songs/:id', SongController.update);
-routerApi.delete('/songs/:id', SongController.delete);
+const songRouter = Router();
+songRouter.get('/', SongController.index);
+songRouter.get('/:id', SongController.show);
+songRouter.post('/', UploadMiddleware.uploadMp3, SongController.create);
+songRouter.put('/:id', SongController.update);
+songRouter.delete('/:id', SongController.delete);
+routerApi.use('/songs', AuthMiddleware.authenticate, songRouter);
 
 
 export default routerApi;

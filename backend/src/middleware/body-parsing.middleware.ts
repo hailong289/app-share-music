@@ -16,7 +16,6 @@ export class BodyParsingMiddleware {
       });
     } else if (contentType.includes('application/x-www-form-urlencoded')) {
       express.urlencoded({ extended: true, limit: '10mb' })(req, res, (err) => {
-        // console.log('URL-encoded Body:', req.body);
         next();
       });
     } else if (contentType.includes('multipart/form-data')) {

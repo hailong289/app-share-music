@@ -28,26 +28,44 @@ export class Connection {
                 // Sử dụng DNS chuỗi kết nối (MongoDB Atlas)
                 mongoUri = dbConfig.dns;
             } else {
-                // Tạo chuỗi kết nối từ các thành phần
-                if (dbConfig.pass) {
-                    // Nếu có mật khẩu, cần xây dựng chuỗi kết nối với thông tin xác thực
-                    mongoUri = `${dbConfig.connection}://${dbConfig.user}:${dbConfig.pass}@${dbConfig.host}:${dbConfig.port}/${dbConfig.name}`;
-                } else {
-                    // Không có mật khẩu
-                    mongoUri = `${dbConfig.connection}://${dbConfig.host}:${dbConfig.port}/${dbConfig.name}`;
+                if (dbConfig.connection) {
+                    // Nếu có kết nối, sử dụng kết nối đã chỉ định
+                    mongoUri = `${dbConfig.connection}://`;
                 }
-            }
-
-            if (dbConfig.query) {
-                mongoUri += dbConfig.query;
+                
+                // Add username and password before host for mongodb+srv
+                if (dbConfig.user && dbConfig.pass) {
+                    mongoUri += `${dbConfig.user}:${dbConfig.pass}@`;
+                }
+                
+                if (dbConfig.host) {
+                    mongoUri += dbConfig.host;
+                }
+                if (dbConfig.port && dbConfig.connection !== 'mongodb+srv') {
+                    mongoUri += `:${dbConfig.port}`;
+                }
+                if (dbConfig.name) {
+                    mongoUri += `/${dbConfig.name}`;
+                }
+                
+                // Add query parameters
+                if (dbConfig.query) {
+                    if (dbConfig.query.startsWith('?')) {
+                        mongoUri += dbConfig.query;
+                    } else {
+                        mongoUri += `?${dbConfig.query}`;
+                    }
+                }
             }
 
             logger.info(`Connecting to MongoDB at: ${mongoUri.replace(/:[^:]*@/, ':****@')}`);
 
-            await mongoose.connect(mongoUri, {
+            let options: mongoose.ConnectOptions = {
                 serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
                 socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
-            });
+            };
+
+            await mongoose.connect(mongoUri, options);
 
             this.isConnected = true;
             logger.info('Connected to MongoDB successfully');

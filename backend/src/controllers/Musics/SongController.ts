@@ -1,5 +1,6 @@
 import { songService } from "@/services/music/SongService";
 import { BaseController } from "../BaseController";
+import { Request } from "express";
 
 class SongController extends BaseController {
   /**
@@ -31,8 +32,23 @@ class SongController extends BaseController {
    */
   public create = this.asyncHandler(async (req, res) => {
     const data = req.body;
-    const song = await songService.createSong(data);
-    return this.sendCreated(res, song);
+    try {
+      const song = await songService.createSong({
+        ...data,
+        user_id: req.body.user_id || req.user?.id,
+      });
+      return this.sendCreated(res, song);
+    } catch (error) {
+      if (req.file && req.file.path) {
+        try {
+          const fs = require('fs');
+          fs.unlinkSync(req.file.path);
+        } catch (error) {
+          console.error('Error cleaning up uploaded file:', error);
+        }
+      }
+      return this.sendError(res, 'Tạo bài hát thất bại', 400);
+    }
   });
 
   /**
@@ -57,7 +73,7 @@ class SongController extends BaseController {
     const { id } = req.params;
     const song = await songService.deleteSongById(id);
     if (!song) {
-      return this.sendNotFound(res);
+      return this.sendNotFound(res, 'Bài hát không tồn tại');
     }
     return this.sendSuccess(res, '', 'Xóa bài hát thành công');
   });

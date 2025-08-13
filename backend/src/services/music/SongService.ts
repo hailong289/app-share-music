@@ -1,6 +1,7 @@
 import { ISong } from "@/types/music.types";
 import { BaseService } from "../BaseService";
 import { Song } from "@/models";
+import * as fs from "fs";
 
 class SongService extends BaseService <ISong> {
   constructor() {
@@ -53,6 +54,18 @@ class SongService extends BaseService <ISong> {
    * @param id - Song ID
    */
   public async deleteSongById(id: string): Promise<ISong | null> {
+    const song = await this.findById(id);
+    if (!song) {
+      return null; // Song not found
+    }
+    // Clean up audio file if it exists
+    if (song.audio_url) {
+      try {
+      fs.unlinkSync(song.audio_url); // Assuming audio_url is the path to the song file
+      } catch (err) {
+      // Handle error (e.g., file not found), optionally log it
+      }
+    }
     return await this.deleteById(id);
   }
 

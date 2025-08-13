@@ -5,9 +5,11 @@ import { ISong } from '../types/music.types';
  * Bảng bài hát
  * @typedef Song
  * @property {string} title - Tiêu đề bài hát
+ * @property {string} description - Nội dung mô tả bài hát
+ * @property {string} lyrics - Lời bài hát
  * @property {ObjectId} album_id - ID của album chứa bài hát (nếu có)
  * @property {ObjectId} playlist_id - ID của playlist chứa bài hát (nếu có)
- * @property {ObjectId} artist_id - ID của nghệ sĩ thể hiện bài hát
+ * @property {ObjectId} user_id - ID của người dùng thể hiện bài hát
  * @property {number} duration - Thời lượng bài hát tính bằng giây
  * @property {string} audio_url - URL của tệp âm thanh bài hát
  * @property {number} [track_number] - Số thứ tự của bài hát trong album (nếu có)
@@ -21,11 +23,19 @@ const SongSchema: Schema = new Schema({
     trim: true,
     maxlength: 200,
   },
+  description: {
+    type: String,
+    trim: true,
+  },
+  lyrics: {
+    type: String,
+    trim: true,
+  },
   album_id: {
     type: Schema.Types.ObjectId,
     ref: 'Album',
   },
-  artist_id: {
+  user_id: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
@@ -57,7 +67,7 @@ const SongSchema: Schema = new Schema({
 });
 
 SongSchema.index({ title: 1 });
-SongSchema.index({ artist_id: 1 });
+SongSchema.index({ user_id: 1 });
 SongSchema.index({ album_id: 1 });
 SongSchema.index({ track_number: 1 });
 
