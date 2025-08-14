@@ -29,8 +29,24 @@ const AlbumSchema: Schema = new Schema({
     type: String,
     trim: true,
   },
+  total_songs: {
+    type: Number,
+    default: 0,
+  },
+  total_duration: {
+    type: Number,
+    default: 0,
+  },
+  total_likes: {
+    type: Number,
+    default: 0,
+  },
+  total_downloads: {
+    type: Number,
+    default: 0,
+  },
 }, {
-  timestamps: true, 
+  timestamps: true,
 });
 
 // Create indexes

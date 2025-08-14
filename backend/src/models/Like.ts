@@ -11,10 +11,15 @@ const LikeSchema: Schema = new Schema({
     ref: 'User',
     required: true,
   },
-  song_id: {
+  like_type_id: {
     type: Schema.Types.ObjectId,
-    ref: 'Song',
     required: true,
+    refPath: 'like_type',
+  },
+  like_type: {
+    type: String,
+    required: true,
+    enum: ['Song', 'Playlist', 'Album'], // Type of like (song, playlist, album)
   },
   liked_at: {
     type: Date,

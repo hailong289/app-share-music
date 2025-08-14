@@ -5,7 +5,7 @@ import { seedGenres } from '@database/seeder/GenreSeeder';
 import { seedAlbums } from '@database/seeder/AlbumSeeder';
 import { seedSongs } from '@database/seeder/SongSeeder';
 import { seedPlaylists } from './PlaylistSeeder';
-import { User, Genre, Album, Song, Playlist, PlaylistSong, SongGenre, Comment, Download, Follow, Like, ListeningHistory, Share } from '../../models';
+import { User, Genre, Album, Song, Playlist, PlaylistSong, SongGenre, Comment, Follow, Like, ListeningHistory, Share } from '../../models';
 
 class DatabaseSeeder {
     private async connectToDatabase(): Promise<void> {
@@ -40,7 +40,6 @@ class DatabaseSeeder {
 
             // Clear all collections in the correct order (considering dependencies)
             await Comment.deleteMany({});
-            await Download.deleteMany({});
             await Follow.deleteMany({});
             await Like.deleteMany({});
             await ListeningHistory.deleteMany({});
@@ -119,7 +118,6 @@ class DatabaseSeeder {
 
         // Clear all collections in the correct order (considering dependencies)
         await Comment.deleteMany({});
-        await Download.deleteMany({});
         await Follow.deleteMany({});
         await Like.deleteMany({});
         await ListeningHistory.deleteMany({});

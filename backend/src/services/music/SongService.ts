@@ -1,6 +1,6 @@
 import { ISong } from "@/types/music.types";
 import { BaseService } from "../BaseService";
-import { Song } from "@/models";
+import { ListeningHistory, Song } from "@/models";
 import * as fs from "fs";
 
 class SongService extends BaseService <ISong> {
@@ -67,6 +67,19 @@ class SongService extends BaseService <ISong> {
       }
     }
     return await this.deleteById(id);
+  }
+
+  public async playSong(id: string, user_id: string): Promise<ISong | null> {
+    const song = await this.findById(id);
+    if (!song) {
+      return null; // Song not found
+    }
+    // Logic to play the song (e.g., streaming the audio)
+    ListeningHistory.create({
+      user_id: user_id,
+      song_id: song.id
+    });
+    return song;
   }
 
 }

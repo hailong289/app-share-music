@@ -52,6 +52,11 @@ const PlaylistSchema: Schema = new Schema({
     type: Number,
     default: 0,
   },
+  banner_url: {
+    type: String,
+    required: true,
+    trim: true,
+  },
 }, {
   timestamps: true, // Automatically manage created_at and updated_at fields
 });

@@ -15,17 +15,20 @@ import { IShare } from '../types/music.types';
  *
  */
 const ShareSchema: Schema = new Schema({
-  song_id: {
+  user_id: {
     type: Schema.Types.ObjectId,
-    ref: 'Song',
+    require: true,
+    ref: 'User',
   },
-  playlist_id: {
+  share_type_id: {
     type: Schema.Types.ObjectId,
-    ref: 'Playlist',
+    require: true,
+    refPath: 'share_type',
   },
-  album_id: {
-    type: Schema.Types.ObjectId,
-    ref: 'Album',
+  share_type: {
+    type: String,
+    required: true,
+    enum: ['Song', 'Playlist', 'Album'],
   },
   platform: {
     type: String,

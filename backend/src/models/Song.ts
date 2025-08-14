@@ -45,6 +45,11 @@ const SongSchema: Schema = new Schema({
     required: true,
     min: 1,
   },
+  banner_url: {
+    type: String,
+    required: true,
+    trim: true,
+  },
   audio_url: {
     type: String,
     required: true,

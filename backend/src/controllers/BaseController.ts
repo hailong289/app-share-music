@@ -8,7 +8,9 @@ export interface ApiResponse<T = any> {
   errors?: Array<{
     field?: string;
     message: string;
-  }>;
+  }> | {
+    message: string;
+  };
   meta?: {
     page?: number;
     limit?: number;
@@ -70,7 +72,9 @@ export class BaseController {
     res: Response,
     message: string = 'Error',
     statusCode: number = 500,
-    errors?: Array<{ field?: string; message: string }>
+    errors?: Array<{ field?: string; message: string }> | {
+      message: string
+    }
   ): void {
     const response: ApiResponse = {
       success: false,
@@ -87,7 +91,9 @@ export class BaseController {
    */
   protected sendValidationError(
     res: Response,
-    errors?: Array<{ field?: string; message: string }>,
+    errors?: Array<{ field?: string; message: string }> | {
+      message: string
+    },
     message: string = 'Validation failed'
   ): void {
     return this.sendError(res, message, 400, errors);
@@ -138,15 +144,15 @@ export class BaseController {
    */
   public sendInternalError(
     res: Response,
-    error: any,
+    error: Error | unknown,
     message: string = 'Internal server error'
   ): void {
     logger.error('Internal server error:', error);
     const response: ApiResponse = {
       success: false,
       message,
-      ...(process.env.NODE_ENV === 'development' && { 
-        errors: [{ message: error.message || 'Unknown error' }]
+      ...(process.env.NODE_ENV === 'development' && {
+        errors: [{ message: (error as Error).message || 'Unknown error' }]
       })
     };
 
