@@ -10,9 +10,9 @@ class AppQueue {
         try {
             this.queue = new Bull(this.queueKey, {
                 redis: {
-                    host: 'redis-16626.crce194.ap-seast-1-1.ec2.redns.redis-cloud.com',
-                    port: 16626,
-                    password: '44YKrzr2xXJpxGTk3UOsVWxOBXqgSx6t', // Replace with your Redis password
+                    host: 'redis-19558.c292.ap-southeast-1-1.ec2.redns.redis-cloud.com',
+                    port: 19558,
+                    password: 'X8K6DkliOdCa0UTpGG1ZFf6CRVjwc5GQ', // Replace with your Redis password
                 }
             });
         } catch (error) {
