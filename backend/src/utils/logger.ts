@@ -34,11 +34,6 @@ const logger = winston.createLogger({
       options: {
          useUnifiedTopology: true,
           useNewUrlParser: true,
-          ssl: true,
-          sslValidate: false, // Tạm thời disable SSL validation
-          authSource: 'admin',
-          serverSelectionTimeoutMS: 30000, // 30 seconds
-          socketTimeoutMS: 45000, // 45 seconds
       },
       metaKey: 'metadata',
       expireAfterSeconds: 2592000, // 30 days
