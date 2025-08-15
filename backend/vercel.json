@@ -37,5 +37,11 @@
     "DB_PASSWORD_PROD": "hailong30100128",
     "DB_QUERY_PROD": "?retryWrites=true&w=majority&appName=longdev",
     "DB_DNS_PROD": "mongodb+srv://longdh2dev:hailong30100128@longdev.yxk8xva.mongodb.net/app-share-music"
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/queue-with-cron-job-vercel",
+      "schedule": "0 0 * * *"
+    }
+  ]
 }

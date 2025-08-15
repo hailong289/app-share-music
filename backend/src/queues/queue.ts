@@ -145,6 +145,21 @@ class AppQueue {
 
         return jobInstance;
     }
+    public async processJobsOnce(): Promise<void> {
+        const jobs = await this.queue.getWaiting();
+        for (const job of jobs) {
+            try {
+                const jobInstance = await this.getJobHandle(job.data.name, job.data.data);
+                if (jobInstance?.handle) {
+                    await jobInstance.handle();
+                    console.log(`Job ${job.id} processed successfully`);
+                    await job.remove(); // remove after success
+                }
+            } catch (error) {
+                logger.error(`Job ${job.id} failed`, error);
+            }
+        }
+    }
 }
 
 export const appQueue = AppQueue.getInstance();
