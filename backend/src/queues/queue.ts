@@ -37,7 +37,7 @@ class AppQueue {
             let jobInstance;
             let className;
             let constructorArgs: any[] = [];
-            
+
             if (typeof jobClass === 'function') {
                 className = jobClass.name;
                 if (params) {
@@ -50,7 +50,7 @@ class AppQueue {
                 className = jobClass.constructor.name;
                 jobInstance = jobClass;
             }
-            
+
             await this.queue.add({
                 name: className,
                 data: {
@@ -68,6 +68,7 @@ class AppQueue {
     }
 
     public async processJobs(): Promise<void> {
+        console.log(`Processing jobs in queue: ${this.queueKey}`);
         this.queue.process(async (job) => {
             const jobHandlerName = job.data.name;
             try {
@@ -131,7 +132,7 @@ class AppQueue {
     public async getJobHandle(name: string, data: any): Promise<any> {
         const jobModule = await import(`@/queues/jobs/${name}`);
         const JobHandlerClass = jobModule.default;
-        const { constructorArgs, jobData } = data;     
+        const { constructorArgs, jobData } = data;
         let jobInstance;
         if (constructorArgs && Array.isArray(constructorArgs) && constructorArgs.length > 0) {
             jobInstance = new JobHandlerClass(...constructorArgs);

@@ -7,7 +7,7 @@ import mongoose from "mongoose";
  * để quản lý các mục hiển thị trong ngữ cảnh đó.
  * @typedef SessionsItems
  * @property {mongoose.Types.ObjectId} item_id - ID của playlist hoặc album
- * @property {string} item_type - Loại mục (playlist, album)
+ * @property {string} item_type - Loại mục (playlist, album, artist) artist đối với khi là trang chủ
  * @property {mongoose.Types.ObjectId} session_id - ID của session
  */
 const SessionsItems: mongoose.Schema = new mongoose.Schema({

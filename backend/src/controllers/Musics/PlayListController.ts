@@ -18,8 +18,7 @@ class PlaylistController extends BaseController {
    * @route GET /playlists/user/:userId
    */
   public getPlaylistsByUserId = this.asyncHandler(async (req, res) => {
-    const { userId } = req.body;
-    const playlists = await playListService.getPlaylistsByUserId(userId);
+    const playlists = await playListService.getPlaylistsByUserId(req.user.id);
     return this.sendSuccess(res, playlists);
   });
 
