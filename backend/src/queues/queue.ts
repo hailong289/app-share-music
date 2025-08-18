@@ -146,20 +146,24 @@ class AppQueue {
 
         return jobInstance;
     }
-    public async processJobsOnce(limit = 10): Promise<void> {
-        let job;
-        while ((job = await this.queue.getNextJob())) {
-          try {
-            const jobInstance = await this.getJobHandle(job.data.name, job.data.data);
-            if (jobInstance?.handle) {
-              await jobInstance.handle();
-              console.log(`Job ${job.id} processed successfully`);
-              await job.remove(); // xoá job trong Redis
+    public async processJobsOnce(): Promise<void> {
+        const jobs = await this.queue.getWaiting(0, 0); // Lấy 1 job đầu tiên (start=0, end=0)
+
+        if (jobs.length > 0) {
+            const job = jobs[0];
+            try {
+                const jobInstance = await this.getJobHandle(job.data.name, job.data.data);
+                if (jobInstance?.handle) {
+                    await jobInstance.handle();
+                    console.log(`Job ${job.id} processed successfully`);
+                    await job.remove();
+                }
+            } catch (error) {
+                logger.error(`Job ${job.id} failed`, error);
             }
-          } catch (error) {
-            logger.error(`Job ${job.id} failed`, error);
-          }
-       }
+        } else {
+            console.log('No jobs waiting in queue');
+        }
     }
 }
 
