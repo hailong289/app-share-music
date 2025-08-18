@@ -51,11 +51,6 @@ class App {
         fs.mkdirSync(logsDir, { recursive: true });
       }
 
-      setInterval(async () => {
-        console.log('Processing jobs...');
-        await appQueue.processJobsOnce();
-      }, 5000);
-
       // Chỉ start server khi không phải Vercel
       if (!process.env.VERCEL) {
         this.app.listen(this.port, () => {

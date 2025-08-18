@@ -148,7 +148,6 @@ class AppQueue {
     }
     public async processJobsOnce(): Promise<void> {
         const jobs = await this.queue.getWaiting(0, 0); // Lấy 1 job đầu tiên (start=0, end=0)
-
         if (jobs.length > 0) {
             const job = jobs[0];
             try {
