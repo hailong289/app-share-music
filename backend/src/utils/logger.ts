@@ -27,17 +27,17 @@ const logger = winston.createLogger({
       maxFiles: 5,
     }),
 
-    new winston.transports.MongoDB({
-      db: 'mongodb+srv://longdh2dev:hailong30100128@longdev.yxk8xva.mongodb.net/app-share-music',
-      collection: 'logs',
-      level: 'error',
-      options: {
-         useUnifiedTopology: true,
-          useNewUrlParser: true,
-      },
-      metaKey: 'metadata',
-      expireAfterSeconds: 2592000, // 30 days
-    }),
+    // new winston.transports.MongoDB({
+    //   db: 'mongodb+srv://longdh2dev:hailong30100128@longdev.yxk8xva.mongodb.net/app-share-music',
+    //   collection: 'logs',
+    //   level: 'error',
+    //   options: {
+    //      useUnifiedTopology: true,
+    //       useNewUrlParser: true,
+    //   },
+    //   metaKey: 'metadata',
+    //   expireAfterSeconds: 2592000, // 30 days
+    // }),
   ],
 });
 // phải có logger.error, logger.warn, logger.info, logger.http, logger.verbose
