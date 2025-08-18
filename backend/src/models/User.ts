@@ -2,32 +2,50 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { IUser } from '../types/user.type';
 
+/**
+ * Bảng người dùng
+ * @typedef User
+ * @property {string} name - Tên người dùng
+ * @property {string} email - Email người dùng
+ * @property {string} bio - Tiểu sử người dùng
+ * @property {string} image_url - URL hình ảnh đại diện người dùng
+ * @property {string} password - Mật khẩu người dùng
+ * @property {string} role - Vai trò của người dùng (user, admin, artist)
+ * @property {boolean} isActive - Trạng thái hoạt động của người dùng
+ * @property {Date} created_at - Ngày tạo người dùng
+ * @property {Date} updated_at - Ngày cập nhật người dùng
+ */
 const UserSchema: Schema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Name is required'],
+      required: true,
       trim: true,
-      maxlength: [50, 'Name cannot be more than 50 characters'],
+      maxlength: 50,
     },
     email: {
       type: String,
-      required: [true, 'Email is required'],
+      required: true,
       unique: true,
       lowercase: true,
-      match: [
-        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-        'Please provide a valid email',
-      ],
+    },
+    bio: {
+      type: String,
+      trim: true,
+      maxlength: 1000,
+    },
+    image_url: {
+      type: String,
+      trim: true,
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
-      minlength: [6, 'Password must be at least 6 characters'],
+      required: true,
+      minlength: 6,
     },
     role: {
       type: String,
-      enum: ['user', 'admin'],
+      enum: ['user', 'admin', 'artist'],
       default: 'user',
     },
     isActive: {
@@ -48,6 +66,16 @@ UserSchema.pre<IUser>('save', async function (next) {
   next();
 });
 
+UserSchema.pre('insertMany', async function (next, docs) {
+  for (const user of docs) {
+    if (user.password) {
+      const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '12');
+      user.password = await bcrypt.hash(user.password as string, saltRounds);
+    }
+  }
+  next();
+});
+
 // So sánh mật khẩu
 UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password as string);
@@ -60,4 +88,6 @@ UserSchema.methods.toJSON = function () {
   return userObject;
 };
 
-export const User = mongoose.model<IUser>('User', UserSchema);
+const User = mongoose.model<IUser>('User', UserSchema);
+
+export default User;

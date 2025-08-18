@@ -19,29 +19,6 @@ export interface AppStats {
 
 export class AppService {
   [x: string]: any;
-  /**
-   * Get application statistics
-   */
-  async getAppStats(): Promise<AppStats> {
-    try {
-      const userStats = await userService.getUserStats();
-      
-      const systemStats = {
-        uptime: process.uptime(),
-        environment: process.env.NODE_ENV || 'development',
-        version: process.env.npm_package_version || '1.0.0',
-        node_version: process.version
-      };
-
-      return {
-        users: userStats,
-        system: systemStats
-      };
-    } catch (error) {
-      logger.error('Error getting app statistics:', error);
-      throw error;
-    }
-  }
 
   /**
    * Get application health status
@@ -80,6 +57,24 @@ export class AppService {
     } catch (error) {
       logger.error('Error checking health status:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Health check endpoint handler
+   */
+  async healthCheck(req: any, res: any): Promise<void> {
+    try {
+      const healthStatus = await this.checkHealth();
+      const statusCode = healthStatus.status === 'healthy' ? 200 : 503;
+      res.status(statusCode).json(healthStatus);
+    } catch (error) {
+      logger.error('Health check failed:', error);
+      res.status(503).json({
+        status: 'unhealthy',
+        timestamp: new Date().toISOString(),
+        error: 'Health check failed'
+      });
     }
   }
 

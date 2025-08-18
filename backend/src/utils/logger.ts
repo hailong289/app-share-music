@@ -1,5 +1,6 @@
 import winston from 'winston';
 import path from 'path';
+import 'winston-mongodb';
 
 const logFormat = winston.format.combine(
   winston.format.timestamp({
@@ -10,7 +11,7 @@ const logFormat = winston.format.combine(
 );
 
 const logger = winston.createLogger({
-  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+  level: process.env.APP_ENV === 'production' ? 'info' : 'debug',
   format: logFormat,
   defaultMeta: { service: 'mern-backend' },
   transports: [
@@ -25,10 +26,22 @@ const logger = winston.createLogger({
       maxsize: 5242880, // 5MB
       maxFiles: 5,
     }),
+
+    // new winston.transports.MongoDB({
+    //   db: 'mongodb+srv://longdh2dev:hailong30100128@longdev.yxk8xva.mongodb.net/app-share-music',
+    //   collection: 'logs',
+    //   level: 'error',
+    //   options: {
+    //      useUnifiedTopology: true,
+    //       useNewUrlParser: true,
+    //   },
+    //   metaKey: 'metadata',
+    //   expireAfterSeconds: 2592000, // 30 days
+    // }),
   ],
 });
-
-if (process.env.NODE_ENV !== 'production') {
+// phải có logger.error, logger.warn, logger.info, logger.http, logger.verbose
+if (process.env.APP_ENV !== 'production') {
   logger.add(new winston.transports.Console({
     format: winston.format.combine(
       winston.format.colorize(),

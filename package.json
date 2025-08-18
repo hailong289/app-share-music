@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "./start.sh",
     "start": "npm run start:backend",
-    "start:backend": "cd backend && npm start",
-    "start:frontend": "cd frontend && npm start",
+    "start:backend": "cd backend && npm run dev",
+    "start:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
     "build": "npm run build:backend && npm run build:frontend",
@@ -23,9 +23,12 @@
     "express",
     "mongodb",
     "tailwindcss",
-    "daisyui",
-    "tanstack-query"
+    "daisyui"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.1.0",
+    "multer": "^2.0.2"
+  }
 }

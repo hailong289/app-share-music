@@ -13,6 +13,8 @@ class MiddlewareSetup {
 
         // CORS
         app.use(cors(corsOptions));
+        // 🔹 Cho phép Express tin header X-Forwarded-For từ reverse proxy (Vercel, Nginx, Cloudflare...)
+        app.set('trust proxy', 1);
 
         // Rate limiting
         app.use('/api', RateLimitMiddleware.applyRateLimit());

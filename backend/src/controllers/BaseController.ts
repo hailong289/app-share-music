@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Response, Request, NextFunction } from 'express';
 import logger from '../utils/logger';
 
 export interface ApiResponse<T = any> {
@@ -8,7 +8,9 @@ export interface ApiResponse<T = any> {
   errors?: Array<{
     field?: string;
     message: string;
-  }>;
+  }> | {
+    message: string;
+  };
   meta?: {
     page?: number;
     limit?: number;
@@ -34,6 +36,7 @@ export class BaseController {
     };
 
     res.status(statusCode).json(response);
+    return;
   }
 
   /**
@@ -59,6 +62,7 @@ export class BaseController {
     };
 
     res.status(statusCode).json(response);
+    return;
   }
 
   /**
@@ -68,7 +72,9 @@ export class BaseController {
     res: Response,
     message: string = 'Error',
     statusCode: number = 500,
-    errors?: Array<{ field?: string; message: string }>
+    errors?: Array<{ field?: string; message: string }> | {
+      message: string
+    }
   ): void {
     const response: ApiResponse = {
       success: false,
@@ -77,6 +83,7 @@ export class BaseController {
     };
 
     res.status(statusCode).json(response);
+    return;
   }
 
   /**
@@ -84,10 +91,12 @@ export class BaseController {
    */
   protected sendValidationError(
     res: Response,
-    errors: Array<{ field?: string; message: string }>,
+    errors?: Array<{ field?: string; message: string }> | {
+      message: string
+    },
     message: string = 'Validation failed'
   ): void {
-    this.sendError(res, message, 400, errors);
+    return this.sendError(res, message, 400, errors);
   }
 
   /**
@@ -97,7 +106,7 @@ export class BaseController {
     res: Response,
     message: string = 'Resource not found'
   ): void {
-    this.sendError(res, message, 404);
+    return this.sendError(res, message, 404);
   }
 
   /**
@@ -107,7 +116,7 @@ export class BaseController {
     res: Response,
     message: string = 'Unauthorized'
   ): void {
-    this.sendError(res, message, 401);
+    return this.sendError(res, message, 401);
   }
 
   /**
@@ -117,7 +126,7 @@ export class BaseController {
     res: Response,
     message: string = 'Forbidden'
   ): void {
-    this.sendError(res, message, 403);
+    return this.sendError(res, message, 403);
   }
 
   /**
@@ -127,27 +136,28 @@ export class BaseController {
     res: Response,
     message: string = 'Conflict'
   ): void {
-    this.sendError(res, message, 409);
+    return this.sendError(res, message, 409);;
   }
 
   /**
    * Send internal server error
    */
-  protected sendInternalError(
+  public sendInternalError(
     res: Response,
-    error: any,
+    error: Error | unknown,
     message: string = 'Internal server error'
   ): void {
     logger.error('Internal server error:', error);
     const response: ApiResponse = {
       success: false,
       message,
-      ...(process.env.NODE_ENV === 'development' && { 
-        errors: [{ message: error.message || 'Unknown error' }]
+      ...(process.env.APP_ENV === 'development' && {
+        errors: [{ message: (error as Error).message || 'Unknown error' }]
       })
     };
 
     res.status(500).json(response);
+    return;
   }
 
   /**
@@ -158,7 +168,7 @@ export class BaseController {
     data?: T,
     message: string = 'Created successfully'
   ): void {
-    this.sendSuccess(res, data, message, 201);
+    return this.sendSuccess(res, data, message, 201);
   }
 
   /**
@@ -166,15 +176,16 @@ export class BaseController {
    */
   protected sendNoContent(res: Response): void {
     res.status(204).send();
+    return;
   }
 
   /**
    * Handle async controller methods and catch errors
    */
-  protected asyncHandler = (fn: Function) => {
-    return (req: any, res: Response, next: any) => {
-      Promise.resolve(fn(req, res, next)).catch((error) => {
-        this.sendInternalError(res, error);
+  protected asyncHandler = (fn: (req: Request, res: Response, next?: NextFunction) => Promise<void>) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+      return Promise.resolve(fn(req, res, next)).catch((error) => {
+        return this.sendInternalError(res, error); // các lỗi nghiêm trọng sẽ được gửi về đây
       });
     };
   };

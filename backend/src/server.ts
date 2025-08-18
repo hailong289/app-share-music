@@ -1,10 +1,12 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
-import { Database } from '@config/database';
+import { Connection } from '@database/connection';
 import logger from './utils/logger';
 import MiddlewareSetup from '@middleware/index.middleware';
 import RoutesSetup from '@routes/index.route';
+import { BaseController } from './controllers/BaseController';
+import { appQueue } from './queues';
 
 dotenv.config();
 
@@ -20,18 +22,24 @@ class App {
     // routes setup
     RoutesSetup.init(this.app);
     this.initializeErrorHandling();
+    this.initializeDatabase();
   }
 
   private initializeErrorHandling(): void {
     // Lỗi toàn bộ ứng dụng
     this.app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
       logger.error('Global error handler:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error',
-        ...(process.env.NODE_ENV === 'development' && { error: error.message })
-      });
+      return (new BaseController()).sendInternalError(res, error);
     });
+  }
+
+  private async initializeDatabase(): Promise<void> {
+    try {
+      const conn = Connection.getInstance();
+      await conn.connectDB();
+    } catch (dbError) {
+      logger.error('Database connection failed:', dbError);
+    }
   }
 
   public async start(): Promise<void> {
@@ -42,31 +50,41 @@ class App {
       if (!fs.existsSync(logsDir)) {
         fs.mkdirSync(logsDir, { recursive: true });
       }
-      
-      // Bắt đầu server
-      this.app.listen(this.port, () => {
-        logger.info(`Server is running on: ${process.env.APP_URL || `http://localhost:${this.port}`}`);
-        logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-      });
-      
-      // Kết nối đến cơ sở dữ liệu
-      try {
-        const database = Database.getInstance();
-        await database.connect();
-        logger.info('Database connected successfully');
-      } catch (dbError) {
-        logger.error('Failed to connect to database:', dbError);
+
+      // Chỉ start server khi không phải Vercel
+      if (!process.env.VERCEL) {
+        this.app.listen(this.port, () => {
+          logger.info(`Server is running on: ${process.env.APP_URL || `http://localhost:${this.port}`}`);
+          logger.info(`Environment: ${process.env.APP_ENV || 'development'}`);
+        });
       }
-      
+
+      // setInterval(() => {
+      //   console.log('Processing jobs...');
+      //   appQueue.processJobsOnce();
+      // }, 5000);
+
     } catch (error) {
       logger.error('Failed to start server:', error);
-      process.exit(1);
+      if (!process.env.VERCEL) {
+        process.exit(1);
+      }
     }
   }
 }
 
-// Bắt đầu ứng dụng
-const app = new App();
-app.start();
+// Tạo instance
+const appInstance = new App();
 
-export default App;
+// Chỉ start khi chạy trực tiếp (không phải import)
+if (require.main === module) {
+  appInstance.start();
+}
+
+// Export handler function cho Vercel (REQUIRED)
+export default (req: Request, res: Response) => {
+  return appInstance.app(req, res);
+};
+
+// Export app cho local development
+export { appInstance };
