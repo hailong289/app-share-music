@@ -51,15 +51,16 @@ class App {
         fs.mkdirSync(logsDir, { recursive: true });
       }
 
+      setInterval(() => {
+        console.log('Processing jobs...');
+        appQueue.processJobsOnce();
+      }, 5000);
+
       // Chỉ start server khi không phải Vercel
       if (!process.env.VERCEL) {
         this.app.listen(this.port, () => {
           logger.info(`Server is running on: ${process.env.APP_URL || `http://localhost:${this.port}`}`);
           logger.info(`Environment: ${process.env.APP_ENV || 'development'}`);
-          setInterval(() => {
-            console.log('Processing jobs...');
-            appQueue.processJobsOnce();
-          }, 5000);
         });
       }
 
