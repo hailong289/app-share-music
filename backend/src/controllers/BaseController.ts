@@ -151,7 +151,7 @@ export class BaseController {
     const response: ApiResponse = {
       success: false,
       message,
-      ...(process.env.NODE_ENV === 'development' && {
+      ...(process.env.APP_ENV === 'development' && {
         errors: [{ message: (error as Error).message || 'Unknown error' }]
       })
     };

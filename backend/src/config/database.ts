@@ -27,7 +27,7 @@ const configDatabase = {
 
 
 const getDatabaseConfig = () => {
-  const env = (process.env.NODE_ENV === 'production' ? 'production' : 'local') as EnvType;
+  const env = (process.env.APP_ENV === 'production' ? 'production' : 'local') as EnvType;
   return configDatabase[env];
 }
 

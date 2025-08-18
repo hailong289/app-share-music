@@ -55,7 +55,7 @@ class App {
       if (!process.env.VERCEL) {
         this.app.listen(this.port, () => {
           logger.info(`Server is running on: ${process.env.APP_URL || `http://localhost:${this.port}`}`);
-          logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+          logger.info(`Environment: ${process.env.APP_ENV || 'development'}`);
         });
       }
 

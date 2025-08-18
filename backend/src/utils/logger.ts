@@ -11,7 +11,7 @@ const logFormat = winston.format.combine(
 );
 
 const logger = winston.createLogger({
-  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+  level: process.env.APP_ENV === 'production' ? 'info' : 'debug',
   format: logFormat,
   defaultMeta: { service: 'mern-backend' },
   transports: [
@@ -41,7 +41,7 @@ const logger = winston.createLogger({
   ],
 });
 // phải có logger.error, logger.warn, logger.info, logger.http, logger.verbose
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.APP_ENV !== 'production') {
   logger.add(new winston.transports.Console({
     format: winston.format.combine(
       winston.format.colorize(),
