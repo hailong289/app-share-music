@@ -147,13 +147,8 @@ class AppQueue {
         return jobInstance;
     }
     public async processJobsOnce(limit = 10): Promise<void> {
-        const jobs = await this.queue.getJobs(["waiting"], 0, limit - 1); // lấy waiting jobs
-        if (jobs.length === 0) {
-          console.log("No jobs waiting");
-          return;
-        }
-
-        for (const job of jobs) {
+        let job;
+        while ((job = await this.queue.getNextJob())) {
           try {
             const jobInstance = await this.getJobHandle(job.data.name, job.data.data);
             if (jobInstance?.handle) {
