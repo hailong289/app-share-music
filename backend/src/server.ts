@@ -6,6 +6,7 @@ import logger from './utils/logger';
 import MiddlewareSetup from '@middleware/index.middleware';
 import RoutesSetup from '@routes/index.route';
 import { BaseController } from './controllers/BaseController';
+import { appQueue } from './queues';
 
 dotenv.config();
 
@@ -49,7 +50,7 @@ class App {
       if (!fs.existsSync(logsDir)) {
         fs.mkdirSync(logsDir, { recursive: true });
       }
-      
+
       // Chỉ start server khi không phải Vercel
       if (!process.env.VERCEL) {
         this.app.listen(this.port, () => {
@@ -57,7 +58,12 @@ class App {
           logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
         });
       }
-      
+
+      setInterval(() => {
+        console.log('Processing jobs...');
+        appQueue.processJobsOnce();
+      }, 5000);
+
     } catch (error) {
       logger.error('Failed to start server:', error);
       if (!process.env.VERCEL) {

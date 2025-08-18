@@ -9,8 +9,8 @@ class HomeController extends BaseController {
   });
 
   public queueWithCronJobVercel = async (req: Request, res: Response) => {
-     await appQueue.processJobsOnce();
-     return this.sendSuccess(res, { message: 'Jobs processed successfully' });
+    await appQueue.processJobsOnce();
+    return this.sendSuccess(res, { message: 'Jobs processed successfully' });
   }
 }
 

@@ -1,6 +1,7 @@
 import logger from "@/utils/logger";
 import Bull from "bull";
-
+import dotenv from 'dotenv';
+dotenv.config();
 class AppQueue {
     private static instance: AppQueue;
     private queueKey: string = 'defaultQueue';
@@ -10,9 +11,9 @@ class AppQueue {
         try {
             this.queue = new Bull(this.queueKey, {
                 redis: {
-                    host: 'redis-19558.c292.ap-southeast-1-1.ec2.redns.redis-cloud.com',
-                    port: 19558,
-                    password: 'X8K6DkliOdCa0UTpGG1ZFf6CRVjwc5GQ', // Replace with your Redis password
+                    host: process.env.REDIS_HOST,
+                    port: parseInt(process.env.REDIS_PORT || '6379'),
+                    password: process.env.REDIS_PASSWORD,
                 }
             });
         } catch (error) {
@@ -146,18 +147,22 @@ class AppQueue {
         return jobInstance;
     }
     public async processJobsOnce(): Promise<void> {
-        const jobs = await this.queue.getWaiting();
-        for (const job of jobs) {
+        const jobs = await this.queue.getWaiting(0, 0); // Lấy 1 job đầu tiên (start=0, end=0)
+
+        if (jobs.length > 0) {
+            const job = jobs[0];
             try {
                 const jobInstance = await this.getJobHandle(job.data.name, job.data.data);
                 if (jobInstance?.handle) {
                     await jobInstance.handle();
                     console.log(`Job ${job.id} processed successfully`);
-                    await job.remove(); // remove after success
+                    await job.remove();
                 }
             } catch (error) {
                 logger.error(`Job ${job.id} failed`, error);
             }
+        } else {
+            console.log('No jobs waiting in queue');
         }
     }
 }
