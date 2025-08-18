@@ -131,7 +131,7 @@ class AppQueue {
     }
 
     public async getJobHandle(name: string, data: any): Promise<any> {
-        const jobModule = await import(`@/queues/jobs/${name}`);
+        const jobModule = await import(`./jobs/${name}`);
         const JobHandlerClass = jobModule.default;
         const { constructorArgs, jobData } = data;
         let jobInstance;
