@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": [
-      "ES2020"
-    ],
+    "lib": ["ES2020", "DOM"],
     "module": "commonjs",
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -56,7 +54,7 @@
       ],
       "@queues/*": [
         "src/queues/*"
-      ],
+      ]
     },
     "plugins": [
       {
