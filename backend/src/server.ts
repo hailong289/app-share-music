@@ -59,10 +59,10 @@ class App {
         });
       }
 
-      setInterval(() => {
-        console.log('Processing jobs...');
-        appQueue.processJobsOnce();
-      }, 5000);
+      // setInterval(() => {
+      //   console.log('Processing jobs...');
+      //   appQueue.processJobsOnce();
+      // }, 5000);
 
     } catch (error) {
       logger.error('Failed to start server:', error);
