@@ -3,9 +3,9 @@ import logger from '../../utils/logger';
 import { seedUsers } from '@database/seeder/UserSeeder';
 import { seedGenres } from '@database/seeder/GenreSeeder';
 import { seedAlbums } from '@database/seeder/AlbumSeeder';
-import { seedSongs } from '@database/seeder/SongSeeder';
-import { seedPlaylists } from './PlaylistSeeder';
 import { User, Genre, Album, Song, Playlist, PlaylistSong, SongGenre, Comment, Follow, Like, ListeningHistory, Share } from '../../models';
+import { seedSessions } from './SessionsSeeder';
+import { seedSessionsItems } from './SessionsItemSeeder';
 
 class DatabaseSeeder {
     private async connectToDatabase(): Promise<void> {
@@ -67,30 +67,17 @@ class DatabaseSeeder {
     async run(): Promise<void> {
         try {
             await this.connectToDatabase();
-
             logger.info('Starting database seeding...');
-
-            // Clear existing data first
-            await this.clearDataOnly();
-
             // Seed data in the correct order (considering dependencies)
             logger.info('='.repeat(50));
             logger.info('SEEDING DATABASE');
             logger.info('='.repeat(50));
-
             // Step 1: Seed independent entities
             const users = await seedUsers();
             const genres = await seedGenres();
-
-            // Step 2: Seed entities that depend on users
             const albums = await seedAlbums(users);
-
-            // Step 3: Seed entities that depend on users, albums, and genres
-            const songs = await seedSongs(users, albums, genres);
-
-            // Step 4: Seed entities that depend on users and songs
-            const playlists = await seedPlaylists(users, songs);
-
+            const sessions = await seedSessions();
+            const sessionItems = await seedSessionsItems();
             logger.info('='.repeat(50));
             logger.info('SEEDING COMPLETED SUCCESSFULLY');
             logger.info('='.repeat(50));
@@ -98,39 +85,15 @@ class DatabaseSeeder {
             logger.info(`- Users: ${users.length}`);
             logger.info(`- Genres: ${genres.length}`);
             logger.info(`- Albums: ${albums.length}`);
-            logger.info(`- Songs: ${songs.length}`);
-            logger.info(`- Playlists: ${playlists.length}`);
+            logger.info(`- Sessions: ${sessions.length}`);
+            logger.info(`- Session Items: ${sessionItems.length}`);
             logger.info('='.repeat(50));
-
         } catch (error) {
             logger.error('Error during database seeding:', error);
             throw error;
         } finally {
             await this.disconnectFromDatabase();
         }
-    }
-
-    /**
-     * Clear data without disconnecting (for internal use)
-     */
-    private async clearDataOnly(): Promise<void> {
-        logger.info('Clearing existing data...');
-
-        // Clear all collections in the correct order (considering dependencies)
-        await Comment.deleteMany({});
-        await Follow.deleteMany({});
-        await Like.deleteMany({});
-        await ListeningHistory.deleteMany({});
-        await Share.deleteMany({});
-        await PlaylistSong.deleteMany({});
-        await Playlist.deleteMany({});
-        await SongGenre.deleteMany({});
-        await Song.deleteMany({});
-        await Album.deleteMany({});
-        await Genre.deleteMany({});
-        await User.deleteMany({});
-
-        logger.info('Existing data cleared');
     }
 
     /**
@@ -154,16 +117,7 @@ class DatabaseSeeder {
                     await seedAlbums(users);
                     break;
                 case 'songs':
-                    const allUsers = await User.find({});
-                    const allAlbums = await Album.find({});
-                    const allGenres = await Genre.find({});
-                    await seedSongs(allUsers, allAlbums, allGenres);
-                    break;
                 case 'playlists':
-                    const playlistUsers = await User.find({});
-                    const playlistSongs = await Song.find({});
-                    await seedPlaylists(playlistUsers, playlistSongs);
-                    break;
                 default:
                     throw new Error(`Unknown entity type: ${entityType}`);
             }

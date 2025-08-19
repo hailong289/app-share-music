@@ -1,6 +1,5 @@
 import winston from 'winston';
 import path from 'path';
-import 'winston-mongodb';
 
 const logFormat = winston.format.combine(
   winston.format.timestamp({

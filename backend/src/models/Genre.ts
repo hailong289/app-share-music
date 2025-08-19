@@ -18,6 +18,11 @@ const GenreSchema: Schema = new Schema({
     trim: true,
     maxlength: 500,
   },
+  banner_image: {
+    type: String,
+    trim: true,
+    maxlength: 500,
+  },
 });
 
 export default mongoose.model<IGenre>('Genre', GenreSchema);

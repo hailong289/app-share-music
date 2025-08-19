@@ -13,12 +13,12 @@ import mongoose from "mongoose";
 const SessionsItems: mongoose.Schema = new mongoose.Schema({
   item_id: {
     type: mongoose.Schema.Types.ObjectId,
-    refPath: 'item_type', // Reference to either Playlist or Album based on item_type
+    refPath: 'item_type', // Reference to either Playlist or Album or Song or User
     required: true,
   },
   item_type: {
     type: String,
-    enum: ['playlist', 'album'],
+    enum: ['playlist', 'album', 'song', 'user'],
     required: true,
   },
   session_id: {

@@ -18,7 +18,6 @@ async function main() {
                 await seeder.clear();
                 logger.info('Database cleared successfully!');
                 break;
-
             case 'seed:specific':
                 const entityType = process.argv[3];
                 if (!entityType) {
@@ -27,7 +26,6 @@ async function main() {
                 await seeder.seedSpecific(entityType);
                 logger.info(`Specific entity type "${entityType}" seeded successfully!`);
                 break;
-
             case 'seed':
             case 'run':
                 await seeder.run();

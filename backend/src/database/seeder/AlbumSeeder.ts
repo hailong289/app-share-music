@@ -2,81 +2,139 @@ import { Album } from '../../models';
 import logger from '../../utils/logger';
 
 const sampleAlbums = [
-    {
-        title: 'Những Ca Khúc Hay Nhất',
-        release_date: new Date('2023-01-15'),
-        cover_url: 'https://example.com/covers/nhung-ca-khuc-hay-nhat.jpg'
-    },
-    {
-        title: 'Giấc Mơ Điện Tử',
-        release_date: new Date('2023-03-20'),
-        cover_url: 'https://example.com/covers/giac-mo-dien-tu.jpg'
-    },
-    {
-        title: 'Đêm Nhạc Nửa Đêm',
-        release_date: new Date('2023-05-10'),
-        cover_url: 'https://example.com/covers/dem-nhac-nua-dem.jpg'
-    },
-    {
-        title: 'Không Khí Mùa Hè',
-        release_date: new Date('2023-06-01'),
-        cover_url: 'https://example.com/covers/khong-khi-mua-he.jpg'
-    },
-    {
-        title: 'Ngầm Lòng Đất',
-        release_date: new Date('2023-08-15'),
-        cover_url: 'https://example.com/covers/ngam-long-dat.jpg'
-    },
-    {
-        title: 'Tuyển Tập Acoustic',
-        release_date: new Date('2023-09-30'),
-        cover_url: 'https://example.com/covers/tuyen-tap-acoustic.jpg'
-    },
-    {
-        title: 'Chân Trời Số',
-        release_date: new Date('2023-11-12'),
-        cover_url: 'https://example.com/covers/chan-troi-so.jpg'
-    },
-    {
-        title: 'Live Tại Nhà Hát Apollo',
-        release_date: new Date('2024-01-20'),
-        cover_url: 'https://example.com/covers/live-apollo.jpg'
-    },
-    {
-        title: 'Tình Ca Bất Hủ',
-        release_date: new Date('2024-02-14'),
-        cover_url: 'https://example.com/covers/tinh-ca-bat-hu.jpg'
-    },
-    {
-        title: 'Âm Hưởng Việt Nam',
-        release_date: new Date('2024-03-10'),
-        cover_url: 'https://example.com/covers/am-huong-viet-nam.jpg'
-    }
+  {
+    "title": "m-tp M-TP",
+    "artist_id": "Sơn Tùng M-TP",
+    "release_date": "2017-04-01",
+    "cover_url": "https://icotar.com/initials/ST.png"
+  },
+  {
+    "title": "Ai Cũng Phải Bắt Đầu Từ Đâu Đó",
+    "artist_id": "HIEUTHUHAI",
+    "release_date": "2023-10-16",
+    "cover_url": "https://icotar.com/initials/H.png"
+  },
+  {
+    "title": "GOLDEN",
+    "artist_id": "Jung Kook",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/JK.png"
+  },
+  {
+    "title": "THE WXRDIES",
+    "artist_id": "Wxrdie",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/W.png"
+  },
+  {
+    "title": "Đánh Đổi",
+    "artist_id": "Obito, Shiki",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/OS.png"
+  },
+  {
+    "title": "BẬT NÓ LÊN",
+    "artist_id": "SOOBIN",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/S.png"
+  },
+  {
+    "title": "Từng Ngày Như Mãi Mãi",
+    "artist_id": "Bùi Trường Linh",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/BT.png"
+  },
+  {
+    "title": "Lặng",
+    "artist_id": "Shiki",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/SK.png"
+  },
+  {
+    "title": "rosie",
+    "artist_id": "ROSÉ",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/R.png"
+  },
+  {
+    "title": "Dữ Liệu Quý",
+    "artist_id": "Dương Domic",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/DD.png"
+  },
+  {
+    "title": "Bảo Tàng Của Nuối Tiếc",
+    "artist_id": "Vũ.",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/V.png"
+  },
+  {
+    "title": "99%",
+    "artist_id": "RPT MCK",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/MCK.png"
+  },
+  {
+    "title": "Ruby",
+    "artist_id": "JENNIE",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/J.png"
+  },
+  {
+    "title": "Phép Màu (Đàn Cá Gỗ Original Soundtrack)",
+    "artist_id": "MAYDAYs, Minh Tốc & Lam",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/MD.png"
+  },
+  {
+    "title": "ái",
+    "artist_id": "tlinh",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/T.png"
+  },
+  {
+    "title": "ANH TRAI \"SAY HI\" (Live Stage 4)",
+    "artist_id": "ANH TRAI \"SAY HI\"",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/AT.png"
+  },
+  {
+    "title": "Wrong Times",
+    "artist_id": "Puppy, Dangrangto",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/W.png"
+  },
+  {
+    "title": "Seven (feat. Latto)",
+    "artist_id": "Jung Kook, Latto",
+    "release_date": "2025-08-19",
+    "cover_url": "https://icotar.com/initials/JK.png"
+  }
 ];
 
 export async function seedAlbums(users: any[]): Promise<any[]> {
-    try {
-        logger.info('Seeding albums...');
+  try {
+    logger.info('Seeding albums...');
 
-        // Clear existing albums
-        await Album.deleteMany({});
+    // Clear existing albums
+    await Album.deleteMany({});
 
-        // Get only artist users
-        const artists = users.filter(user => user.role === 'artist');
+    // Get only artist users
+    const artists = users.filter(user => user.role === 'artist');
 
-        // Assign albums to artists
-        const albumsWithArtists = sampleAlbums.map((album, index) => ({
-            ...album,
-            artist_id: artists[index % artists.length]._id
-        }));
+    // Assign albums to artists
+    const albumsWithArtists = sampleAlbums.map((album, index) => ({
+      ...album,
+      artist_id: artists[index % artists.length]._id
+    }));
 
-        // Create albums
-        const createdAlbums = await Album.insertMany(albumsWithArtists);
+    // Create albums
+    const createdAlbums = await Album.insertMany(albumsWithArtists);
 
-        logger.info(`Successfully created ${createdAlbums.length} albums`);
-        return createdAlbums;
-    } catch (error) {
-        logger.error('Error seeding albums:', error);
-        throw error;
-    }
+    logger.info(`Successfully created ${createdAlbums.length} albums`);
+    return createdAlbums;
+  } catch (error) {
+    logger.error('Error seeding albums:', error);
+    throw error;
+  }
 }
