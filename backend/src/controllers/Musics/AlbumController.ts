@@ -75,7 +75,17 @@ class AlbumController extends BaseController {
     return this.sendSuccess(res, albums);
   });
 
-
+  /**
+   * Thêm nhạc vào album
+   */
+  public addSongToAlbum = this.asyncHandler(async (req, res) => {
+    try {
+      const album = await albumService.addSongToAlbum(req.params.id, req.body.song_id);
+       return this.sendSuccess(res, album);
+    } catch (error) {
+      return this.sendError(res, error instanceof Error ? error.message : 'An error occurred while adding song to album');
+    }
+  });
 }
 
 export default new AlbumController();

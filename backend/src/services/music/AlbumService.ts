@@ -1,12 +1,14 @@
 import { IAlbum } from "@/types/music.types";
 import { BaseService } from "../BaseService";
 import { Album } from "@/models";
+import AlbumSong from "@/models/AlbumSong";
+import { Types } from "mongoose";
 
 class AlbumService extends BaseService<IAlbum> {
   constructor() {
     super(Album);
   }
-  
+
   getListAlBums = async (filter: Record<string, any> = {}, options: Record<string, any> = {}) => {
     return await this.find(filter, options);
   }
@@ -24,7 +26,32 @@ class AlbumService extends BaseService<IAlbum> {
    * @param id - Album ID
    */
   public async findAlbumById(id: string): Promise<IAlbum | null> {
-    return await this.findById(id);
+    const album = await this.aggregate([
+      {
+        $match: { _id: new Types.ObjectId(id) }
+      },
+      {
+        $lookup: {
+          from: "albumsongs",
+          let: { pid: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$album_id", "$$pid"] } } },
+            {
+              $lookup: {
+                from: "songs",
+                localField: "song_id",
+                foreignField: "_id",
+                as: "song"
+              }
+            },
+            { $unwind: "$song" },
+            { $replaceWith: "$song" }
+          ],
+          as: "songs"
+        }
+      }
+    ]);
+    return album[0] ?? null;
   }
 
   /**
@@ -49,6 +76,17 @@ class AlbumService extends BaseService<IAlbum> {
 
   public async findAlbumsByArtistId(artistId: string): Promise<IAlbum[]> {
     return await this.find({ artist_id: artistId });
+  }
+
+  public async addSongToAlbum(albumId: string, songId: string): Promise<IAlbum | null> {
+    const albumSongs = await AlbumSong.create({
+      album_id: albumId,
+      song_id: songId
+    });
+    if (!albumSongs) {
+      throw new Error("Failed to add song to album");
+    }
+    return this.findAlbumById(albumId);
   }
 
 }

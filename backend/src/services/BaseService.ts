@@ -196,4 +196,17 @@ export abstract class BaseService<T extends Document> {
       throw error;
     }
   }
+
+  /**
+   * aggregate
+   */
+  async aggregate(pipeline: any[]): Promise<any[]> {
+    try {
+      const results = await this.model.aggregate(pipeline);
+      return results;
+    } catch (error) {
+      throw error;
+    }
+  }
+
 }

@@ -1,6 +1,8 @@
 import { BaseService } from "../BaseService";
 import { ISession, ISessionItem } from "@/types/music.types";
 import { SessionItems, Sessions } from "@/models";
+import { Types } from "mongoose";
+import { pipeline } from "stream";
 
 class SessionsService extends BaseService<ISession> {
 
@@ -26,7 +28,70 @@ class SessionsService extends BaseService<ISession> {
   }
 
   public async getSessionById(sessionId: string): Promise<ISession | null> {
-    return await this.findById(sessionId);
+    const session = await this.aggregate([
+      {
+        $match: { _id: new Types.ObjectId(sessionId) }
+      },
+      {
+        $lookup: {
+          from: "sessionitems",
+          localField: "_id",
+          foreignField: "session_id",
+          as: "items",
+          pipeline: [
+            { $sort: { created_at: -1 } },
+            { $limit: 10 },
+            // nghệ sĩ
+            {
+              $lookup: {
+                from: "users",
+                let: { sid: "$item_id", t: "$item_type" },
+                pipeline: [
+                  { $match: { $expr: { $and: [ { $eq: ["$$t", "user"] }, { $eq: ["$_id", "$$sid"] } ] } } },
+                ],
+                as: "artist"
+              }
+            },
+            // Albums
+            {
+              $lookup: {
+                from: "albums",
+                let: { sid: "$item_id", t: "$item_type" },
+                pipeline: [
+                  { $match: { $expr: { $and: [ { $eq: ["$$t", "album"] }, { $eq: ["$_id", "$$sid"] } ] } } },
+                ],
+                as: "album"
+              }
+            },
+            // Playlists
+            {
+              $lookup: {
+                from: "playlists",
+                let: { sid: "$item_id", t: "$item_type" },
+                pipeline: [
+                  { $match: { $expr: { $and: [ { $eq: ["$$t", "playlist"] }, { $eq: ["$_id", "$$sid"] } ] } } },
+                ],
+                as: "playlist"
+              }
+            },
+            // Coalesce về 1 field duy nhất `item_detail`
+            {
+              $set: {
+                item_detail: {
+                  $first: {
+                    $concatArrays: [
+                      "$artist", "$playlist", "$album"
+                    ]
+                  }
+                }
+              }
+            },
+            { $project: { artist: 0, playlist: 0, album: 0, session_id: 0 } }
+          ]
+        }
+      }
+    ])
+    return session[0] ?? null;
   }
 
   public async updateSession(sessionId: string, updateData: Partial<ISession>): Promise<ISession | null> {

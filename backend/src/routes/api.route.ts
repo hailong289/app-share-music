@@ -58,6 +58,7 @@ albumRouter.post('/', AlbumController.create);
 albumRouter.put('/:id', AlbumController.update);
 albumRouter.delete('/:id', AlbumController.delete);
 albumRouter.get('/artist/albums', AlbumController.getAlbumsByArtistId);
+albumRouter.post('/:id/add-song', AlbumController.addSongToAlbum);
 routerApi.use('/albums', albumRouter);
 
 
@@ -69,6 +70,7 @@ playlistRouter.post('/', PlaylistController.create);
 playlistRouter.patch('/:playlistId', PlaylistController.update);
 playlistRouter.delete('/:playlistId', PlaylistController.delete);
 playlistRouter.get('/:playlistId', PlaylistController.show);
+playlistRouter.post('/:playlistId/add-song', PlaylistController.addSong);
 routerApi.use('/playlists', AuthMiddleware.authenticate, playlistRouter);
 
 
