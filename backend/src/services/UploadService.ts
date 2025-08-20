@@ -55,6 +55,8 @@ class UploadService {
       name = `banners/${user_slug}${name}`;
     } else if (file.fieldname === 'audio_url') {
       name = `songs/${user_slug}${name}`;
+    } else {
+      name = `shared/${name}`;
     }
 
     // Chấp nhận file mp3 và image

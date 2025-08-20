@@ -1,5 +1,7 @@
 import { playListService } from "@/services/music/PlayListService";
 import { BaseController } from "../BaseController";
+import { uploadService } from "@/services/UploadService";
+import { slug } from "@/utils/data";
 
 class PlaylistController extends BaseController {
 
@@ -27,7 +29,22 @@ class PlaylistController extends BaseController {
    * @route POST /playlists
    */
   public create = this.asyncHandler(async (req: any, res) => {
-    const playlist = await playListService.createPlaylist(req.body);
+    const data = req.body;
+    try {
+      (data.files || []).forEach((itemFile: Express.Multer.File) => {
+        if (itemFile.fieldname !== 'banner_url') {
+          return this.sendError(res, 'Invalid file field name', 400);
+        }
+        const filePath = uploadService.uploadSingle(itemFile, slug(data.name, '_'), slug(req.user?.name || ''));
+        data[itemFile.fieldname] = filePath;
+      });
+    } catch (error) {
+      if (req.file && req.file.path) {
+        uploadService.removeFile(req.file.path); // Clean up uploaded file on error
+      }
+      return this.sendError(res, error instanceof Error ? error.message : 'Có lỗi xảy ra khi tạo playlist');
+    }
+    const playlist = await playListService.createPlaylist(data);
     return this.sendCreated(res, playlist);
   });
 
@@ -38,6 +55,24 @@ class PlaylistController extends BaseController {
   public update = this.asyncHandler(async (req, res) => {
     const { playlistId } = req.params;
     const updateData = req.body;
+    try {
+      const playList = await playListService.getPlaylistById(playlistId);
+      if (!playList) {
+        return this.sendNotFound(res);
+      }
+      (updateData.files || []).forEach((itemFile: Express.Multer.File) => {
+        if (itemFile.fieldname !== 'banner_url') {
+          return this.sendError(res, 'Invalid file field name', 400);
+        }
+        const filePath = uploadService.uploadSingle(itemFile, slug(updateData.name, '_'), slug(req.user?.name || ''));
+        updateData[itemFile.fieldname] = filePath;
+      });
+    } catch (error) {
+      if (req.file && req.file.path) {
+        uploadService.removeFile(req.file.path); // Clean up uploaded file on error
+      }
+      return this.sendError(res, error instanceof Error ? error.message : 'Có lỗi xảy ra khi tạo playlist');
+    }
     const updatedPlaylist = await playListService.updatePlaylist(playlistId, updateData);
     if (!updatedPlaylist) {
       return this.sendNotFound(res);
@@ -76,9 +111,9 @@ class PlaylistController extends BaseController {
     const { playlistId } = req.params;
     try {
       const result = await playListService.addSongToPlaylist(playlistId, req.body);
-       return this.sendSuccess(res, result, 'Thêm bài hát vào playlist thành công');
+      return this.sendSuccess(res, result, 'Thêm bài hát vào playlist thành công');
     } catch (error) {
-       return this.sendError(res, error instanceof Error ? error.message : 'An error occurred');
+      return this.sendError(res, error instanceof Error ? error.message : 'An error occurred');
     }
   });
 
