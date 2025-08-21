@@ -37,7 +37,14 @@ class SongService extends BaseService <ISong> {
    * @param filter - Filter query
    */
   public async findSongs(filter: Record<string, any> = {}): Promise<ISong[]> {
-    return await this.find(filter);
+    if (filter.page && filter.limit) {
+      const { page, limit } = filter;
+      return await this.model.find({})
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec();
+    }
+    return await this.find({});
   }
 
   /**
@@ -75,7 +82,7 @@ class SongService extends BaseService <ISong> {
       return null; // Song not found
     }
     // Logic to play the song (e.g., streaming the audio)
-    ListeningHistory.create({
+    await ListeningHistory.create({
       user_id: user_id,
       song_id: song.id
     });

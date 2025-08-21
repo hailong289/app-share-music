@@ -10,6 +10,13 @@ class AlbumService extends BaseService<IAlbum> {
   }
 
   getListAlBums = async (filter: Record<string, any> = {}, options: Record<string, any> = {}) => {
+    if (filter.page && filter.limit) {
+      const { page, limit } = filter;
+      return await this.model.find({})
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec();
+    }
     return await this.find(filter, options);
   }
 

@@ -58,7 +58,14 @@ class PlayListService extends BaseService<IPlaylist> {
     return this.find({ is_public: true });
   }
 
-  public async getAllPlaylists(): Promise<IPlaylist[]> {
+  public async getAllPlaylists(query: { page?: number; limit?: number;} = {}): Promise<IPlaylist[]> {
+    if (query.page && query.limit) {
+      const { page, limit } = query;
+      return this.model.find({})
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec();
+    }
     return this.find({});
   }
 

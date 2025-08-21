@@ -10,7 +10,7 @@ class PlaylistController extends BaseController {
    * @route GET /playlists
    */
   public index = this.asyncHandler(async (req, res) => {
-    const playlists = await playListService.getAllPlaylists();
+    const playlists = await playListService.getAllPlaylists(req.query);
     return this.sendSuccess(res, playlists, 'Lấy danh sách playlist thành công');
   });
 
