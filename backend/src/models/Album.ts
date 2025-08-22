@@ -28,6 +28,10 @@ const AlbumSchema: Schema = new Schema({
   cover_url: {
     type: String,
     trim: true,
+    get: (value: string) => {
+      if (!value) return '';
+      return `${process.env.APP_URL}/${value}`;
+    },
   },
   total_songs: {
     type: Number,
@@ -52,5 +56,8 @@ const AlbumSchema: Schema = new Schema({
 // Create indexes
 AlbumSchema.index({ artist_id: 1 });
 AlbumSchema.index({ title: 1 });
+
+AlbumSchema.set('toJSON', { getters: true });
+AlbumSchema.set('toObject', { getters: true });
 
 export default mongoose.model<IAlbum>('Album', AlbumSchema);

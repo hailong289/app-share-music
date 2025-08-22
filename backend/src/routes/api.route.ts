@@ -82,6 +82,7 @@ songRouter.get('/:id', SongController.show);
 songRouter.post('/', SongController.create);
 songRouter.patch('/:id', SongController.update);
 songRouter.delete('/:id', SongController.delete);
+songRouter.post('/:id/comment', SongController.comment);
 routerApi.use('/songs', AuthMiddleware.authenticate, songRouter);
 
 

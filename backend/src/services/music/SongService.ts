@@ -1,6 +1,6 @@
-import { ISong } from "@/types/music.types";
+import { IComment, ISong } from "@/types/music.types";
 import { BaseService } from "../BaseService";
-import { ListeningHistory, Song } from "@/models";
+import { Comment, ListeningHistory, Song } from "@/models";
 import * as fs from "fs";
 
 class SongService extends BaseService <ISong> {
@@ -87,6 +87,19 @@ class SongService extends BaseService <ISong> {
       song_id: song.id
     });
     return song;
+  }
+
+  public async commentSong(id: string, user_id: string, content: string): Promise<IComment | null> {
+    const song = await this.findById(id);
+    if (!song) {
+      return null; // Song not found
+    }
+    const comment = await Comment.create({
+      user_id: user_id,
+      song_id: song.id,
+      content: content
+    });
+    return comment;
   }
 
 }

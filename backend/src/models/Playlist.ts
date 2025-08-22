@@ -1,6 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
 import { IPlaylist } from '../types/music.types';
-
 /**
  *  Bảng danh sách phát nhạc
  *  @typedef Playlist
@@ -56,6 +55,10 @@ const PlaylistSchema: Schema = new Schema({
     type: String,
     required: true,
     trim: true,
+    get: (v: string) => {
+      if (!v) return '';
+      return `${process.env.APP_URL}/${v}`;
+    },
   },
 }, {
   timestamps: true, // Automatically manage created_at and updated_at fields
@@ -65,5 +68,8 @@ const PlaylistSchema: Schema = new Schema({
 PlaylistSchema.index({ user_id: 1 });
 PlaylistSchema.index({ name: 1 });
 PlaylistSchema.index({ is_public: 1 });
+
+PlaylistSchema.set("toJSON", { getters: true });
+PlaylistSchema.set("toObject", { getters: true });
 
 export default mongoose.model<IPlaylist>('Playlist', PlaylistSchema);

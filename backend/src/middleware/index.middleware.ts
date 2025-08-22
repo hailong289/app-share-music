@@ -4,6 +4,7 @@ import { LoggingMiddleware } from "@middleware/logging.middleware";
 import { RateLimitMiddleware } from "@middleware/ratelimit.middleware";
 import cors from 'cors';
 import helmet from 'helmet';
+import { StaticFileMiddleware } from "./staticfile.middleware";
 
 class MiddlewareSetup {
 
@@ -18,6 +19,9 @@ class MiddlewareSetup {
 
         // Rate limiting
         app.use('/api', RateLimitMiddleware.applyRateLimit());
+
+        // get static file
+        app.use('/uploads', StaticFileMiddleware.serveUploads(), StaticFileMiddleware.handleFileNotFound());
 
         // Body parsing
         app.use(BodyParsingMiddleware.handleBodyParsing);

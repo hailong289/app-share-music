@@ -1,6 +1,6 @@
 import { songService } from "@/services/music/SongService";
 import { BaseController } from "../BaseController";
-import { Request } from "express";
+import { Request, Response } from "express";
 import { uploadService } from "@/services/UploadService";
 import { slug } from "@/utils/data";
 import logger from "@/utils/logger";
@@ -116,6 +116,20 @@ class SongController extends BaseController {
       return this.sendNotFound(res);
     }
     return this.sendSuccess(res, song);
+  });
+
+  /**
+   * comment
+   */
+  public comment = this.asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const userId = req.user?.id || req.body.user_id || '';
+    const { content } = req.body;
+    const comment = await songService.commentSong(id, userId, content);
+    if (!comment) {
+      return this.sendNotFound(res);
+    }
+    return this.sendSuccess(res, comment);
   });
 
 }

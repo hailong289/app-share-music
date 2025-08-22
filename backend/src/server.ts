@@ -6,7 +6,6 @@ import logger from './utils/logger';
 import MiddlewareSetup from '@middleware/index.middleware';
 import RoutesSetup from '@routes/index.route';
 import { BaseController } from './controllers/BaseController';
-import { appQueue } from './queues';
 
 dotenv.config();
 

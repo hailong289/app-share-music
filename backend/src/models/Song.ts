@@ -49,11 +49,19 @@ const SongSchema: Schema = new Schema({
     type: String,
     required: true,
     trim: true,
+    get: (value: string) => {
+      if (!value) return '';
+      return `${process.env.APP_URL}/${value}`;
+    },
   },
   audio_url: {
     type: String,
     required: true,
     trim: true,
+    get: (value: string) => {
+      if (!value) return '';
+      return `${process.env.APP_URL}/${value}`;
+    },
   },
   track_number: {
     type: Number,
@@ -75,5 +83,8 @@ SongSchema.index({ title: 1 });
 SongSchema.index({ user_id: 1 });
 SongSchema.index({ album_id: 1 });
 SongSchema.index({ track_number: 1 });
+
+SongSchema.set('toJSON', { getters: true });
+SongSchema.set('toObject', { getters: true });
 
 export default mongoose.model<ISong>('Song', SongSchema);
