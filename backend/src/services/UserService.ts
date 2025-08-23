@@ -156,6 +156,18 @@ export class UserService extends BaseService<IUser> {
       throw error;
     }
   }
+
+  /**
+   * Get all users
+   */
+  async getArtist(query: Record<string, any>): Promise<IUser[]> {
+    try {
+      return await this.find({ ...query, role: 'artist' });
+    } catch (error) {
+      logger.error('Error getting all users:', error);
+      throw error;
+    }
+  }
 }
 
 // Export singleton instance

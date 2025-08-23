@@ -19,7 +19,7 @@ class AuthController extends BaseController {
                 return this.sendUnauthorized(res, result.msg);
             }
             return this.sendSuccess(res, {
-                tokens: await JWTUtil.createTokenJwt(pick(result.user, ['id', 'email', 'name']) as JWTPayload),
+                tokens: await JWTUtil.createTokenJwt(pick(result.user, ['id', 'email', 'name', 'role']) as JWTPayload),
                 user: result.user
             }, 'Đăng nhập thành công');
         } catch (error) {
