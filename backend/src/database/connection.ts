@@ -32,12 +32,12 @@ export class Connection {
                     // Nếu có kết nối, sử dụng kết nối đã chỉ định
                     mongoUri = `${dbConfig.connection}://`;
                 }
-                
+
                 // Add username and password before host for mongodb+srv
                 if (dbConfig.user && dbConfig.pass) {
                     mongoUri += `${dbConfig.user}:${dbConfig.pass}@`;
                 }
-                
+
                 if (dbConfig.host) {
                     mongoUri += dbConfig.host;
                 }
@@ -47,7 +47,7 @@ export class Connection {
                 if (dbConfig.name) {
                     mongoUri += `/${dbConfig.name}`;
                 }
-                
+
                 // Add query parameters
                 if (dbConfig.query) {
                     if (dbConfig.query.startsWith('?')) {
@@ -63,6 +63,7 @@ export class Connection {
             let options: mongoose.ConnectOptions = {
                 serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
                 socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+                ssl: true,
             };
 
             await mongoose.connect(mongoUri, options);
