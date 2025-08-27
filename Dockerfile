@@ -23,4 +23,4 @@ ENV NODE_ENV=production
 ENV PORT=5001
 
 EXPOSE 5001
-CMD ["npm", "queue:start"]
+CMD ["npm", "start"]
