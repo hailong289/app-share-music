@@ -8,6 +8,7 @@ import AlbumController from '@/controllers/Musics/AlbumController';
 import SongController from '@/controllers/Musics/SongController';
 import PlaylistController from '@/controllers/Musics/PlayListController';
 import SessionsController from '@/controllers/Musics/SessionsController';
+import routeUser from './user.route';
 
 const routerApi = Router();
 
@@ -55,11 +56,12 @@ const albumRouter = Router();
 albumRouter.get('/', AlbumController.index);
 albumRouter.get('/:id', AlbumController.show);
 albumRouter.post('/', AlbumController.create);
-albumRouter.put('/:id', AlbumController.update);
+albumRouter.patch('/:id', AlbumController.update);
 albumRouter.delete('/:id', AlbumController.delete);
 albumRouter.get('/artist/albums', AlbumController.getAlbumsByArtistId);
 albumRouter.post('/:id/add-song', AlbumController.addSongToAlbum);
-routerApi.use('/albums', albumRouter);
+albumRouter.post('/:id/add-songs', AlbumController.addSongsToAlbum);
+routerApi.use('/albums', AuthMiddleware.authenticate, albumRouter);
 
 
 // Playlist routes
@@ -83,7 +85,14 @@ songRouter.post('/', SongController.create);
 songRouter.patch('/:id', SongController.update);
 songRouter.delete('/:id', SongController.delete);
 songRouter.post('/:id/comment', SongController.comment);
+songRouter.post('/:id/play', SongController.playSong);
+songRouter.get('/artist/:artistId', SongController.getSongsByArtistId);
 routerApi.use('/songs', AuthMiddleware.authenticate, songRouter);
 
+/**
+ * API users
+ */
+
+routerApi.use('/users', routeUser);
 
 export default routerApi;

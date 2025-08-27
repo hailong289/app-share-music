@@ -70,7 +70,7 @@ class AlbumController extends BaseController {
           if (itemFile.fieldname !== 'cover_url') {
             throw new Error('Invalid file field name');
           }
-          const filePath = uploadService.uploadSingle(itemFile, slug(data.title, '_'), slug(req.user?.name || ''));
+          const filePath = uploadService.uploadSingle(itemFile, slug(existingAlbum.title || '', '_'), slug(req.user?.name || ''));
           data[itemFile.fieldname] = filePath;
           uploadService.removeFile(existingAlbum.cover_url); // Clean up old cover if exists
         });
@@ -123,6 +123,18 @@ class AlbumController extends BaseController {
       return this.sendSuccess(res, album);
     } catch (error) {
       return this.sendError(res, error instanceof Error ? error.message : 'An error occurred while adding song to album');
+    }
+  });
+
+  /**
+   * Thêm nhiều bài hát vào album
+   */
+  public addSongsToAlbum = this.asyncHandler(async (req, res) => {
+    try {
+      const album = await albumService.addSongsToAlbum(req.params.id, req.body.song_ids);
+      return this.sendSuccess(res, album);
+    } catch (error) {
+      return this.sendError(res, error instanceof Error ? error.message : 'An error occurred while adding songs to album');
     }
   });
 }

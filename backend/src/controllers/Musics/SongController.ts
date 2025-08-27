@@ -132,6 +132,15 @@ class SongController extends BaseController {
     return this.sendSuccess(res, comment);
   });
 
+  /**
+   * Get songs by artist ID
+   */
+  public getSongsByArtistId = this.asyncHandler(async (req, res) => {
+    const { artistId } = req.params;
+    const songs = await songService.findSongsByArtistId(artistId);
+    return this.sendSuccess(res, songs);
+  });
+
 }
 
 export default new SongController();

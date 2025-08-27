@@ -13,6 +13,9 @@ class UploadService {
     if (!fs.existsSync('uploads/banners')) {
       fs.mkdirSync('uploads/banners', { recursive: true });
     }
+    if (!fs.existsSync('uploads/shared')) {
+      fs.mkdirSync('uploads/shared', { recursive: true });
+    }
   }
 
   public uploadMultiple(files: Express.Multer.File[]): string[] {
@@ -51,17 +54,19 @@ class UploadService {
       user_slug = `${user_slug}/`;
     }
 
-    if (file.fieldname === 'banner_url') {
+    if (file.fieldname === 'banner_url' || file.fieldname === 'cover_url') {
       name = `banners/${user_slug}${name}`;
     } else if (file.fieldname === 'audio_url') {
       name = `songs/${user_slug}${name}`;
-    } else {
+    }  else {
       name = `shared/${name}`;
     }
 
     // Chấp nhận file mp3 và image
-    const isAudio = file.mimetype === 'audio/mpeg' || path.extname(file.originalname).toLowerCase() === '.mp3';
-    const isImage = file.mimetype.startsWith('image/') || ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(path.extname(file.originalname).toLowerCase());
+    console.log(`Uploading file: ${file.originalname} to ${this.uploadDir}/${name}`);
+    const fileExt = path.extname(file.originalname || '').toLowerCase();
+    const isAudio = file.mimetype === 'audio/mpeg' || fileExt === '.mp3';
+    const isImage = file.mimetype.startsWith('image/') || ['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(fileExt);
 
     if (!isAudio && !isImage) {
       throw new Error('Chỉ cho phép upload file MP3 và hình ảnh (JPG, JPEG, PNG, GIF, WEBP)');

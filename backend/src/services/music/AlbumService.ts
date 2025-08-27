@@ -96,6 +96,16 @@ class AlbumService extends BaseService<IAlbum> {
     return this.findAlbumById(albumId);
   }
 
+  public async addSongsToAlbum(albumId: string, songIds: string[]): Promise<IAlbum | null> {
+    const albumSongs = await AlbumSong.insertMany(
+      songIds.map(songId => ({ album_id: albumId, song_id: songId }))
+    );
+    if (!albumSongs || albumSongs.length === 0) {
+      throw new Error("Failed to add songs to album");
+    }
+    return this.findAlbumById(albumId);
+  }
+
 }
 
 const albumService = new AlbumService();
