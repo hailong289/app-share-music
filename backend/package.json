@@ -14,7 +14,8 @@
     "seed": "ts-node -r tsconfig-paths/register src/scripts/seed.ts",
     "seed:clear": "ts-node -r tsconfig-paths/register src/scripts/seed.ts clear",
     "queue": "ts-node -r tsconfig-paths/register src/scripts/queue.ts",
-    "seed:users": "ts-node -r tsconfig-paths/register src/scripts/seed.ts seed:specific users"
+    "seed:users": "ts-node -r tsconfig-paths/register src/scripts/seed.ts seed:specific users",
+    "queue:start": "node dist/scripts/queue.js"
   },
   "keywords": [
     "app-share-music-backend",
