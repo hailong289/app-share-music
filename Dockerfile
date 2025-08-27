@@ -4,20 +4,27 @@ FROM node:18-alpine
 # Thiết lập thư mục làm việc
 WORKDIR /backend
 
-# Sao chép package.json và package-lock.json
+# Sao chép file package.json và lock để cài đặt deps
 COPY package*.json ./
 
-# Cài đặt các phụ thuộc
-RUN npm install --production
+# Cài cả devDependencies (để có thể build)
+RUN npm install
 
-# Sao chép toàn bộ mã nguồn vào container
+# Sao chép toàn bộ source code
 COPY . .
 
-# Thiết lập biến môi trường cho Northflank (nếu cần)
-ENV NODE_ENV=production
+# Build project (ví dụ TypeScript -> dist)
+RUN npm run build
 
-# Mở port ứng dụng (thường dùng 3000)
+# Xóa devDependencies sau khi build để giảm size
+RUN npm prune --production
+
+# Thiết lập biến môi trường
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Mở port
 EXPOSE 3000
 
-# Lệnh khởi chạy ứng dụng
+# Khởi chạy ứng dụng
 CMD ["npm", "start"]
