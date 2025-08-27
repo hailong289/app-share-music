@@ -1,30 +1,26 @@
-# Sử dụng image Node chính thức
 FROM node:18-alpine
 
-# Thiết lập thư mục làm việc
-WORKDIR /backend
+WORKDIR /app
 
-# Sao chép file package.json và lock để cài đặt deps
-COPY package*.json ./
+# Copy package.json của backend
+COPY backend/package*.json ./backend/
 
-# Cài cả devDependencies (để có thể build)
+# Cài đặt dependencies
+WORKDIR /app/backend
 RUN npm install
 
-# Sao chép toàn bộ source code
+# Copy toàn bộ source code
+WORKDIR /app
 COPY . .
 
-# Build project (ví dụ TypeScript -> dist)
+# Build trong folder backend
+WORKDIR /app/backend
 RUN npm run build
-
-# Xóa devDependencies sau khi build để giảm size
 RUN npm prune --production
 
-# Thiết lập biến môi trường
+# Env
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Mở port
 EXPOSE 3000
-
-# Khởi chạy ứng dụng
 CMD ["npm", "start"]
