@@ -72,7 +72,7 @@ class AuthController extends BaseController {
         const { email, otp } = req.body;
         const result = await OtpService.verifyOtp(email, otp);
         if (!result) {
-            return this.sendError(res, 'Mã OTP không hợp lệ hoặc đã hết hạn', 400);
+            return this.sendSuccess(res, 'Mã OTP không hợp lệ hoặc đã hết hạn');
         }
         return this.sendSuccess(res, {}, 'Xác thực OTP thành công');
     });
