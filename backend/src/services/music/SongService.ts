@@ -4,8 +4,9 @@ import { Comment, ListeningHistory, Song, User } from "@/models";
 import * as fs from "fs";
 import ArtistSong from "@/models/ArtistSong";
 import { Types } from "mongoose";
+import { pipeline } from "stream";
 
-class SongService extends BaseService <ISong> {
+class SongService extends BaseService<ISong> {
   constructor() {
     super(Song);
   }
@@ -34,10 +35,22 @@ class SongService extends BaseService <ISong> {
       { $match: { _id: new Types.ObjectId(id) } },
       {
         $lookup: {
-          from: "artistsongs",
-          localField: "_id",
-          foreignField: "song_id",
-          as: "artist_songs"
+          from: 'artistsongs',
+          let: { songId: '$_id' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$song_id', '$$songId'] } } },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'artist_id',
+                foreignField: '_id',
+                as: 'artist'
+              }
+            },
+            { $unwind: { path: '$artist', preserveNullAndEmptyArrays: false } },
+            { $replaceRoot: { newRoot: '$artist' } }
+          ],
+          as: 'artists'
         }
       }
     ]);
@@ -59,12 +72,53 @@ class SongService extends BaseService <ISong> {
   public async findSongs(filter: Record<string, any> = {}): Promise<ISong[]> {
     if (filter.page && filter.limit) {
       const { page, limit } = filter;
-      return await this.model.find({})
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .exec();
+      return await this.model.aggregate([
+        {
+          $lookup: {
+            from: 'artistsongs',
+            let: { songId: '$_id' },
+            pipeline: [
+              { $match: { $expr: { $eq: ['$song_id', '$$songId'] } } },
+              {
+                $lookup: {
+                  from: 'users',
+                  localField: 'artist_id',
+                  foreignField: '_id',
+                  as: 'artist'
+                }
+              },
+              { $unwind: { path: '$artist', preserveNullAndEmptyArrays: false } },
+              { $replaceRoot: { newRoot: '$artist' } }
+            ],
+            as: 'artists'
+          }
+        },
+        { $skip: (Number(page) - 1) * Number(limit) },
+        { $limit: Number(limit) }
+      ]);
     }
-    return await this.find({});
+    return await this.aggregate([
+      {
+        $lookup: {
+          from: 'artistsongs',
+          let: { songId: '$_id' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$song_id', '$$songId'] } } },
+            {
+              $lookup: {
+                from: 'users',
+                localField: 'artist_id',
+                foreignField: '_id',
+                as: 'artist'
+              }
+            },
+            { $unwind: { path: '$artist', preserveNullAndEmptyArrays: false } },
+            { $replaceRoot: { newRoot: '$artist' } }
+          ],
+          as: 'artists'
+        }
+      }
+    ]);
   }
 
   /**
@@ -98,9 +152,9 @@ class SongService extends BaseService <ISong> {
     // Clean up audio file if it exists
     if (song.audio_url) {
       try {
-      fs.unlinkSync(song.audio_url); // Assuming audio_url is the path to the song file
+        fs.unlinkSync(song.audio_url); // Assuming audio_url is the path to the song file
       } catch (err) {
-      // Handle error (e.g., file not found), optionally log it
+        // Handle error (e.g., file not found), optionally log it
       }
     }
     return await this.deleteById(id);

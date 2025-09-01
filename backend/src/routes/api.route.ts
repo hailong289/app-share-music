@@ -9,6 +9,7 @@ import SongController from '@/controllers/Musics/SongController';
 import PlaylistController from '@/controllers/Musics/PlayListController';
 import SessionsController from '@/controllers/Musics/SessionsController';
 import routeUser from './user.route';
+import ReportController from '@/controllers/ReportController';
 
 const routerApi = Router();
 
@@ -92,8 +93,14 @@ routerApi.use('/songs', AuthMiddleware.authenticate, songRouter);
 
 /**
  * API users
- */
+*/
 
 routerApi.use('/users', routeUser);
+/**
+ * API reports
+ */
+const routeReport = Router();
+routeReport.get('/', ReportController.index);
+routerApi.use('/reports', routeReport);
 
 export default routerApi;
