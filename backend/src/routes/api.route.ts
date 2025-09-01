@@ -69,6 +69,7 @@ const playlistRouter = Router();
 // playlistRouter.use(AuthMiddleware.authorize('admin', 'user'));
 playlistRouter.get('/', PlaylistController.index);
 playlistRouter.post('/', PlaylistController.create);
+playlistRouter.get('/users', PlaylistController.getPlaylistsByUserId);
 playlistRouter.patch('/:playlistId', PlaylistController.update);
 playlistRouter.delete('/:playlistId', PlaylistController.delete);
 playlistRouter.get('/:playlistId', PlaylistController.show);

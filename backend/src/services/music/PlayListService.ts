@@ -10,7 +10,8 @@ class PlayListService extends BaseService<IPlaylist> {
   }
 
   public async getPlaylistsByUserId(userId: string): Promise<IPlaylist[]> {
-    return this.model.find({ user_id: userId }).exec();
+    console.log('Fetching playlists for userId:', userId);
+    return this.model.find({ user_id: new Types.ObjectId(userId) }).exec();
   }
 
   public async createPlaylist(playlistData: any): Promise<IPlaylist> {

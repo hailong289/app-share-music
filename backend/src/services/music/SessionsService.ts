@@ -94,7 +94,15 @@ class SessionsService extends BaseService<ISession> {
     return session[0] ?? null;
   }
 
-  public async updateSession(sessionId: string, updateData: Partial<ISession>): Promise<ISession | null> {
+  public async updateSession(sessionId: string, updateData: any): Promise<ISession | null> {
+    for (const item of updateData.items || []) {
+      const sessionItem = new SessionItems({
+        item_id: item.item_id,
+        item_type: item.item_type,
+        session_id: sessionId,
+      });
+      await sessionItem.save();
+    }
     return await this.updateById(sessionId, updateData);
   }
 
