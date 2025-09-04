@@ -51,7 +51,7 @@ const SongSchema: Schema = new Schema({
     trim: true,
     get: (value: string) => {
       if (!value) return '';
-      return `${process.env.APP_URL}/${value}`;
+      return `${process.env.APP_URL}/${value.replace(/\\/g, '/')}`;
     },
   },
   audio_url: {
@@ -60,7 +60,7 @@ const SongSchema: Schema = new Schema({
     trim: true,
     get: (value: string) => {
       if (!value) return '';
-      return `${process.env.APP_URL}/${value}`;
+      return `${process.env.APP_URL}/${value.replace(/\\/g, '/')}`;
     },
   },
   track_number: {

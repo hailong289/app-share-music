@@ -70,7 +70,16 @@ class HomeService extends BaseService<ISession> {
           let: { ids: "$playlist_ids" },
           pipeline: [
             { $match: { $expr: { $in: ["$_id", "$$ids"] } } },
-            // { $project: { title: 1, cover_url: 1 } } // optional
+            {
+              $addFields: {
+                banner_url: {
+                  $concat: [
+                    `${process.env.APP_URL}/`,
+                    { $replaceAll: { input: "$banner_url", find: "\\", replacement: "/" } }
+                  ]
+                }
+              }
+            }
           ],
           as: "playlist_docs"
         }
@@ -80,7 +89,17 @@ class HomeService extends BaseService<ISession> {
           from: "albums",
           let: { ids: "$album_ids" },
           pipeline: [
-            { $match: { $expr: { $in: ["$_id", "$$ids"] } } }
+            { $match: { $expr: { $in: ["$_id", "$$ids"] } } },
+            {
+              $addFields: {
+                cover_url: {
+                  $concat: [
+                    `${process.env.APP_URL}/`,
+                    { $replaceAll: { input: "$cover_url", find: "\\", replacement: "/" } }
+                  ]
+                }
+              }
+            }
           ],
           as: "album_docs"
         }
@@ -90,7 +109,23 @@ class HomeService extends BaseService<ISession> {
           from: "songs",
           let: { ids: "$song_ids" },
           pipeline: [
-            { $match: { $expr: { $in: ["$_id", "$$ids"] } } }
+            { $match: { $expr: { $in: ["$_id", "$$ids"] } } },
+            {
+              $addFields: {
+                banner_url: {
+                  $concat: [
+                    `${process.env.APP_URL}/`,
+                    { $replaceAll: { input: "$banner_url", find: "\\", replacement: "/" } }
+                  ]
+                },
+                audio_url: {
+                  $concat: [
+                    `${process.env.APP_URL}/`,
+                    { $replaceAll: { input: "$audio_url", find: "\\", replacement: "/" } }
+                  ]
+                }
+              }
+            }
           ],
           as: "song_docs"
         }

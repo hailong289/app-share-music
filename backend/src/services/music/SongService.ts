@@ -70,9 +70,9 @@ class SongService extends BaseService<ISong> {
    * @param filter - Filter query
    */
   public async findSongs(filter: Record<string, any> = {}): Promise<ISong[]> {
-    if (filter.page && filter.limit) {
-      const { page, limit } = filter;
-      return await this.model.aggregate([
+    const { page = null, limit = null, search = '' } = filter;
+    if (page && limit) {
+      const result = await this.model.aggregate([
         {
           $lookup: {
             from: 'artistsongs',
@@ -94,10 +94,12 @@ class SongService extends BaseService<ISong> {
           }
         },
         { $skip: (Number(page) - 1) * Number(limit) },
-        { $limit: Number(limit) }
+        { $limit: Number(limit) },
+        { $match: { title: { $regex: search, $options: 'i' } } }
       ]);
+      return await this.convertObject(result);
     }
-    return await this.aggregate([
+    const result = await this.aggregate([
       {
         $lookup: {
           from: 'artistsongs',
@@ -117,8 +119,10 @@ class SongService extends BaseService<ISong> {
           ],
           as: 'artists'
         }
-      }
+      },
+      { $match: { title: { $regex: search, $options: 'i' } } }
     ]);
+    return await this.convertObject(result);
   }
 
   /**

@@ -209,4 +209,8 @@ export abstract class BaseService<T extends Document> {
     }
   }
 
+  async convertObject(docs: any, ) {
+    return docs.map((doc: any) => this.model.hydrate(doc).toJSON({ getters: true, virtuals: true }));
+  }
+
 }

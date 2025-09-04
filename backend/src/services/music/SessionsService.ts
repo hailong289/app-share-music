@@ -47,7 +47,7 @@ class SessionsService extends BaseService<ISession> {
                 from: "users",
                 let: { sid: "$item_id", t: "$item_type" },
                 pipeline: [
-                  { $match: { $expr: { $and: [ { $eq: ["$$t", "user"] }, { $eq: ["$_id", "$$sid"] } ] } } },
+                  { $match: { $expr: { $and: [{ $eq: ["$$t", "user"] }, { $eq: ["$_id", "$$sid"] }] } } },
                 ],
                 as: "artist"
               }
@@ -58,7 +58,17 @@ class SessionsService extends BaseService<ISession> {
                 from: "albums",
                 let: { sid: "$item_id", t: "$item_type" },
                 pipeline: [
-                  { $match: { $expr: { $and: [ { $eq: ["$$t", "album"] }, { $eq: ["$_id", "$$sid"] } ] } } },
+                  { $match: { $expr: { $and: [{ $eq: ["$$t", "album"] }, { $eq: ["$_id", "$$sid"] }] } } },
+                  {
+                    $addFields: {
+                      cover_url: {
+                        $concat: [
+                          `${process.env.APP_URL}/`,
+                          { $replaceAll: { input: "$cover_url", find: "\\", replacement: "/" } }
+                        ]
+                      }
+                    }
+                  }
                 ],
                 as: "album"
               }
@@ -69,7 +79,17 @@ class SessionsService extends BaseService<ISession> {
                 from: "playlists",
                 let: { sid: "$item_id", t: "$item_type" },
                 pipeline: [
-                  { $match: { $expr: { $and: [ { $eq: ["$$t", "playlist"] }, { $eq: ["$_id", "$$sid"] } ] } } },
+                  { $match: { $expr: { $and: [{ $eq: ["$$t", "playlist"] }, { $eq: ["$_id", "$$sid"] }] } } },
+                  {
+                    $addFields: {
+                      banner_url: {
+                        $concat: [
+                          `${process.env.APP_URL}/`,
+                          { $replaceAll: { input: "$banner_url", find: "\\", replacement: "/" } }
+                        ]
+                      }
+                    }
+                  }
                 ],
                 as: "playlist"
               }
@@ -91,7 +111,8 @@ class SessionsService extends BaseService<ISession> {
         }
       }
     ])
-    return session[0] ?? null;
+
+    return this.convertObject(session).then(res => res.length > 0 ? res[0] : null);
   }
 
   public async updateSession(sessionId: string, updateData: any): Promise<ISession | null> {

@@ -57,7 +57,7 @@ const PlaylistSchema: Schema = new Schema({
     trim: true,
     get: (v: string) => {
       if (!v) return '';
-      return `${process.env.APP_URL}/${v}`;
+      return `${process.env.APP_URL}/${v.replace(/\\/g, '/')}`;
     },
   },
 }, {
