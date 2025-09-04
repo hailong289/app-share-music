@@ -26,6 +26,10 @@ const SessionsItems: mongoose.Schema = new mongoose.Schema({
     ref: 'Sessions',
     required: true,
   },
+  order_index: {
+    type: Number,
+    default: 0,
+  },
 }, {
   timestamps: true, // Automatically manage createdAt and updatedAt fields
 });

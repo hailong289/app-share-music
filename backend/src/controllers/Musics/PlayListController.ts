@@ -117,6 +117,15 @@ class PlaylistController extends BaseController {
     }
   });
 
+  public createMultiple = this.asyncHandler(async (req, res) => {
+    try {
+      const result = await playListService.createMultiple(req.body.playlists, req.user.id);
+      return this.sendSuccess(res, result, 'Thêm nhiều playlist thành công');
+    } catch (error) {
+      return this.sendError(res, error instanceof Error ? error.message : 'An error occurred');
+    }
+  });
+
 }
 
 export default new PlaylistController();

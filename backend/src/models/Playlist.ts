@@ -60,6 +60,10 @@ const PlaylistSchema: Schema = new Schema({
       return `${process.env.APP_URL}/${v.replace(/\\/g, '/')}`;
     },
   },
+  members: {
+    type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    default: [],
+  }
 }, {
   timestamps: true, // Automatically manage created_at and updated_at fields
 });

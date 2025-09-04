@@ -97,5 +97,6 @@ export interface ISessionItem extends Document {
   item_id: Types.ObjectId;
   item_type: 'playlist' | 'album';
   session_id: Types.ObjectId;
+  order_index: number;
 }
 

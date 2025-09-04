@@ -43,7 +43,6 @@ routerApi.use('/genres', genderRouter);
 // | **Because you like...** | Vì bạn thích Taylor Swift | Playlist/album liên quan đến nghệ sĩ/genre đó |
 // | **Throwback**           | Hoài niệm                 | Các playlist nhạc cũ                          |
 const sessionRouter = Router();
-// sessionRouter.use(AuthMiddleware.authorize('admin'));
 sessionRouter.get('/', SessionsController.index);
 sessionRouter.get('/:id', SessionsController.show);
 sessionRouter.post('/', SessionsController.create);
@@ -70,6 +69,7 @@ const playlistRouter = Router();
 // playlistRouter.use(AuthMiddleware.authorize('admin', 'user'));
 playlistRouter.get('/', PlaylistController.index);
 playlistRouter.post('/', PlaylistController.create);
+playlistRouter.post('/multiple', PlaylistController.createMultiple);
 playlistRouter.get('/users', PlaylistController.getPlaylistsByUserId);
 playlistRouter.patch('/:playlistId', PlaylistController.update);
 playlistRouter.delete('/:playlistId', PlaylistController.delete);
@@ -80,7 +80,6 @@ routerApi.use('/playlists', AuthMiddleware.authenticate, playlistRouter);
 
 // song routes
 const songRouter = Router();
-// songRouter.use(AuthMiddleware.authorize('admin', 'artist'));
 songRouter.get('/', SongController.index);
 songRouter.get('/:id', SongController.show);
 songRouter.post('/', SongController.create);
