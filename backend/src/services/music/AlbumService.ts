@@ -12,12 +12,51 @@ class AlbumService extends BaseService<IAlbum> {
   getListAlBums = async (filter: Record<string, any> = {}, options: Record<string, any> = {}) => {
     if (filter.page && filter.limit) {
       const { page, limit } = filter;
-      return await this.model.find({})
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .exec();
+      return await this.model.aggregate([
+        { $skip: (Number(page) - 1) * Number(limit) },
+        { $limit: Number(limit) },
+        {
+          $lookup: {
+            from: "users",
+            localField: "artist_id",
+            foreignField: "_id",
+            as: "artist"
+          }
+        },
+        { $unwind: "$artist" },
+        {
+          $addFields: {
+            cover_url: {
+              $concat: [
+                `${process.env.APP_URL}/`,
+                { $replaceAll: { input: "$cover_url", find: "\\", replacement: "/" } }
+              ]
+            }
+          }
+        }
+      ])
     }
-    return await this.find(filter, options);
+    return await this.model.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "artist_id",
+          foreignField: "_id",
+          as: "artist"
+        }
+      },
+      { $unwind: "$artist" },
+      {
+          $addFields: {
+            cover_url: {
+              $concat: [
+                `${process.env.APP_URL}/`,
+                { $replaceAll: { input: "$cover_url", find: "\\", replacement: "/" } }
+              ]
+            }
+          }
+        }
+    ]);
   }
 
   /**
@@ -52,9 +91,44 @@ class AlbumService extends BaseService<IAlbum> {
               }
             },
             { $unwind: "$song" },
-            { $replaceWith: "$song" }
+            { $replaceWith: "$song" },
+            {
+              $addFields: {
+                banner_url: {
+                  $concat: [
+                    `${process.env.APP_URL}/`,
+                    { $replaceAll: { input: "$banner_url", find: "\\", replacement: "/" } }
+                  ]
+                },
+                audio_url: {
+                  $concat: [
+                    `${process.env.APP_URL}/`,
+                    { $replaceAll: { input: "$audio_url", find: "\\", replacement: "/" } }
+                  ]
+                }
+              }
+            }
           ],
           as: "songs"
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "artist_id",
+          foreignField: "_id",
+          as: "artist"
+        }
+      },
+      { $unwind: "$artist" },
+      {
+        $addFields: {
+          cover_url: {
+            $concat: [
+              `${process.env.APP_URL}/`,
+              { $replaceAll: { input: "$cover_url", find: "\\", replacement: "/" } }
+            ]
+          }
         }
       }
     ]);

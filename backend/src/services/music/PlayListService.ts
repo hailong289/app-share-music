@@ -51,6 +51,25 @@ class PlayListService extends BaseService<IPlaylist> {
           as: "songs"
         }
       },
+      {
+        $addFields: {
+          banner_url: {
+            $concat: [
+              `${process.env.APP_URL}/`,
+              { $replaceAll: { input: "$banner_url", find: "\\", replacement: "/" } }
+            ]
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      { $unwind: "$user" }
     ]);
     return playlist[0] ?? [];
   }
@@ -59,15 +78,54 @@ class PlayListService extends BaseService<IPlaylist> {
     return this.find({ is_public: true });
   }
 
-  public async getAllPlaylists(query: { page?: number; limit?: number;} = {}): Promise<IPlaylist[]> {
+  public async getAllPlaylists(query: { page?: number; limit?: number; } = {}): Promise<IPlaylist[]> {
     if (query.page && query.limit) {
       const { page, limit } = query;
-      return this.model.find({})
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .exec();
+      return this.model.aggregate([
+        { $skip: (Number(page) - 1) * Number(limit) },
+        { $limit: Number(limit) },
+        {
+          $addFields: {
+            banner_url: {
+              $concat: [
+                `${process.env.APP_URL}/`,
+                { $replaceAll: { input: "$banner_url", find: "\\", replacement: "/" } }
+              ]
+            }
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "user_id",
+            foreignField: "_id",
+            as: "user"
+          }
+        },
+        { $unwind: "$user" }
+      ]);
     }
-    return this.find({});
+    return this.aggregate([
+      {
+        $addFields: {
+          banner_url: {
+            $concat: [
+              `${process.env.APP_URL}/`,
+              { $replaceAll: { input: "$banner_url", find: "\\", replacement: "/" } }
+            ]
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "user_id",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      { $unwind: "$user" }
+    ]);
   }
 
   public async addSongToPlaylist(playlistId: string, data: {
