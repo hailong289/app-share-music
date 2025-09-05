@@ -41,7 +41,8 @@ class PlayListService extends BaseService<IPlaylist> {
   }
 
   public async getPlaylistById(playlistId: string): Promise<any> {
-    const playlist = await this.model.aggregate([
+    console.log('Fetching playlist for playlistId:', playlistId);
+    const playlist = await this.aggregate([
       {
         $match: { _id: new Types.ObjectId(playlistId) }
       },
@@ -82,8 +83,7 @@ class PlayListService extends BaseService<IPlaylist> {
           foreignField: "_id",
           as: "user"
         }
-      },
-      { $unwind: "$user" }
+      }
     ]);
     return playlist[0] ?? [];
   }
@@ -203,6 +203,14 @@ class PlayListService extends BaseService<IPlaylist> {
         }
     }
     return data;
+  }
+
+  public async addOrCreateSong(playlistId: string, songData: any, userId: string): Promise<any> {
+    const playlist = await this.getPlaylistById(playlistId);
+    if (!playlist) {
+      throw new Error("Playlist not found");
+    }
+
   }
 }
 

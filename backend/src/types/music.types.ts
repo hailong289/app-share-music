@@ -16,6 +16,7 @@ export interface ISong extends Document {
   duration: number;
   audio_url: string;
   track_number?: number;
+  banner_url?: string;
 }
 
 export interface IPlaylist extends Document {
@@ -25,6 +26,12 @@ export interface IPlaylist extends Document {
   description?: string;
   is_public: boolean;
   created_at: Date;
+  banner_url: string;
+  total_songs: number;
+  total_duration: number;
+  total_likes: number;
+  total_downloads: number;
+  members: Types.ObjectId[];
 }
 
 export interface IPlaylistSong extends Document {

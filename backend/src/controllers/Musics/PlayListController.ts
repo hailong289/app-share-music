@@ -126,6 +126,16 @@ class PlaylistController extends BaseController {
     }
   });
 
+  public addOrCreateSong = this.asyncHandler(async (req, res) => {
+    const { playlistId } = req.params;
+    try {
+      const result = await playListService.addOrCreateSong(playlistId, req.body, req.user.id);
+      return this.sendSuccess(res, result, 'Thêm hoặc tạo bài hát vào playlist thành công');
+    } catch (error) {
+      return this.sendError(res, error instanceof Error ? error.message : 'An error occurred');
+    }
+  });
+
 }
 
 export default new PlaylistController();

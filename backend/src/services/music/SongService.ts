@@ -1,6 +1,6 @@
 import { IComment, ISong } from "@/types/music.types";
 import { BaseService } from "../BaseService";
-import { Comment, ListeningHistory, Song, User } from "@/models";
+import { Comment, ListeningHistory, Playlist, PlaylistSong, Song, User } from "@/models";
 import * as fs from "fs";
 import ArtistSong from "@/models/ArtistSong";
 import { Types } from "mongoose";
@@ -15,12 +15,33 @@ class SongService extends BaseService<ISong> {
    * Create a new song
    * @param data - Song data
    */
-  public async createSong(data: Partial<ISong & { artist_ids?: string[] }>): Promise<ISong> {
+  public async createSong(data: Partial<ISong & { artist_names?: string; artist_ids?: string[]; playlist_id?: string }> ): Promise<ISong> {
+    const playListId = data.playlist_id ?? null;
+    data.playlist_id && delete data.playlist_id;
+    const playlist = await Playlist.findById(new Types.ObjectId(playListId ?? ''));
+    console.log('Creating song with data:', data, 'for playlist:', playlist);
+    data.banner_url = data.banner_url ?? playlist?.banner_url ?? '';
     const song = await this.create(data);
+
     if (data.artist_ids && Array.isArray(data.artist_ids)) {
       // Handle artist_ids if needed
       for (const artistId of data.artist_ids) {
         await ArtistSong.create({ artist_id: artistId, song_id: song.id });
+      }
+    } else if (data.artist_names) {
+      const artistNames = data.artist_names.split(',').map(name => name.trim()).filter(name => name.length > 0);
+      for (const name of artistNames) {
+        let artist = await User.findOne({ name: name, role: 'artist' });
+        if (!artist) {
+          artist = await User.create({ name: name, role: 'artist', email: `${name.replace(/\s+/g, '_').toLowerCase()}@example.com`, password: 'defaultpassword' });
+        }
+        await ArtistSong.create({ artist_id: artist.id, song_id: song.id });
+      }
+    }
+    if (playListId) {
+
+      if (playlist) {
+        await PlaylistSong.create({ playlist_id: playlist.id, song_id: song.id, order: playlist.total_songs + 1 });
       }
     }
     return song;
