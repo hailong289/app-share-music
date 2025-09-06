@@ -21,6 +21,10 @@ const AlbumSchema: Schema = new Schema({
     ref: 'User',
     required: true,
   },
+  memmber_ids: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  }],
   release_date: {
     type: Date,
     required: true,

@@ -2,6 +2,7 @@ import { IPlaylist } from "@/types/music.types";
 import { BaseService } from "../BaseService";
 import { Playlist, PlaylistSong, SessionItems, Sessions, User } from "@/models";
 import { Types } from "mongoose";
+import { pipeline } from "stream";
 
 
 class PlayListService extends BaseService<IPlaylist> {
@@ -57,11 +58,28 @@ class PlayListService extends BaseService<IPlaylist> {
                 from: "songs",
                 localField: "song_id",
                 foreignField: "_id",
+                pipeline: [
+                  {
+                    $addFields: {
+                      banner_url: {
+                        $concat: [
+                          `${process.env.APP_URL}/`,
+                          { $replaceAll: { input: "$banner_url", find: "\\", replacement: "/" } }
+                        ]
+                      },
+                      audio_url: {
+                        $concat: [
+                          `${process.env.APP_URL}/`,
+                          { $replaceAll: { input: "$audio_url", find: "\\", replacement: "/" } }
+                        ]
+                      }
+                    }
+                  },
+                ],
                 as: "song"
               }
             },
             { $unwind: "$song" },
-            { $replaceWith: "$song" }
           ],
           as: "songs"
         }
@@ -164,43 +182,43 @@ class PlayListService extends BaseService<IPlaylist> {
       messageErrors: [] as string[]
     };
     for (let index = 0; index < playlists.length; index++) {
-        try {
-            playlists[index].user_id = new Types.ObjectId(userId);
-            const members = playlists[index].members || [];
-            playlists[index].members = Array.isArray(members) ? members : JSON.parse(members || '[]');
-            if (playlists[index].members.length > 0) {
-               for (let j = 0; j < playlists[index].members.length; j++) {
-                  const artist = await User.findOne({ name: playlists[index].members[j], role: 'artist' });
-                  if (artist) {
-                    playlists[index].members[j] = new Types.ObjectId(artist._id);
-                  } else {
-                    const dataUser = {
-                      name: playlists[index].members[j],
-                      email: `artist${Date.now()}${Math.floor(Math.random() * 1000)}@example.com`,
-                      image_url:  `https://icotar.com/initials/${playlists[index].members[j].charAt(0).toUpperCase()}.png`,
-                      password: '123456',
-                      isActive: true,
-                      role: 'artist'
-                    }
-                    User.create(dataUser).then((newArtist) => {
-                      playlists[index].members[j] = new Types.ObjectId(newArtist._id);
-                    });
-                  }
-               }
+      try {
+        playlists[index].user_id = new Types.ObjectId(userId);
+        const members = playlists[index].members || [];
+        playlists[index].members = Array.isArray(members) ? members : JSON.parse(members || '[]');
+        if (playlists[index].members.length > 0) {
+          for (let j = 0; j < playlists[index].members.length; j++) {
+            const artist = await User.findOne({ name: playlists[index].members[j], role: 'artist' });
+            if (artist) {
+              playlists[index].members[j] = new Types.ObjectId(artist._id);
+            } else {
+              const dataUser = {
+                name: playlists[index].members[j],
+                email: `artist${Date.now()}${Math.floor(Math.random() * 1000)}@example.com`,
+                image_url: `https://icotar.com/initials/${playlists[index].members[j].charAt(0).toUpperCase()}.png`,
+                password: '123456',
+                isActive: true,
+                role: 'artist'
+              }
+              User.create(dataUser).then((newArtist) => {
+                playlists[index].members[j] = new Types.ObjectId(newArtist._id);
+              });
             }
-            playlists[index].banner_url = playlists[index].banner_url || `?url=https://picsum.photos/600/400`;
-            const payListByName = await this.model.findOne({ name: playlists[index].name });
-            if (payListByName) {
-              console.error(`Playlist with name "${playlists[index].name}" already exists. Skipping...`);
-              continue; // Skip to the next iteration
-            }
-            const results = await this.createPlaylist(playlists[index]);
-            data.countSuccess += 1;
-        } catch (error) {
-            console.error(`Failed to create playlist at index ${index}:`, error);
-            data.countFail += 1;
-            data.messageErrors.push(`Index ${index}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          }
         }
+        playlists[index].banner_url = playlists[index].banner_url || `?url=https://picsum.photos/600/400`;
+        const payListByName = await this.model.findOne({ name: playlists[index].name });
+        if (payListByName) {
+          console.error(`Playlist with name "${playlists[index].name}" already exists. Skipping...`);
+          continue; // Skip to the next iteration
+        }
+        const results = await this.createPlaylist(playlists[index]);
+        data.countSuccess += 1;
+      } catch (error) {
+        console.error(`Failed to create playlist at index ${index}:`, error);
+        data.countFail += 1;
+        data.messageErrors.push(`Index ${index}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
     }
     return data;
   }
