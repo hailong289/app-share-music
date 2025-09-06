@@ -79,6 +79,16 @@ class HomeService extends BaseService<ISession> {
                   ]
                 }
               }
+            },
+            {
+              $lookup: {
+                from: "users",
+                let: { memberIds: "$members" }, // members là mảng userId
+                pipeline: [
+                  { $match: { $expr: { $in: ["$_id", "$$memberIds"] } } }
+                ],
+                as: "artists"
+              }
             }
           ],
           as: "playlist_docs"
@@ -98,6 +108,14 @@ class HomeService extends BaseService<ISession> {
                     { $replaceAll: { input: "$cover_url", find: "\\", replacement: "/" } }
                   ]
                 }
+              }
+            },
+            {
+              $lookup: {
+                from: "users",
+                localField: "artist_id",
+                foreignField: "_id",
+                as: "artist"
               }
             }
           ],
