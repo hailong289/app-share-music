@@ -75,6 +75,25 @@ class PlayListService extends BaseService<IPlaylist> {
                       }
                     }
                   },
+                  {
+                    $lookup: {
+                      from: "artistsongs",
+                      let: { songId: "$_id" },
+                      pipeline: [
+                        { $match: { $expr: { $eq: ["$song_id", "$$songId"] } } },
+                        {
+                          $lookup: {
+                            from: "users",
+                            localField: "artist_id",
+                            foreignField: "_id",
+                            as: "artist"
+                          }
+                        },
+                        { $unwind: "$artist" },
+                      ],
+                      as: "artists"
+                    }
+                  }
                 ],
                 as: "song"
               }
