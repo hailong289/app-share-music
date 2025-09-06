@@ -76,6 +76,7 @@ playlistRouter.delete('/:playlistId', PlaylistController.delete);
 playlistRouter.get('/:playlistId', PlaylistController.show);
 playlistRouter.post('/:playlistId/add-song', PlaylistController.addSong);
 playlistRouter.post('/:playlistId/add-or-create-song', PlaylistController.addOrCreateSong);
+playlistRouter.post('/:playlistId/remove-song', PlaylistController.removeSong);
 routerApi.use('/playlists', AuthMiddleware.authenticate, playlistRouter);
 
 

@@ -136,6 +136,17 @@ class PlaylistController extends BaseController {
     }
   });
 
+  public removeSong = this.asyncHandler(async (req, res) => {
+    const { playlistId } = req.params;
+    const { songId } = req.body;
+    try {
+      const result = await playListService.removeSongFromPlaylist(playlistId, songId);
+      return this.sendSuccess(res, result, 'Xóa bài hát khỏi playlist thành công');
+    } catch (error) {
+      return this.sendError(res, error instanceof Error ? error.message : 'An error occurred');
+    }
+  });
+
 }
 
 export default new PlaylistController();

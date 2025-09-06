@@ -249,6 +249,17 @@ class PlayListService extends BaseService<IPlaylist> {
     }
 
   }
+
+  public async removeSongFromPlaylist(playlistId: string, songId: string): Promise<any> {
+    const result = await PlaylistSong.findOneAndDelete({
+      playlist_id: new Types.ObjectId(playlistId),
+      song_id: new Types.ObjectId(songId)
+    });
+    if (!result) {
+      throw new Error("Failed to remove song from playlist");
+    }
+    return this.getPlaylistById(playlistId);
+  }
 }
 
 const playListService = new PlayListService();
