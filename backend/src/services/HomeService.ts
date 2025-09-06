@@ -90,7 +90,7 @@ class HomeService extends BaseService<ISession> {
                     $addFields: {
                       image_url: {
                         $cond: [
-                          { $regexMatch: { input: { $toString: "$image_url" }, regex: /^http/ } },
+                          { $regexMatch: { input: { $toString: "$image_url" }, regex: /^https?:\/\// } },
                           { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } },
                           {
                             $concat: [

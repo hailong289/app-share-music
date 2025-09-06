@@ -99,6 +99,24 @@ class PlayListService extends BaseService<IPlaylist> {
                       from: "users",
                       localField: "artist_id",
                       foreignField: "_id",
+                      pipeline: [
+                        {
+                          $addFields: {
+                            image_url: {
+                              $cond: [
+                                { $regexMatch: { input: { $toString: "$image_url" }, regex: /^https?:\/\// } },
+                                { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } },
+                                {
+                                  $concat: [
+                                    `${process.env.APP_URL}/`,
+                                    { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } }
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      ],
                       as: "artist"
                     }
                   },
