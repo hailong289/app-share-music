@@ -85,7 +85,23 @@ class HomeService extends BaseService<ISession> {
                 from: "users",
                 let: { memberIds: "$members" }, // members là mảng userId
                 pipeline: [
-                  { $match: { $expr: { $in: ["$_id", "$$memberIds"] } } }
+                  { $match: { $expr: { $in: ["$_id", "$$memberIds"] } } },
+                  {
+                    $addFields: {
+                      image_url: {
+                        $cond: [
+                          { $regexMatch: { input: { $toString: "$image_url" }, regex: /^http/ } },
+                          { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } },
+                          {
+                            $concat: [
+                              `${process.env.APP_URL}/`,
+                              { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  }
                 ],
                 as: "artists"
               }
@@ -228,8 +244,13 @@ class HomeService extends BaseService<ISession> {
                   }
                 ]
               }
-            }
-          }
+            },
+          },
+        }
+      },
+      {
+        $match: {
+          "session_items.item": { $exists: true, $ne: null } // chỉ giữ khi có item
         }
       },
 

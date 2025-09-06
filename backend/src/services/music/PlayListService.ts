@@ -50,55 +50,64 @@ class PlayListService extends BaseService<IPlaylist> {
       {
         $lookup: {
           from: "playlistsongs",
-          let: { pid: "$_id" },
+          localField: "_id",
+          foreignField: "playlist_id",
+          as: "playlistSong",
+        }
+      },
+      {
+        $set: {
+          playListSongId: {
+            $map: {
+              input: "$playlistSong",
+              as: "s",
+              in: "$$s._id"
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "songs",
+          localField: "playlistSong.song_id",
+          foreignField: "_id",
           pipeline: [
-            { $match: { $expr: { $eq: ["$playlist_id", "$$pid"] } } },
             {
-              $lookup: {
-                from: "songs",
-                localField: "song_id",
-                foreignField: "_id",
-                pipeline: [
-                  {
-                    $addFields: {
-                      banner_url: {
-                        $concat: [
-                          `${process.env.APP_URL}/`,
-                          { $replaceAll: { input: "$banner_url", find: "\\", replacement: "/" } }
-                        ]
-                      },
-                      audio_url: {
-                        $concat: [
-                          `${process.env.APP_URL}/`,
-                          { $replaceAll: { input: "$audio_url", find: "\\", replacement: "/" } }
-                        ]
-                      }
-                    }
-                  },
-                  {
-                    $lookup: {
-                      from: "artistsongs",
-                      let: { songId: "$_id" },
-                      pipeline: [
-                        { $match: { $expr: { $eq: ["$song_id", "$$songId"] } } },
-                        {
-                          $lookup: {
-                            from: "users",
-                            localField: "artist_id",
-                            foreignField: "_id",
-                            as: "artist"
-                          }
-                        },
-                        { $unwind: "$artist" },
-                      ],
-                      as: "artists"
-                    }
-                  }
-                ],
-                as: "song"
+              $addFields: {
+                banner_url: {
+                  $concat: [
+                    `${process.env.APP_URL}/`,
+                    { $replaceAll: { input: "$banner_url", find: "\\", replacement: "/" } }
+                  ]
+                },
+                audio_url: {
+                  $concat: [
+                    `${process.env.APP_URL}/`,
+                    { $replaceAll: { input: "$audio_url", find: "\\", replacement: "/" } }
+                  ]
+                }
               }
             },
-            { $unwind: "$song" },
+            {
+              $lookup: {
+                from: "artistsongs",
+                let: { songId: "$_id" },
+                pipeline: [
+                  { $match: { $expr: { $eq: ["$song_id", "$$songId"] } } },
+                  {
+                    $lookup: {
+                      from: "users",
+                      localField: "artist_id",
+                      foreignField: "_id",
+                      as: "artist"
+                    }
+                  },
+                  { $unwind: "$artist" },
+                  { $replaceRoot: { newRoot: "$artist" } }
+                ],
+                as: "artists"
+              }
+            }
           ],
           as: "songs"
         }
@@ -120,7 +129,8 @@ class PlayListService extends BaseService<IPlaylist> {
           foreignField: "_id",
           as: "user"
         }
-      }
+      },
+      { $unset: ["__v", "playListSongId", "playlistSong"] },
     ]);
     return playlist[0] ?? [];
   }
