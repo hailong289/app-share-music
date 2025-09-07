@@ -81,7 +81,7 @@ const AccountBar = (props: any) => {
             className={`w-10 rounded-full ${isPending ? "skeleton" : ""}`}
           >
             {!isPending && (
-              <img alt="Tailwind CSS Navbar component" src={user?.image_url}  crossOrigin="anonymous" />
+              <img alt="Tailwind CSS Navbar component" src={user?.image_url} crossOrigin={user?.image_url.includes("uploads") ? "anonymous" : undefined} />
             )}
           </div>
         </div>
@@ -124,10 +124,10 @@ const AccountBar = (props: any) => {
               <div className="avatar">
                 <div className="ring-primary ring-offset-base-100 w-24 rounded-full ring-2 ring-offset-2">
                   {typeof form?.image_url === 'string' ? (
-                    <img src={form?.image_url || user?.image_url || 'https://placehold.co/600x400/png'} alt="Avatar" crossOrigin="anonymous" />
+                    <img src={form?.image_url || user?.image_url || 'https://placehold.co/600x400/png'} alt="Avatar" crossOrigin={user?.image_url.includes("uploads") ? "anonymous" : undefined} />
                   ) : (
                     form?.image_url && (
-                      <img src={URL.createObjectURL(form?.image_url)} alt="Avatar"  crossOrigin="anonymous" />
+                      <img src={URL.createObjectURL(form?.image_url)} alt="Avatar" crossOrigin={form?.image_url.includes("uploads") ? "anonymous" : undefined} />
                     )
                   )}
                 </div>
