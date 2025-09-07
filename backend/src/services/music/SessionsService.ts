@@ -47,7 +47,7 @@ class SessionsService extends BaseService<ISession> {
                 from: "users",
                 let: { sid: "$item_id", t: "$item_type" },
                 pipeline: [
-                  { $match: { $expr: { $and: [{ $eq: ["$$t", "user"] }, { $eq: ["$_id", "$$sid"] }] } } },
+                  { $match: { $expr: { $and: [{ $eq: ["$$t", "artist"] }, { $eq: ["$_id", "$$sid"] }] } } },
                 ],
                 as: "artist"
               }
