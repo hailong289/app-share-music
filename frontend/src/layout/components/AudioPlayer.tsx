@@ -25,6 +25,7 @@ const AudioPlayer = () => {
 
 		return () => audio?.removeEventListener("ended", handleEnded);
 	}, [playNext]);
+console.log("Current Song in AudioPlayer:", currentSong);
 
 	// handle song changes
 	useEffect(() => {
@@ -33,18 +34,20 @@ const AudioPlayer = () => {
 		const audio = audioRef.current;
 
 		// check if this is actually a new song
-		const isSongChange = prevSongRef.current !== currentSong?.audioUrl;
+		const isSongChange = prevSongRef.current !== currentSong?.audio_url;
 		if (isSongChange) {
-			audio.src = currentSong?.audioUrl;
+      audio.pause();
+			audio.src = `${currentSong?.audio_url}`;
+      audio.load();
 			// reset the playback position
 			audio.currentTime = 0;
 
-			prevSongRef.current = currentSong?.audioUrl;
+			prevSongRef.current = currentSong?.audio_url;
 
 			if (isPlaying) audio.play();
 		}
 	}, [currentSong, isPlaying]);
 
-	return <audio ref={audioRef} />;
+	return <audio ref={audioRef} crossOrigin="anonymous" />;
 };
 export default AudioPlayer;

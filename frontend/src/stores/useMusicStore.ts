@@ -1,158 +1,102 @@
 import ApiService from "@/services/api";
-import type { Album, Song, Stats } from "@/types";
+import type { Album, Artist, Playlist, SearchAll, Session, Song, Stats, User } from "@/types";
 import toast from "react-hot-toast";
 import { create } from "zustand";
 
 interface MusicStore {
   songs: Song[];
+  searchSongData: Song[];
+  searchAllData: SearchAll;
   albums: Album[];
+  playlists: Playlist[];
+  artists: User[];
   isLoading: boolean;
   error: string | null;
   currentAlbum: Album | null;
-  featuredSongs: Song[];
-  madeForYouSongs: Song[];
-  trendingSongs: Song[];
+  currentSession: Session;
+  featuredSession: Session;
+  popularRadio: Session;
+  popularArtist: Session;
   stats: Stats;
 
-  fetchAlbums: () => Promise<void>;
+  fetchArtists: () => Promise<void>;
+  fetchAlbums: (params) => Promise<void>;
   fetchAlbumById: (id: string) => Promise<void>;
-  fetchFeaturedSongs: () => Promise<void>;
-  fetchMadeForYouSongs: () => Promise<void>;
-  fetchTrendingSongs: () => Promise<void>;
+  fetchPlaylistById: (id: string) => Promise<void>;
+  fetchSessionById: (id: string) => Promise<void>;
+  fetchArtistById: (id: string) => Promise<void>;
+  fetchHomeData: () => Promise<void>;
   fetchStats: () => Promise<void>;
-  fetchSongs: () => Promise<void>;
+  fetchSongs: (params) => Promise<void>;
+  searchSongs: (params) => Promise<void>;
+  searchAll: (params) => Promise<void>;
+  refreshSearchSongs: () => void;
+  fetchPlayList: () => Promise<void>;
+  addSong: (data: any) => Promise<void>;
+  addAlbum: (data: any) => Promise<void>;
+  addPlaylist: (data: any) => Promise<void>;
+  addSongToPlaylist: (playlistId, songId) => Promise<void>;
   deleteSong: (id: string) => Promise<void>;
   deleteAlbum: (id: string) => Promise<void>;
+  deletePlaylist: (id: string) => Promise<void>;
 }
 
-const createdSongs: Song[] = [
-  {
-    _id: "City Rain",
-    title: "City Rain",
-    artist: "Urban Echo",
-    imageUrl: "/cover-images/7.jpg",
-    audioUrl: "/songs/7.mp3",
-    duration: 39, // 0:39
-  },
-  {
-    _id: "Neon Lights",
-    title: "Neon Lights",
-    artist: "Night Runners",
-    imageUrl: "/cover-images/5.jpg",
-    audioUrl: "/songs/5.mp3",
-    duration: 36, // 0:36
-  },
-  {
-    _id: "Urban Jungle",
-    title: "Urban Jungle",
-    artist: "City Lights",
-    imageUrl: "/cover-images/15.jpg",
-    audioUrl: "/songs/15.mp3",
-    duration: 36, // 0:36
-  },
-  {
-    _id: "Neon Dreams",
-    title: "Neon Dreams",
-    artist: "Cyber Pulse",
-    imageUrl: "/cover-images/13.jpg",
-    audioUrl: "/songs/13.mp3",
-    duration: 39, // 0:39
-  },
-  {
-    _id: "Summer Daze",
-    title: "Summer Daze",
-    artist: "Coastal Kids",
-    imageUrl: "/cover-images/4.jpg",
-    audioUrl: "/songs/4.mp3",
-    duration: 24, // 0:24
-  },
-  {
-    _id: "Ocean Waves",
-    title: "Ocean Waves",
-    artist: "Coastal Drift",
-    imageUrl: "/cover-images/9.jpg",
-    audioUrl: "/songs/9.mp3",
-    duration: 28, // 0:28
-  },
-  {
-    _id: "Crystal Rain",
-    title: "Crystal Rain",
-    artist: "Echo Valley",
-    imageUrl: "/cover-images/16.jpg",
-    audioUrl: "/songs/16.mp3",
-    duration: 39, // 0:39
-  },
-  {
-    _id: "Starlight",
-    title: "Starlight",
-    artist: "Luna Bay",
-    imageUrl: "/cover-images/10.jpg",
-    audioUrl: "/songs/10.mp3",
-    duration: 30, // 0:30
-  },
-  {
-    _id: "Stay With Me",
-    title: "Stay With Me",
-    artist: "Sarah Mitchell",
-    imageUrl: "/cover-images/1.jpg",
-    audioUrl: "/songs/1.mp3",
-    duration: 46, // 0:46
-  },
-  {
-    _id: "Midnight Drive",
-    title: "Midnight Drive",
-    artist: "The Wanderers",
-    imageUrl: "/cover-images/2.jpg",
-    audioUrl: "/songs/2.mp3",
-    duration: 41, // 0:41
-  },
-  {
-    _id: "Moonlight Dance",
-    title: "Moonlight Dance",
-    artist: "Silver Shadows",
-    imageUrl: "/cover-images/14.jpg",
-    audioUrl: "/songs/14.mp3",
-    duration: 27, // 0:27
-  },
-  {
-    _id: "Lost in Tokyo",
-    title: "Lost in Tokyo",
-    artist: "Electric Dreams",
-    imageUrl: "/cover-images/3.jpg",
-    audioUrl: "/songs/3.mp3",
-    duration: 24, // 0:24
-  },
-  {
-    _id: "Neon Tokyo",
-    title: "Neon Tokyo",
-    artist: "Future Pulse",
-    imageUrl: "/cover-images/17.jpg",
-    audioUrl: "/songs/17.mp3",
-    duration: 39, // 0:39
-  },
-  {
-    _id: "Purple Sunset",
-    title: "Purple Sunset",
-    artist: "Dream Valley",
-    imageUrl: "/cover-images/12.jpg",
-    audioUrl: "/songs/12.mp3",
-    duration: 17, // 0:17
-  },
-];
 export const useMusicStore = create<MusicStore>((set) => ({
   albums: [],
+  playlists: [],
   songs: [],
+  searchSongData: [],
+  artists: [],
   isLoading: false,
   error: null,
   currentAlbum: null,
-  madeForYouSongs: [],
-  featuredSongs: [],
-  trendingSongs: [],
+  popularRadio: {},
+  featuredSession: {},
+  popularArtist: {},
   stats: {
-    totalSongs: 0,
-    totalAlbums: 0,
-    totalUsers: 0,
-    totalArtists: 0,
+    totalSong: 0,
+    totalAlbum: 0,
+    totalUser: 0,
+    totalArtist: 0,
+  },
+
+  addSong: async (data) => {
+    set({ isLoading: true, error: null });
+    try {
+      await ApiService.post(`/songs`, data);
+      console.log("Song add successfully");
+    } catch (error: any) {
+      console.log("Error in addSong", error);
+      toast.error("Error adding song");
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  addPlaylist: async (data) => {
+    set({ isLoading: true, error: null });
+    try {
+      await ApiService.post(`/playlists`, data);
+      console.log("Playlist add successfully");
+    } catch (error: any) {
+      console.log("Error in addPlaylist", error);
+      toast.error("Error adding playlist");
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  addSongToPlaylist: async (playlistId, songId) => {
+    set({ isLoading: true, error: null });
+    try {
+      await ApiService.post(`/playlists/${playlistId}/add-song`, {song_id : songId, order: 1});
+      console.log("Playlist add successfully");
+    } catch (error: any) {
+      console.log("Error in addPlaylist", error);
+      toast.error("Error adding playlist");
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
   deleteSong: async (id) => {
@@ -167,6 +111,19 @@ export const useMusicStore = create<MusicStore>((set) => ({
     } catch (error: any) {
       console.log("Error in deleteSong", error);
       toast.error("Error deleting song");
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  addAlbum: async (data) => {
+    set({ isLoading: true, error: null });
+    try {
+      await ApiService.post(`/albums`, data);
+      console.log("Album add successfully");
+    } catch (error: any) {
+      console.log("Error in addAlbum", error);
+      toast.error("Error adding Album");
     } finally {
       set({ isLoading: false });
     }
@@ -192,10 +149,12 @@ export const useMusicStore = create<MusicStore>((set) => ({
     }
   },
 
-  fetchSongs: async () => {
+  fetchSongs: async (params = {}) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await ApiService.get("/songs");
+      const response = await ApiService.get("/songs", params);
+      console.log("Fetched songs:", response.data);
+
       set({ songs: response.data });
     } catch (error: any) {
       set({ error: error.message });
@@ -204,10 +163,34 @@ export const useMusicStore = create<MusicStore>((set) => ({
     }
   },
 
+  searchSongs: async (params = {}) => {
+    try {
+      const response = await ApiService.get("/songs", params);
+      console.log("Fetched searchSongData:", response.data);
+      set({ searchSongData: response.data });
+    } catch (error: any) {
+      set({ error: error.message });
+    }
+  },
+
+  refreshSearchSongs: () => {
+    set({ searchSongData: [] });
+  },
+
+  searchAll: async (params = {}) => {
+    try {
+      const response = await ApiService.get("/search", params);
+      console.log("Fetched searchAllData:", response.data);
+      set({ searchAllData: response.data });
+    } catch (error: any) {
+      set({ error: error.message });
+    }
+  },
+
   fetchStats: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await ApiService.get("/stats");
+      const response = await ApiService.get("/reports");
       set({ stats: response.data });
     } catch (error: any) {
       set({ error: error.message });
@@ -216,47 +199,25 @@ export const useMusicStore = create<MusicStore>((set) => ({
     }
   },
 
-  fetchAlbums: async () => {
+  fetchArtists: async () => {
     set({ isLoading: true, error: null });
 
     try {
-      // const response = await ApiService.get("/albums");
-      // set({ albums: response.data });
-      const albums: Album[] = [
-        {
-          _id: "Urban Nights",
-          title: "Urban Nights",
-          artist: "Various Artists",
-          imageUrl: "/albums/1.jpg",
-          releaseYear: 2024,
-          songs: createdSongs.slice(0, 4),
-        },
-        {
-          _id: "Coastal Dreaming",
-          title: "Coastal Dreaming",
-          artist: "Various Artists",
-          imageUrl: "/albums/2.jpg",
-          releaseYear: 2024,
-          songs: createdSongs.slice(4, 8),
-        },
-        {
-          _id: "Midnight Sessions",
-          title: "Midnight Sessions",
-          artist: "Various Artists",
-          imageUrl: "/albums/3.jpg",
-          releaseYear: 2024,
-          songs: createdSongs.slice(8, 11),
-        },
-        {
-          _id: "Eastern Dreams",
-          title: "Eastern Dreams",
-          artist: "Various Artists",
-          imageUrl: "/albums/4.jpg",
-          releaseYear: 2024,
-          songs: createdSongs.slice(11, 14),
-        },
-      ];
-      set({ albums });
+      const response = await ApiService.get("/users/artists");
+      set({ artists: response.data });
+    } catch (error: any) {
+      set({ error: error.response.data.message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  fetchAlbums: async (params = {}) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const response = await ApiService.get("/albums", params);
+      set({ albums: response.data });
     } catch (error: any) {
       set({ error: error.response.data.message });
     } finally {
@@ -282,12 +243,11 @@ export const useMusicStore = create<MusicStore>((set) => ({
     }
   },
 
-  fetchFeaturedSongs: async () => {
+  fetchSessionById: async (id) => {
     set({ isLoading: true, error: null });
     try {
-      // const response = await ApiService.get("/songs/featured");
-      // set({ featuredSongs: response.data });
-      set({ featuredSongs: createdSongs });
+      const response = await ApiService.get(`/sessions/${id}`);
+      set({ currentSession: response.data });
     } catch (error: any) {
       set({ error: error.response.data.message });
     } finally {
@@ -295,12 +255,11 @@ export const useMusicStore = create<MusicStore>((set) => ({
     }
   },
 
-  fetchMadeForYouSongs: async () => {
+  fetchArtistById: async (id) => {
     set({ isLoading: true, error: null });
     try {
-      // const response = await ApiService.get("/songs/made-for-you");
-      // set({ madeForYouSongs: response.data });
-      set({ madeForYouSongs: createdSongs });
+      const response = await ApiService.get(`/songs/artist/${id}`);
+      set({ currentAlbum: response.data });
     } catch (error: any) {
       set({ error: error.response.data.message });
     } finally {
@@ -308,16 +267,61 @@ export const useMusicStore = create<MusicStore>((set) => ({
     }
   },
 
-  fetchTrendingSongs: async () => {
+  fetchHomeData: async () => {
     set({ isLoading: true, error: null });
     try {
-      // const response = await ApiService.get("/songs/trending");
-      // set({ trendingSongs: response.data });
-      set({ trendingSongs: createdSongs.reverse() });
+      const response = await ApiService.get("/home");
+      console.log("Home data:", response.data);
+      set({ featuredSession: response.data[0], popularArtist: response.data[1], popularRadio: response.data[3] });
+
     } catch (error: any) {
       set({ error: error.response.data.message });
     } finally {
       set({ isLoading: false });
     }
   },
+
+  fetchPlayList: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await ApiService.get("/playlists/users");
+      set({ playlists: response.data });
+    } catch (error: any) {
+      set({ error: error.response.data.message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  fetchPlaylistById: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await ApiService.get(`/playlists/${id}`);
+      set({ currentAlbum: response.data });
+      console.log("Fetched playlist by ID:", response.data);
+
+    } catch (error: any) {
+      set({ error: error.response.data.message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  deletePlaylist: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      await ApiService.delete(`/playlists/${id}`);
+
+      set((state) => ({
+        playlists: state.playlists.filter((playList) => playList._id !== id),
+      }));
+      toast.success("Playlist deleted successfully");
+    } catch (error: any) {
+      console.log("Error in deletePlaylist", error);
+      toast.error("Error deleting Playlist");
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
 }));

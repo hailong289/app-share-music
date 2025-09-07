@@ -57,7 +57,8 @@ export const PlaybackControls = () => {
 					{currentSong && (
 						<>
 							<img
-								src={currentSong.imageUrl}
+                crossOrigin="anonymous"
+								src={currentSong.banner_url}
 								alt={currentSong.title}
 								className='w-14 h-14 object-cover rounded-md'
 							/>

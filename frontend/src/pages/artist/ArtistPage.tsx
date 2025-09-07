@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMusicStore } from "@/stores/useMusicStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
-import { Clock, Pause, Play } from "lucide-react";
+import { Clock, Pause, Play, SearchIcon, Trash2 } from "lucide-react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
@@ -12,16 +12,18 @@ export const formatDuration = (seconds: number) => {
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
-const AlbumPage = () => {
-  const { albumId } = useParams();
-  const { fetchAlbumById, currentAlbum, isLoading } = useMusicStore();
+const ArtistPage = () => {
+  const { artistId = "" } = useParams();
+  const {
+    fetchArtistById,
+    currentAlbum,
+    isLoading,
+  } = useMusicStore();
   const { currentSong, isPlaying, playAlbum, togglePlay } = usePlayerStore();
 
   useEffect(() => {
-    if (albumId) fetchAlbumById(albumId);
-  }, [fetchAlbumById, albumId]);
-
-  if (isLoading) return null;
+    if (artistId) fetchArtistById(artistId);
+  }, [fetchArtistById, artistId]);
 
   const handlePlayAlbum = () => {
     if (!currentAlbum) return;
@@ -42,6 +44,7 @@ const AlbumPage = () => {
     playAlbum(currentAlbum?.songs, index);
   };
 
+  if (isLoading) return null;
   return (
     <div className="h-full">
       <ScrollArea className="h-full rounded-md">
@@ -58,22 +61,21 @@ const AlbumPage = () => {
           <div className="relative z-10">
             <div className="flex p-6 gap-6 pb-8">
               <img
-                src={currentAlbum?.imageUrl}
-                alt={currentAlbum?.title}
-                className="w-[240px] h-[240px] shadow-xl rounded"
                 crossOrigin="anonymous"
+                src={currentAlbum?.image_url}
+                alt={currentAlbum?.name}
+                className="w-[240px] h-[240px] shadow-xl rounded"
               />
               <div className="flex flex-col justify-end">
-                <p className="text-sm font-medium">Album</p>
+                <p className="text-sm font-medium">Artist</p>
                 <h1 className="text-7xl font-bold my-4">
-                  {currentAlbum?.title}
+                  {currentAlbum?.name}
                 </h1>
                 <div className="flex items-center gap-2 text-sm text-zinc-100">
                   <span className="font-medium text-white">
                     {currentAlbum?.artist}
                   </span>
-                  <span>• {currentAlbum?.songs.length} songs</span>
-                  <span>• {currentAlbum?.releaseYear}</span>
+                  <span>• {currentAlbum?.songs?.length} songs</span>
                 </div>
               </div>
             </div>
@@ -116,7 +118,7 @@ const AlbumPage = () => {
 
               <div className="px-6">
                 <div className="space-y-2 py-4">
-                  {currentAlbum?.songs.map((song, index) => {
+                  {currentAlbum?.songs?.map((song, index) => {
                     const isCurrentSong = currentSong?._id === song._id;
                     return (
                       <div
@@ -141,17 +143,16 @@ const AlbumPage = () => {
 
                         <div className="flex items-center gap-3">
                           <img
-                            src={song.imageUrl}
+                            crossOrigin="anonymous"
+                            src={song.banner_url}
                             alt={song.title}
                             className="size-10"
-                            crossOrigin="anonymous"
                           />
 
                           <div>
                             <div className={`font-medium text-white`}>
                               {song.title}
                             </div>
-                            <div>{song.artist}</div>
                           </div>
                         </div>
                         <div className='flex items-center'>{song.createdAt.split("T")[0]}</div>
@@ -170,4 +171,4 @@ const AlbumPage = () => {
     </div>
   );
 };
-export default AlbumPage;
+export default ArtistPage;

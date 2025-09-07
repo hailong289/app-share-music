@@ -1,10 +1,4 @@
-// src/router/router.tsx
 import React from 'react'
-// import AuthCallbackPage from '../pages/auth-callback/AuthCallbackPage'
-// import { AuthenticateWithRedirectCallback } from '@clerk/clerk-react'
-// import AdminPage from '../pages/admin/AdminPage'
-// import NotFoundPage from '../pages/404/NotFoundPage'
-
 import { createBrowserRouter, type RouteObject } from 'react-router'
 import ChatPage from '@/pages/chat/ChatPage'
 import MainLayout from '@/layout/MainLayout'
@@ -12,6 +6,11 @@ import HomePage from '@/pages/home/HomePage'
 import NotFoundPage from '@/pages/404/NotFoundPage'
 import AlbumPage from '@/pages/album/AlbumPage'
 import Login from '@/pages/auth/Login'
+import AdminPage from '@/pages/admin/AdminPage'
+import PlaylistPage from '@/pages/playlist/PlaylistPage';
+import SessionPage from '@/pages/session/SessionPage';
+import ArtistPage from '@/pages/artist/ArtistPage'
+import SearchPage from '@/pages/search/SearchPage'
 
 // Định nghĩa cấu trúc route
 export interface RouterConfig {
@@ -28,11 +27,11 @@ const routeConfigs: RouterConfig[] = [
   //   name: 'Auth Callback',
   //   component: AuthCallbackPage
   // },
-  // {
-  //   path: '/admin',
-  //   name: 'Admin',
-  //   component: AdminPage
-  // },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: AdminPage
+  },
   {
     path: '/login',
     name: 'Login',
@@ -54,9 +53,29 @@ const routeConfigs: RouterConfig[] = [
         component: ChatPage
       },
       {
-        path: '/albums/:albumId',
+        path: '/session/:sessionId',
+        name: 'Session Detail',
+        component: SessionPage
+      },
+      {
+        path: '/album/:albumId',
         name: 'Album Detail',
         component: AlbumPage
+      },
+      {
+        path: '/playlist/:playlistId',
+        name: 'Playlist Detail',
+        component: PlaylistPage
+      },
+      {
+        path: '/artist/:artistId',
+        name: 'Artist Detail',
+        component: ArtistPage
+      },
+      {
+        path: '/search/:keyword',
+        name: 'Search Results',
+        component: SearchPage
       },
       {
         path: '*',

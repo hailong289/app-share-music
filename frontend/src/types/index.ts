@@ -1,10 +1,11 @@
 export interface Song {
 	_id: string;
 	title: string;
-	artist: string;
+	artists: any;
 	albumId: string | null;
 	imageUrl: string;
-	audioUrl: string;
+	banner_url: string;
+	audio_url: string;
 	duration: number;
 	createdAt: string;
 	updatedAt: string;
@@ -14,16 +15,37 @@ export interface Album {
 	_id: string;
 	title: string;
 	artist: string;
-	imageUrl: string;
-	releaseYear: number;
+	cover_url: string;
+	image_url: string;
+	release_date: string;
+	total_songs: number;
+	songs: Song[];
+	banner_url: string;
+	name: string;
+}
+
+export interface Playlist {
+	_id: string;
+	name: string;
+	artist: string;
+	banner_url: string;
+	description: string;
+	total_songs: number;
+	songs: Song[];
+}
+
+export interface Artist {
+	_id: string;
+	name: string;
+	image_url: string;
 	songs: Song[];
 }
 
 export interface Stats {
-	totalSongs: number;
-	totalAlbums: number;
-	totalUsers: number;
-	totalArtists: number;
+	totalSong: number;
+	totalAlbum: number;
+	totalUser: number;
+	totalArtist: number;
 }
 
 export interface Message {
@@ -41,4 +63,18 @@ export interface User {
 	image_url: string;
 	name: string;
 	role: string;
+}
+
+export interface Session {
+	_id: string;
+	name: string;
+  order_index: number;
+  session_items: []
+  items: []
+}
+
+export interface SearchAll {
+  songs: []
+  artists: []
+  albums: []
 }

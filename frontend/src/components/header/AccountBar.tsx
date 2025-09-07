@@ -4,43 +4,36 @@ import { Bell, ExternalLink, UsersRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { buttonVariants } from "../ui/button";
 
-const AccountBar = () => {
+const AccountBar = (props) => {
+  const {color = '', type = 'homePage'} = props;
   const { logout, user } = useAuthStore();
   const handleLogout = () => {
     logout();
+    window.location.reload();
   };
   const isPending = false;
 
   return (
     <div
-      className="flex-none flex flex-row gap-2 items-center justify-center"
+      className={"flex-none flex flex-row gap-2 items-center justify-center" + " " + color}
     >
-			<div className='rounded-lg'>
-        <Link
-          to={"/"}
-          className={cn(
-            buttonVariants({
-              variant: "ghost",
-              className: "w-full justify-start text-white hover:bg-zinc-800 hover:text-white",
-            })
-          )}
-        >
-          <Bell className='size-5' />
-        </Link>
-			</div>
-			<div className='rounded-lg'>
-        <UsersRound
-          to={"/"}
-          className={cn(
-            buttonVariants({
-              variant: "ghost",
-              className: "w-full justify-start text-white hover:bg-zinc-800 hover:text-white",
-            })
-          )}
-        >
-          <Bell className='size-5' />
-        </UsersRound>
-			</div>
+      {
+        type === 'homePage' && (
+          <div className='rounded-lg'>
+            <Link
+              to={"/"}
+              className={cn(
+                buttonVariants({
+                  variant: "ghost",
+                  className: "w-full justify-start text-white hover:bg-zinc-800 hover:text-white",
+                })
+              )}
+            >
+              <Bell className='size-5' />
+            </Link>
+          </div>
+        )
+      }
       <div className="dropdown dropdown-end">
         <div
           tabIndex={0}

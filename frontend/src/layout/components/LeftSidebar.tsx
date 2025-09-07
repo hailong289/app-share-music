@@ -1,20 +1,19 @@
 import PlaylistSkeleton from "@/components/skeletons/PlaylistSkeleton";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useMusicStore } from "@/stores/useMusicStore";
-import { HomeIcon, Library, MessageCircle } from "lucide-react";
+import { HomeIcon, Library, MessageCircle, Plus } from "lucide-react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import AddPlaylistDialog from "./AddPlaylistDialog";
 
 const LeftSidebar = () => {
-	const { albums, fetchAlbums, isLoading } = useMusicStore();
+	const { playlists, fetchPlayList, isLoading } = useMusicStore();
 
 	useEffect(() => {
-		fetchAlbums();
-	}, [fetchAlbums]);
-
-	console.log({ albums });
+		fetchPlayList();
+	}, [fetchPlayList]);
 
 	return (
 		<div className='h-full flex flex-col gap-2'>
@@ -25,6 +24,7 @@ const LeftSidebar = () => {
 						<Library className='size-5 mr-2' />
 						<span className='hidden md:inline'>Playlists</span>
 					</div>
+          <AddPlaylistDialog />
 				</div>
 
 				<ScrollArea className='h-[calc(100vh-300px)]'>
@@ -32,21 +32,22 @@ const LeftSidebar = () => {
 						{isLoading ? (
 							<PlaylistSkeleton />
 						) : (
-							albums.map((album) => (
+							playlists.map((album) => (
 								<Link
-									to={`/albums/${album._id}`}
+									to={`/playlist/${album._id}`}
 									key={album._id}
 									className='p-2 hover:bg-zinc-800 rounded-md flex items-center gap-3 group cursor-pointer'
 								>
 									<img
-										src={album.imageUrl}
+                    crossOrigin="anonymous"
+										src={album.banner_url}
 										alt='Playlist img'
 										className='size-12 rounded-md flex-shrink-0 object-cover'
 									/>
 
 									<div className='flex-1 min-w-0 hidden md:block'>
-										<p className='font-medium truncate'>{album.title}</p>
-										<p className='text-sm text-zinc-400 truncate'>Album • {album.artist}</p>
+										<p className='font-medium truncate'>{album.name}</p>
+										<p className='text-sm text-zinc-400 truncate'>Playlist • {album.artist}</p>
 									</div>
 								</Link>
 							))

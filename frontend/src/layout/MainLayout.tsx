@@ -5,11 +5,15 @@ import LeftSidebar from "./components/LeftSidebar";
 import Topbar from "@/components/header/Topbar";
 import AudioPlayer from "./components/AudioPlayer";
 import { PlaybackControls } from "./components/PlaybackControls";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useMusicStore } from "@/stores/useMusicStore";
 
 const MainLayout = () => {
 	const [isMobile, setIsMobile] = useState(false);
+  const { loadFromStorage } = useAuthStore();
 
 	useEffect(() => {
+    loadFromStorage();
     console.log("window.innerWidth", window.innerWidth);
 
 		const checkMobile = () => {
@@ -38,7 +42,7 @@ const MainLayout = () => {
         <ResizableHandle className='w-2 bg-black rounded-lg transition-colors' />
 
         {/* Main content */}
-        <ResizablePanel defaultSize={isMobile ? 80 : 60}>
+        <ResizablePanel defaultSize={isMobile ? 80 : 60} className="min-w-0 overflow-hidden">
           <Outlet />
         </ResizablePanel>
 
