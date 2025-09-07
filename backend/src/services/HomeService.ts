@@ -193,7 +193,23 @@ class HomeService extends BaseService<ISession> {
           from: "users",
           let: { ids: "$user_ids" },
           pipeline: [
-            { $match: { $expr: { $in: ["$_id", "$$ids"] } } }
+            { $match: { $expr: { $in: ["$_id", "$$ids"] } } },
+            {
+              $addFields: {
+                image_url: {
+                  $cond: [
+                    { $regexMatch: { input: { $toString: "$image_url" }, regex: /^https?:\/\// } },
+                    { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } },
+                    {
+                      $concat: [
+                        `${process.env.APP_URL}/`,
+                        { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
           ],
           as: "user_docs"
         }
