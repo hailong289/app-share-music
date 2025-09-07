@@ -63,6 +63,11 @@ export interface User {
 	image_url: string;
 	name: string;
 	role: string;
+  createdAt: string;
+  updatedAt: string;
+  isActive: boolean;
+  bio: string;
+  total_followers: number;
 }
 
 export interface Session {

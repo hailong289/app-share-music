@@ -93,6 +93,29 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     }
   },
 
+  updateProfile: async (updatedData: Partial<User>) => {
+    set({ isLoading: true, error: null });
+    try {
+      const form = new FormData();
+      Object.entries(updatedData).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          form.append(key, value as any);
+        }
+      });
+      const response = await ApiService.post("/users/me", form);
+      const updatedUser: User = response.data;
+
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      set({ user: updatedUser });
+    } catch (error: any) {
+      set({
+        error: error?.response?.data?.message || "Update profile failed",
+      });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
   logout: () => {
     sessionStorage.removeItem("accessToken");
     localStorage.removeItem("user");

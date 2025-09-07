@@ -40,7 +40,8 @@ const UserSchema: Schema = new Schema(
       get: (v: string) => {
         if (!v) return '';
         if (v.startsWith('http') || v.startsWith('https')) return v;
-        return `${process.env.APP_URL}/${v}`;
+        const url = v.replace(/\\/g, '/');
+        return `${process.env.APP_URL}/${url}`;
       },
     },
     password: {
