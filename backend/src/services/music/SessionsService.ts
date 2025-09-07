@@ -48,6 +48,22 @@ class SessionsService extends BaseService<ISession> {
                 let: { sid: "$item_id", t: "$item_type" },
                 pipeline: [
                   { $match: { $expr: { $and: [{ $eq: ["$$t", "artist"] }, { $eq: ["$_id", "$$sid"] }] } } },
+                  {
+                    $addFields: {
+                      image_url: {
+                        $cond: [
+                          { $regexMatch: { input: { $toString: "$image_url" }, regex: /^https?:\/\// } },
+                          { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } },
+                          {
+                            $concat: [
+                              `${process.env.APP_URL}/`,
+                              { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  }
                 ],
                 as: "artist"
               }
