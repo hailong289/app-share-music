@@ -16,6 +16,7 @@ const routerApi = Router();
 routerApi.get('/', homeController.index);
 routerApi.get('/queue-with-cron-job-vercel', homeController.queueWithCronJobVercel);
 routerApi.get('/home', homeController.home);
+routerApi.get('/search', homeController.searchAll);
 // auth routes
 routerApi.use('/auth', routerAuth);
 // apply auth middleware to all routes except /auth

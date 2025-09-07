@@ -1,4 +1,4 @@
-import { Sessions } from "@/models";
+import { Album, Sessions, Song, User } from "@/models";
 import { BaseService } from "./BaseService";
 import { ISession } from "@/types/music.types";
 
@@ -306,6 +306,28 @@ class HomeService extends BaseService<ISession> {
       { $unset: ["playlist_ids", "album_ids", "song_ids", "user_ids", "playlist_docs", "album_docs", "song_docs", "user_docs"] }
     ]);
     return query;
+  }
+
+  public async searchAll(q: string): Promise<{ songs: any[]; artists: any[]; albums: any[] }> {
+    const [songs, artists, albums] = await Promise.all([
+      Song.find({
+        $or: [
+          { title: { $regex: q, $options: "i" } },
+          { lyrics: { $regex: q, $options: "i" } }
+        ]
+      }),
+      User.find({
+        role: "artist",
+        name: { $regex: q, $options: "i" }
+      }),
+      Album.find({
+        $or: [
+          { title: { $regex: q, $options: "i" } },
+          { description: { $regex: q, $options: "i" } }
+        ]
+      })
+    ]);
+    return { songs, artists, albums };
   }
 }
 

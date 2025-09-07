@@ -18,6 +18,15 @@ class HomeController extends BaseController {
     return this.sendSuccess(res, result, 'Trang chủ');
   });
 
+  public searchAll = this.asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    const { q } = req.query;
+    if (!q || typeof q !== 'string' || q.trim() === '') {
+      return this.sendError(res, 'Query parameter "q" is required', 400);
+    }
+    const result = await HomeService.searchAll(q);
+    return this.sendSuccess(res, result, 'Kết quả tìm kiếm');
+  });
+
 }
 
 
