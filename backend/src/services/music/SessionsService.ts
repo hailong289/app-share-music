@@ -27,7 +27,8 @@ class SessionsService extends BaseService<ISession> {
     return session;
   }
 
-  public async getSessionById(sessionId: string): Promise<ISession | null> {
+  public async getSessionById(sessionId: string, query: any): Promise<ISession | null> {
+    const { page = 0, limit = 10 } = query;
     const session = await this.aggregate([
       {
         $match: { _id: new Types.ObjectId(sessionId) }
@@ -40,7 +41,6 @@ class SessionsService extends BaseService<ISession> {
           as: "items",
           pipeline: [
             { $sort: { created_at: -1 } },
-            { $limit: 10 },
             // nghệ sĩ
             {
               $lookup: {

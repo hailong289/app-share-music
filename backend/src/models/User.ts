@@ -57,6 +57,11 @@ const UserSchema: Schema = new Schema(
       type: Boolean,
       default: true,
     },
+    total_followers: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
   {
     timestamps: true,

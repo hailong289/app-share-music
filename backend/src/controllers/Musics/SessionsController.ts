@@ -16,7 +16,7 @@ class SessionsController extends BaseController {
 
   public show = this.asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const session = await sessionsService.getSessionById(id);
+    const session = await sessionsService.getSessionById(id, req.query);
     if (!session) {
       return this.sendNotFound(res, 'Phiên không tồn tại');
     }
