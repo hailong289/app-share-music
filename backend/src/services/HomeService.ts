@@ -119,9 +119,15 @@ class HomeService extends BaseService<ISession> {
             {
               $addFields: {
                 cover_url: {
-                  $concat: [
-                    `${process.env.APP_URL}/`,
-                    { $replaceAll: { input: "$cover_url", find: "\\", replacement: "/" } }
+                  $cond: [
+                    { $regexMatch: { input: { $toString: "$cover_url" }, regex: /^https?:\/\// } },
+                    { $replaceAll: { input: { $toString: "$cover_url" }, find: "\\", replacement: "/" } },
+                    {
+                      $concat: [
+                        `${process.env.APP_URL}/`,
+                        { $replaceAll: { input: { $toString: "$cover_url" }, find: "\\", replacement: "/" } }
+                      ]
+                    }
                   ]
                 }
               }
@@ -131,6 +137,24 @@ class HomeService extends BaseService<ISession> {
                 from: "users",
                 localField: "artist_id",
                 foreignField: "_id",
+                pipeline: [
+                  {
+                    $addFields: {
+                      image_url: {
+                        $cond: [
+                          { $regexMatch: { input: { $toString: "$image_url" }, regex: /^https?:\/\// } },
+                          { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } },
+                          {
+                            $concat: [
+                              `${process.env.APP_URL}/`,
+                              { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ],
                 as: "artist"
               }
             }
@@ -246,11 +270,6 @@ class HomeService extends BaseService<ISession> {
               }
             },
           },
-        }
-      },
-      {
-        $match: {
-          "session_items.item": { $exists: true, $ne: null } // chỉ giữ khi có item
         }
       },
 
