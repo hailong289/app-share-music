@@ -56,7 +56,7 @@ class HomeService extends BaseService<ISession> {
           },
           user_ids: {
             $map: {
-              input: { $filter: { input: "$session_items", as: "it", cond: { $eq: ["$$it.item_type", "user"] } } },
+              input: { $filter: { input: "$session_items", as: "it", cond: { $eq: ["$$it.item_type", "artist"] } } },
               as: "x",
               in: "$$x.item_id"
             }
@@ -266,7 +266,7 @@ class HomeService extends BaseService<ISession> {
                             }
                           },
                           {
-                            case: { $eq: ["$$it.item_type", "user"] },
+                            case: { $eq: ["$$it.item_type", "artist"] },
                             then: {
                               $first: {
                                 $filter: {

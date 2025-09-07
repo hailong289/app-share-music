@@ -30,7 +30,7 @@ export async function seedSessionsItems(): Promise<any[]> {
         const sampleSessionItemsArtist = ArtistData.map((artist) => ({
             session_id: findSessionArtist._id,
             item_id: artist._id,
-            item_type: 'user',
+            item_type: 'artist',
         }));
         // Create session items
         const createdSessionItems = await SessionItems.insertMany([...sampleSessionItems, ...sampleSessionItemsArtist]);

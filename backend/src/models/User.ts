@@ -37,6 +37,11 @@ const UserSchema: Schema = new Schema(
     image_url: {
       type: String,
       trim: true,
+      get: (v: string) => {
+        if (!v) return '';
+        if (v.startsWith('http') || v.startsWith('https')) return v;
+        return `${process.env.APP_URL}/${v}`;
+      },
     },
     password: {
       type: String,
@@ -87,6 +92,9 @@ UserSchema.methods.toJSON = function () {
   delete userObject.password;
   return userObject;
 };
+
+UserSchema.set('toObject', { getters: true });
+UserSchema.set('toJSON', { getters: true });
 
 const User = mongoose.model<IUser>('User', UserSchema);
 

@@ -15,7 +15,7 @@ class SongService extends BaseService<ISong> {
    * Create a new song
    * @param data - Song data
    */
-  public async createSong(data: Partial<ISong & { artist_names?: string; artist_ids?: string[]; playlist_id?: string }> ): Promise<ISong> {
+  public async createSong(data: Partial<ISong & { artist_names?: string; artist_ids?: string[]; playlist_id?: string }>): Promise<ISong> {
     const playListId = data.playlist_id ?? null;
     data.playlist_id && delete data.playlist_id;
     const playlist = await Playlist.findById(new Types.ObjectId(playListId ?? ''));
@@ -211,15 +211,18 @@ class SongService extends BaseService<ISong> {
     return comment;
   }
 
-  public async findSongsByArtistId(artistId: string): Promise<ISong[]> {
+  public async findSongsByArtistId(artistId: string) {
     const artist = await User.findById(artistId);
     if (!artist) {
       return []; // Artist not found
     }
     const artistSong = await ArtistSong.find({ artist_id: artistId });
-    return await this.find({
-      _id: { $in: artistSong.map(as => as.song_id) }
-    });
+    return {
+      ...artist.toObject(),
+      songs: await this.find({
+        _id: { $in: artistSong.map(as => as.song_id) }
+      })
+    };
   }
 
 }
