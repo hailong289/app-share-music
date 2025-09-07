@@ -69,9 +69,53 @@ class SongService extends BaseService<ISong> {
               }
             },
             { $unwind: { path: '$artist', preserveNullAndEmptyArrays: false } },
-            { $replaceRoot: { newRoot: '$artist' } }
+            { $replaceRoot: { newRoot: '$artist' } },
+            {
+              $addFields: {
+                image_url: {
+                  $cond: [
+                    { $regexMatch: { input: { $toString: "$image_url" }, regex: /^https?:\/\// } },
+                    { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } },
+                    {
+                      $concat: [
+                        `${process.env.APP_URL}/`,
+                        { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
           ],
           as: 'artists'
+        }
+      },
+      {
+        $addFields: {
+          banner_url: {
+            $cond: [
+              { $regexMatch: { input: { $toString: "$banner_url" }, regex: /^https?:\/\// } },
+              { $replaceAll: { input: { $toString: "$banner_url" }, find: "\\", replacement: "/" } },
+              {
+                $concat: [
+                  `${process.env.APP_URL}/`,
+                  { $replaceAll: { input: { $toString: "$banner_url" }, find: "\\", replacement: "/" } }
+                ]
+              }
+            ]
+          },
+          audio_url: {
+            $cond: [
+              { $regexMatch: { input: { $toString: "$audio_url" }, regex: /^https?:\/\// } },
+              { $replaceAll: { input: { $toString: "$audio_url" }, find: "\\", replacement: "/" } },
+              {
+                $concat: [
+                  `${process.env.APP_URL}/`,
+                  { $replaceAll: { input: { $toString: "$audio_url" }, find: "\\", replacement: "/" } }
+                ]
+              }
+            ]
+          }
         }
       }
     ]);
