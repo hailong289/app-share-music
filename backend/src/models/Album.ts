@@ -34,6 +34,7 @@ const AlbumSchema: Schema = new Schema({
     trim: true,
     get: (value: string) => {
       if (!value) return '';
+      if (value.startsWith('http') || value.startsWith('https')) return value;
       return `${process.env.APP_URL}/${value.replace(/\\/g, '/')}`;
     },
   },
