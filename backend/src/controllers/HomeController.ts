@@ -14,7 +14,7 @@ class HomeController extends BaseController {
   }
 
   public home = this.asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const result = await HomeService.getList();
+    const result = await HomeService.getList(req.query);
     return this.sendSuccess(res, result, 'Trang chủ');
   });
 

@@ -8,7 +8,8 @@ class HomeService extends BaseService<ISession> {
     super(Sessions);
   }
 
-  public getList(): Promise<any[]> {
+  public getList(filter: any): Promise<any[]> {
+    const { page = 0, limit = 10 } = filter;
     const query = this.model.aggregate([
       {
         $match: {
@@ -101,7 +102,7 @@ class HomeService extends BaseService<ISession> {
                         ]
                       }
                     }
-                  }
+                  },
                 ],
                 as: "artists"
               }

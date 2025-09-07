@@ -57,6 +57,7 @@ const PlaylistSchema: Schema = new Schema({
     trim: true,
     get: (v: string) => {
       if (!v) return '';
+      if (v.startsWith('http') || v.startsWith('https')) return v;
       return `${process.env.APP_URL}/${v.replace(/\\/g, '/')}`;
     },
   },
