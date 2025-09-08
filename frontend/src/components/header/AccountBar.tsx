@@ -100,7 +100,7 @@ const AccountBar = (props: any) => {
               <ExternalLink size={15} />
             </button>
           </li>
-          <li>
+          {/* <li>
             <button onClick={() => console.log("")} className="hover:bg-zinc-200 rounded-md">
               Profile
             </button>
@@ -109,7 +109,7 @@ const AccountBar = (props: any) => {
             <button onClick={() => console.log("")} className="hover:bg-zinc-200 rounded-md">
               Settings
             </button>
-          </li>
+          </li> */}
           <div className="border-b-2 border-zinc-200 my-1"></div>
           <li>
             <button onClick={handleLogout} className="hover:bg-zinc-200 rounded-md">Logout</button>
@@ -186,8 +186,8 @@ const AccountBar = (props: any) => {
 
           </div>
           <div className="modal-action">
-            <button className="btn btn-primary rounded-md" onClick={handleUpdateProfile}>Lưu</button>
-            <button className="btn rounded-md" onClick={closeModal}>Thoát</button>
+            <button className="btn btn-primary rounded-md" onClick={handleUpdateProfile}>Save</button>
+            <button className="btn rounded-md" onClick={closeModal}>Close</button>
           </div>
         </div>
       </dialog>

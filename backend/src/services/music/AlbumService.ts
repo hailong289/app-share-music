@@ -20,6 +20,24 @@ class AlbumService extends BaseService<IAlbum> {
             from: "users",
             localField: "artist_id",
             foreignField: "_id",
+            pipeline: [
+              {
+                $addFields: {
+                  image_url: {
+                    $cond: [
+                      { $regexMatch: { input: { $toString: "$image_url" }, regex: /^https?:\/\// } },
+                      { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } },
+                      {
+                        $concat: [
+                          `${process.env.APP_URL}/`,
+                          { $replaceAll: { input: "$image_url", find: "\\", replacement: "/" } }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
             as: "artist"
           }
         },
@@ -27,9 +45,15 @@ class AlbumService extends BaseService<IAlbum> {
         {
           $addFields: {
             cover_url: {
-              $concat: [
-                `${process.env.APP_URL}/`,
-                { $replaceAll: { input: "$cover_url", find: "\\", replacement: "/" } }
+              $cond: [
+                { $regexMatch: { input: { $toString: "$cover_url" }, regex: /^https?:\/\// } },
+                { $replaceAll: { input: { $toString: "$cover_url" }, find: "\\", replacement: "/" } },
+                {
+                  $concat: [
+                    `${process.env.APP_URL}/`,
+                    { $replaceAll: { input: "$cover_url", find: "\\", replacement: "/" } }
+                  ]
+                }
               ]
             }
           }
@@ -43,6 +67,24 @@ class AlbumService extends BaseService<IAlbum> {
           from: "users",
           localField: "artist_id",
           foreignField: "_id",
+          pipeline: [
+            {
+              $addFields: {
+                image_url: {
+                  $cond: [
+                    { $regexMatch: { input: { $toString: "$image_url" }, regex: /^https?:\/\// } },
+                    { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } },
+                    {
+                      $concat: [
+                        `${process.env.APP_URL}/`,
+                        { $replaceAll: { input: "$image_url", find: "\\", replacement: "/" } }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ],
           as: "artist"
         }
       },
@@ -50,13 +92,19 @@ class AlbumService extends BaseService<IAlbum> {
       {
         $addFields: {
           cover_url: {
-            $concat: [
-              `${process.env.APP_URL}/`,
-              { $replaceAll: { input: "$cover_url", find: "\\", replacement: "/" } }
+            $cond: [
+              { $regexMatch: { input: { $toString: "$cover_url" }, regex: /^https?:\/\// } },
+              { $replaceAll: { input: { $toString: "$cover_url" }, find: "\\", replacement: "/" } },
+              {
+                $concat: [
+                  `${process.env.APP_URL}/`,
+                  { $replaceAll: { input: "$cover_url", find: "\\", replacement: "/" } }
+                ]
+              }
             ]
           }
         }
-      }, 
+      },
       { $sort: { created_at: -1 } }
     ]);
   }
