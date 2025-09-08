@@ -64,8 +64,9 @@ class PlaylistController extends BaseController {
         if (itemFile.fieldname !== 'banner_url') {
           return this.sendError(res, 'Invalid file field name', 400);
         }
-        const filePath = uploadService.uploadSingle(itemFile, slug(updateData.name, '_'), slug(req.user?.name || ''));
+        const filePath = uploadService.uploadSingle(itemFile, slug(updateData.name, '_'), slug(req.user?.name || ''), true);
         updateData[itemFile.fieldname] = filePath;
+        uploadService.removeFile((playList as any)[itemFile.fieldname]); // Clean up old file
       });
     } catch (error) {
       if (req.file && req.file.path) {

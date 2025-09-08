@@ -26,7 +26,7 @@ class SongService extends BaseService<ISong> {
     if (data.artist_ids && Array.isArray(data.artist_ids)) {
       // Handle artist_ids if needed
       for (const artistId of data.artist_ids) {
-        await ArtistSong.create({ artist_id: artistId, song_id: song.id });
+        await ArtistSong.create({ artist_id: new Types.ObjectId(artistId), song_id: song.id });
       }
     } else if (data.artist_names) {
       const artistNames = data.artist_names.split(',').map(name => name.trim()).filter(name => name.length > 0);
@@ -149,6 +149,24 @@ class SongService extends BaseService<ISong> {
                   from: 'users',
                   localField: 'artist_id',
                   foreignField: '_id',
+                  pipeline: [
+                    {
+                      $addFields: {
+                        image_url: {
+                          $cond: [
+                            { $regexMatch: { input: { $toString: "$image_url" }, regex: /^https?:\/\// } },
+                            { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } },
+                            {
+                              $concat: [
+                                `${process.env.APP_URL}/`,
+                                { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } }
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ],
                   as: 'artist'
                 }
               },
@@ -160,7 +178,8 @@ class SongService extends BaseService<ISong> {
         },
         { $skip: (Number(page) - 1) * Number(limit) },
         { $limit: Number(limit) },
-        { $match: { title: { $regex: search, $options: 'i' } } }
+        { $match: { title: { $regex: search, $options: 'i' } } },
+        { $sort: { created_at: -1 } }
       ]);
       return await this.convertObject(result);
     }
@@ -176,6 +195,24 @@ class SongService extends BaseService<ISong> {
                 from: 'users',
                 localField: 'artist_id',
                 foreignField: '_id',
+                pipeline: [
+                  {
+                    $addFields: {
+                      image_url: {
+                        $cond: [
+                          { $regexMatch: { input: { $toString: "$image_url" }, regex: /^https?:\/\// } },
+                          { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } },
+                          {
+                            $concat: [
+                              `${process.env.APP_URL}/`,
+                              { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ],
                 as: 'artist'
               }
             },
@@ -185,7 +222,8 @@ class SongService extends BaseService<ISong> {
           as: 'artists'
         }
       },
-      { $match: { title: { $regex: search, $options: 'i' } } }
+      { $match: { title: { $regex: search, $options: 'i' } } },
+      { $sort: { created_at: -1 } }
     ]);
     return await this.convertObject(result);
   }

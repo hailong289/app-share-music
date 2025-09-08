@@ -166,9 +166,15 @@ class PlayListService extends BaseService<IPlaylist> {
         {
           $addFields: {
             banner_url: {
-              $concat: [
-                `${process.env.APP_URL}/`,
-                { $replaceAll: { input: "$banner_url", find: "\\", replacement: "/" } }
+              $cond: [
+                { $regexMatch: { input: { $toString: "$banner_url" }, regex: /^https?:\/\// } },
+                { $replaceAll: { input: { $toString: "$banner_url" }, find: "\\", replacement: "/" } },
+                {
+                  $concat: [
+                    `${process.env.APP_URL}/`,
+                    { $replaceAll: { input: { $toString: "$banner_url" }, find: "\\", replacement: "/" } }
+                  ]
+                }
               ]
             }
           }
@@ -178,19 +184,43 @@ class PlayListService extends BaseService<IPlaylist> {
             from: "users",
             localField: "user_id",
             foreignField: "_id",
+            pipeline: [
+              {
+                $addFields: {
+                  image_url: {
+                    $cond: [
+                      { $regexMatch: { input: { $toString: "$image_url" }, regex: /^https?:\/\// } },
+                      { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } },
+                      {
+                        $concat: [
+                          `${process.env.APP_URL}/`,
+                          { $replaceAll: { input: "$image_url", find: "\\", replacement: "/" } }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
             as: "user"
           }
         },
-        { $unwind: "$user" }
+        { $sort: { created_at: -1 } }
       ]);
     }
     return this.aggregate([
       {
         $addFields: {
           banner_url: {
-            $concat: [
-              `${process.env.APP_URL}/`,
-              { $replaceAll: { input: "$banner_url", find: "\\", replacement: "/" } }
+            $cond: [
+              { $regexMatch: { input: { $toString: "$banner_url" }, regex: /^https?:\/\// } },
+              { $replaceAll: { input: { $toString: "$banner_url" }, find: "\\", replacement: "/" } },
+              {
+                $concat: [
+                  `${process.env.APP_URL}/`,
+                  { $replaceAll: { input: { $toString: "$banner_url" }, find: "\\", replacement: "/" } }
+                ]
+              }
             ]
           }
         }
@@ -200,10 +230,28 @@ class PlayListService extends BaseService<IPlaylist> {
           from: "users",
           localField: "user_id",
           foreignField: "_id",
+          pipeline: [
+            {
+              $addFields: {
+                image_url: {
+                  $cond: [
+                    { $regexMatch: { input: { $toString: "$image_url" }, regex: /^https?:\/\// } },
+                    { $replaceAll: { input: { $toString: "$image_url" }, find: "\\", replacement: "/" } },
+                    {
+                      $concat: [
+                        `${process.env.APP_URL}/`,
+                        { $replaceAll: { input: "$image_url", find: "\\", replacement: "/" } }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ],
           as: "user"
         }
       },
-      { $unwind: "$user" }
+      { $sort: { created_at: -1 } }
     ]);
   }
 
