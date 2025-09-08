@@ -11,12 +11,13 @@ import { useMusicStore } from "@/stores/useMusicStore";
 const AdminPage = () => {
 	const { loadFromStorage, isAdmin, isLoading } = useAuthStore();
 
-	const { fetchAlbums, fetchSongs, fetchStats } = useMusicStore();
+	const { fetchAlbums, fetchSongs, fetchStats, fetchArtists } = useMusicStore();
 
 	useEffect(() => {
 		fetchAlbums({});
 		fetchSongs({});
 		fetchStats();
+		fetchArtists();
 	}, []);
 
 	useEffect(() => {

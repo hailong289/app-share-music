@@ -226,7 +226,7 @@ const AddSongDialog = (props) => {
                 {files.audio
                   ? files.audio.name.slice(0, 20)
                   : files.previewAudio
-                  ? "Current Audio"
+                  ? `Current Audio : ${data.audio_url?.split("/").pop()}`
                   : "Choose Audio File"}
               </Button>
             </div>

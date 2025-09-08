@@ -150,7 +150,7 @@ export const useMusicStore = create<MusicStore>((set) => ({
   deleteSong: async (id) => {
     set({ isLoading: true, error: null });
     try {
-      await ApiService.delete(`/admin/songs/${id}`);
+      await ApiService.delete(`/songs/${id}`);
 
       set((state) => ({
         songs: state.songs.filter((song) => song._id !== id),
@@ -169,6 +169,7 @@ export const useMusicStore = create<MusicStore>((set) => ({
     try {
       await ApiService.post(`/albums`, data);
       console.log("Album add successfully");
+			toast.success("Album created successfully");
     } catch (error: any) {
       console.log("Error in addAlbum", error);
       toast.error("Error adding Album");
@@ -180,7 +181,7 @@ export const useMusicStore = create<MusicStore>((set) => ({
   deleteAlbum: async (id) => {
     set({ isLoading: true, error: null });
     try {
-      await ApiService.delete(`/admin/albums/${id}`);
+      await ApiService.delete(`/albums/${id}`);
       set((state) => ({
         albums: state.albums.filter((album) => album._id !== id),
         songs: state.songs.map((song) =>
