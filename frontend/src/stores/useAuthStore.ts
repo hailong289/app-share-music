@@ -15,6 +15,9 @@ interface AuthStore {
   logout: () => void;
   reset: () => void;
   loadFromStorage: () => void;
+  updateProfile: (updatedData: Partial<User>) => Promise<void>;
+  sendOtp: (email: string) => Promise<void>;
+  verifyOtp: (email: string, code: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
@@ -93,6 +96,18 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     }
   },
 
+  logout: () => {
+    sessionStorage.removeItem("accessToken");
+    localStorage.removeItem("user");
+    set({
+      isAdmin: false,
+      isLoading: false,
+      error: null,
+      user: null,
+      accessToken: null,
+    });
+  },
+
   updateProfile: async (updatedData: Partial<User>) => {
     set({ isLoading: true, error: null });
     try {
@@ -116,15 +131,24 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     }
   },
 
-  logout: () => {
-    sessionStorage.removeItem("accessToken");
-    localStorage.removeItem("user");
-    set({
-      isAdmin: false,
-      isLoading: false,
-      error: null,
-      user: null,
-      accessToken: null,
-    });
+  sendOtp: async (email: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await ApiService.post("/auth/send-otp", { email });
+      console.log("OTP sent successfully:", response.data);
+    } catch (error: any) {
+      set({
+        error: error?.response?.data?.message || "Send OTP failed",
+      });
+    } finally {
+      set({ isLoading: false });
+    }
   },
+
+  verifyOtp: async (email: string, otp: string): Promise<any> => {
+    const res = await ApiService.post("/auth/verify-otp", { email, otp });
+    return res;
+  },
+
+
 }));

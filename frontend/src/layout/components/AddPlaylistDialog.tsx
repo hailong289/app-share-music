@@ -73,6 +73,7 @@ const AddPlaylistDialog = () => {
       });
       toast.success("Playlist added successfully");
       fetchPlayList();
+      setPlaylistDialogOpen(false);
     } catch (error: any) {
       toast.error("Failed to add playlist: " + error.message);
     } finally {

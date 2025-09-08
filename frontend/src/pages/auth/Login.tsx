@@ -3,9 +3,10 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { AlertCircleIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import OtpDialog from "./Otp";
 
 function Login() {
-  const { login, register, user, error } = useAuthStore();
+  const { login, register, user, error, sendOtp } = useAuthStore();
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
@@ -15,6 +16,8 @@ function Login() {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const navigate = useNavigate();
+  const [isDialogOtpOpen, setIsDialogOtpOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -59,8 +62,9 @@ function Login() {
         console.log("Logging in with:", formData);
         await login(email, password);
       } else {
-        console.log("Signing up with:", formData);
-        await register(name, email, password);
+        await sendOtp(email);
+        setIsDialogOtpOpen(true);
+        // await register(name, email, password);
       }
     }
   };
@@ -70,6 +74,20 @@ function Login() {
       navigate("/");
     }
   }, [user])
+
+  const onSubmitRegister = async () => {
+    // Handle registration logic here
+    setIsLoading(true);
+    const { email, password, name } = formData;
+    try {
+      await register(name, email, password);
+      console.log("Signing up with:", formData);
+    } catch (error) {
+      console.error("Registration error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -90,25 +108,22 @@ function Login() {
         {/* Tabs */}
         <div className="relative flex h-12 mb-6 border border-gray-300 rounded-full overflow-hidden">
           <button
-            className={`w-1/2 text-lg font-medium transition-all z-10 ${
-              isLoginMode ? "text-white" : "text-black"
-            }`}
+            className={`w-1/2 text-lg font-medium transition-all z-10 ${isLoginMode ? "text-white" : "text-black"
+              }`}
             onClick={() => setIsLoginMode(true)}
           >
             Login
           </button>
           <button
-            className={`w-1/2 text-lg font-medium transition-all z-10 ${
-              !isLoginMode ? "text-white" : "text-black"
-            }`}
+            className={`w-1/2 text-lg font-medium transition-all z-10 ${!isLoginMode ? "text-white" : "text-black"
+              }`}
             onClick={() => setIsLoginMode(false)}
           >
             Signup
           </button>
           <div
-            className={`absolute top-0 h-full w-1/2 rounded-full bg-gradient-to-r from-green-700 via-green-600 to-green-200 transition-all ${
-              isLoginMode ? "left-0" : "left-1/2"
-            }`}
+            className={`absolute top-0 h-full w-1/2 rounded-full bg-gradient-to-r from-green-700 via-green-600 to-green-200 transition-all ${isLoginMode ? "left-0" : "left-1/2"
+              }`}
           ></div>
         </div>
 
@@ -190,9 +205,10 @@ function Login() {
 
           <button
             type="submit"
+            disabled={isLoading}
             className="w-full p-3 bg-gradient-to-r from-green-700 via-green-600 to-green-200 text-white rounded-full text-lg font-medium hover:opacity-90 transition"
           >
-            {isLoginMode ? "Login" : "Signup"}
+            {isLoading ? "Please wait..." : (isLoginMode ? "Login" : "Sign Up")}
           </button>
 
           <p className="text-center text-gray-600">
@@ -211,6 +227,7 @@ function Login() {
             </a>
           </p>
         </form>
+        <OtpDialog isOpen={isDialogOtpOpen} email={formData.email} onSubmitRegister={onSubmitRegister} onClose={() => setIsDialogOtpOpen(false)} />
       </div>
     </div>
   );
