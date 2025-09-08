@@ -9,7 +9,7 @@ export const corsOptions = {
         const allowedOrigins = [
             'http://localhost:5173',
             'http://localhost:5001',
-            'https://app-share-music.vercel.app'
+            'https://app-share-music-fe.vercel.app'
         ];
 
         if (allowedOrigins.includes(origin)) {
