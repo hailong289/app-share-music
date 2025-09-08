@@ -40,7 +40,7 @@ class SongController extends BaseController {
         return this.sendError(res, 'No file uploaded', 400);
       }
       data.files.forEach((itemFile: Express.Multer.File) => {
-        const filePath = uploadService.uploadSingle(itemFile, slug(data.title, '_'), slug(req.user?.name || ''));
+        const filePath = uploadService.uploadSingle(itemFile, slug(data.title, '_'), slug(req.user?.name || ''), true);
         data[itemFile.fieldname] = filePath;
       });
       delete data.files; // Remove files from data to avoid duplication
@@ -74,7 +74,7 @@ class SongController extends BaseController {
        }
        if (data.files && Array.isArray(data.files) && data.files.length > 0) {
          data.files.forEach((itemFile: Express.Multer.File) => {
-           const filePath = uploadService.uploadSingle(itemFile, slug(data.title, '_'), slug(req.user?.name || ''));
+           const filePath = uploadService.uploadSingle(itemFile, slug(data.title, '_'), slug(req.user?.name || ''), true);
            data[itemFile.fieldname] = filePath;
            uploadService.removeFile((song as any)[itemFile.fieldname]); // Clean up old file
          });

@@ -39,7 +39,7 @@ class AlbumController extends BaseController {
           if (itemFile.fieldname !== 'cover_url') {
             throw new Error('Invalid file field name');
           }
-          const filePath = uploadService.uploadSingle(itemFile, slug(data.title, '_'), slug(req.user?.name || ''));
+          const filePath = uploadService.uploadSingle(itemFile, slug(data.title, '_'), slug(req.user?.name || ''), true);
           data[itemFile.fieldname] = filePath;
         });
       }
@@ -70,7 +70,7 @@ class AlbumController extends BaseController {
           if (itemFile.fieldname !== 'cover_url') {
             throw new Error('Invalid file field name');
           }
-          const filePath = uploadService.uploadSingle(itemFile, slug(existingAlbum.title || '', '_'), slug(req.user?.name || ''));
+          const filePath = uploadService.uploadSingle(itemFile, slug(existingAlbum.title || '', '_'), slug(req.user?.name || ''), true);
           data[itemFile.fieldname] = filePath;
           uploadService.removeFile(existingAlbum.cover_url); // Clean up old cover if exists
         });

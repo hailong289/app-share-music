@@ -39,7 +39,8 @@ class UploadService {
     return savedPaths;
   }
 
-  public uploadSingle(file: Express.Multer.File, name: string = '', user_slug: string = ''): string {
+  public uploadSingle(file: Express.Multer.File, name: string = '', user_slug: string = '', withTimestamp: boolean = false): string {
+    const timeStamp = withTimestamp ? `_${Date.now()}` : '';
     if (!file) {
       throw new Error('Không có file để upload');
     }
@@ -74,7 +75,7 @@ class UploadService {
 
     const ext = path.extname(file.originalname) || (isAudio ? '.mp3' : '.jpg');
     const newFileName = name
-      ? `${name}${ext}`
+      ? `${name}${timeStamp}${ext}`
       : `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
 
     const filePath = path.join(this.uploadDir, newFileName);
