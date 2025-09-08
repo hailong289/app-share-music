@@ -1,16 +1,24 @@
+import PaginationCustom from "@/components/pagination/PaginationCustom";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useMusicStore } from "@/stores/useMusicStore";
 import { Calendar, Music, Trash2 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const AlbumsTable = () => {
 	const { albums = [], deleteAlbum, fetchAlbums } = useMusicStore();
-console.log("albums", albums);
+  const [albumsPagination, setAlbumsPagination] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+  const totalPages = Math.ceil(albums.length / pageSize);
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
-	useEffect(() => {
-		fetchAlbums();
-	}, [fetchAlbums]);
+  useEffect(() => {
+    if (albums.length === 0) return;
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    setAlbumsPagination(albums.slice(startIndex, endIndex));
+  }, [currentPage]);
 
 	return (
 		<Table>
@@ -25,13 +33,13 @@ console.log("albums", albums);
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{albums.map((album) => (
+				{albumsPagination.map((album) => (
 					<TableRow key={album._id} className='hover:bg-zinc-800/50'>
 						<TableCell>
-							<img src={album.cover_url} alt={album.title} className='w-10 h-10 rounded object-cover' crossOrigin="anonymous" />
+							<img src={album.cover_url} alt={album.title} className='w-10 h-10 rounded object-cover' crossOrigin={album?.cover_url.includes("uploads") ? "anonymous" : undefined} />
 						</TableCell>
 						<TableCell className='font-medium text-zinc-400'>{album.title}</TableCell>
-						<TableCell>{album.artist}</TableCell>
+						<TableCell className='font-medium text-zinc-400'>{album?.artist && album?.artist.name}</TableCell>
 						<TableCell>
 							<span className='inline-flex items-center gap-1 text-zinc-400'>
 								<Calendar className='h-4 w-4' />
@@ -59,6 +67,18 @@ console.log("albums", albums);
 					</TableRow>
 				))}
 			</TableBody>
+      <TableFooter>
+        <tr>
+          <td colSpan={999}>
+            <PaginationCustom
+              currentPage={currentPage}
+              totalPages={totalPages}
+              handleChange={(page) => setCurrentPage(page)}
+              pageNumbers={pageNumbers}
+            />
+          </td>
+        </tr>
+      </TableFooter>
 		</Table>
 	);
 };

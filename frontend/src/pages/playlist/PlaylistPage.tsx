@@ -4,9 +4,17 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useMusicStore } from "@/stores/useMusicStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
-import { Clock, Pause, Play, SearchIcon, Trash2 } from "lucide-react";
+import { Clock, Pause, Play, SearchIcon, Share2, Trash2 } from "lucide-react";
 import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import EditPlaylistDialog from "./components/EditPlaylistDialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import toast from "react-hot-toast";
 
 export const formatDuration = (seconds: number) => {
   const minutes = Math.floor(seconds / 60);
@@ -29,6 +37,8 @@ const PlaylistPage = () => {
   const { currentSong, isPlaying, playAlbum, togglePlay } = usePlayerStore();
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isCreator = user?._id && user?._id === currentAlbum?.user_id;
 
   useEffect(() => {
     if (playlistId) fetchPlaylistById(playlistId);
@@ -68,6 +78,12 @@ const PlaylistPage = () => {
   const onDeletePlaylist = async () => {
     await deletePlaylist(playlistId);
     navigate("/");
+  };
+
+  const onCopyLinkPlaylist = async () => {
+    const currentUrl = `${window.location.origin}${location.pathname}${location.search}${location.hash}`;
+    await navigator.clipboard.writeText(currentUrl);
+    toast.success("Đã copy link!");
   };
 
   const debouncedSearch = useDebounce(handleSearch, 500);
@@ -126,14 +142,50 @@ const PlaylistPage = () => {
                   <Play className="h-7 w-7 text-black" />
                 )}
               </Button>
-              <Button
-                onClick={onDeletePlaylist}
-                size="icon"
-                className="w-14 h-14 rounded-full bg-red-500 hover:bg-red-400
-                hover:scale-105 transition-all"
-              >
-                <Trash2 className="h-7 w-7 text-white" />
-              </Button>
+              {
+                isCreator && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <EditPlaylistDialog playlistId={playlistId} />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Edit playlist</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Button
+                          onClick={onDeletePlaylist}
+                          size="icon"
+                          className="w-14 h-14 rounded-full bg-red-500 hover:bg-red-400
+                          hover:scale-105 transition-all"
+                        >
+                          <Trash2 className="h-7 w-7 text-white" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Remove Playlist</p>
+                      </TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Button
+                          onClick={onCopyLinkPlaylist}
+                          size="icon"
+                          className="w-14 h-14 rounded-full bg-blue-500 hover:bg-blue-400
+                          hover:scale-105 transition-all"
+                        >
+                          <Share2 className="h-7 w-7 text-white" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Copy link Playlist</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )
+              }
             </div>
 
             {/* Table Section */}
@@ -199,14 +251,18 @@ const PlaylistPage = () => {
                           {formatDuration(song.duration)}
                         </div>
                         <div className="flex items-center">
-                          <Button
-                            onClick={onAddSongToPlaylist(playlistId, song._id)}
-                            size="default"
-                            variant="ghost"
-                            className="hidden lg:inline-flex text-zinc-400"
-                          >
-                            Remove
-                          </Button>
+                          {
+                            isCreator && (
+                              <Button
+                                onClick={onAddSongToPlaylist(playlistId, song._id)}
+                                size="default"
+                                variant="ghost"
+                                className="hidden lg:inline-flex text-zinc-400"
+                              >
+                                Remove
+                              </Button>
+                            )
+                          }
                         </div>
                       </div>
                     );
@@ -217,7 +273,7 @@ const PlaylistPage = () => {
           </div>
         </div>
         {
-          user?._id && user?._id === currentAlbum?.user_id && (
+          isCreator && (
             <>
               {/* find song */}
               <div className="px-6 py-2">

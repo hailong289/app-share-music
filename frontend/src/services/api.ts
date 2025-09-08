@@ -49,17 +49,21 @@ const ApiService = {
     return axiosClient.get(url, { params });
   },
   post: async (url: string, data: any): Promise<AxiosResponse> => {
-    return axiosClient.post(url, data,{
-				headers: {
-					"Content-Type": "multipart/form-data",
-				},
-			});
+    return axiosClient.post(url, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   },
   put: async (url: string, data: any): Promise<AxiosResponse> => {
     return axiosClient.put(url, data);
   },
   patch: async (url: string, data: any): Promise<AxiosResponse> => {
-    return axiosClient.patch(url, data);
+    return axiosClient.patch(url, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
   },
   delete: async (url: string): Promise<AxiosResponse> => {
     return axiosClient.delete(url);

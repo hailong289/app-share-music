@@ -1,16 +1,28 @@
 import { useDebounce } from '@/hooks/useDebounce';
 import { SearchIcon } from 'lucide-react'
-import React from 'react'
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams } from "react-router-dom";
 
 const SearchBar = () => {
   const navigate = useNavigate();
+  const { keyword = "" } = useParams();
+  const [key, setKey] = useState();
 
   const handleSearch = async (value) => {
+    if (value.trim() === "") return navigate(`/`);
     navigate(`/search/${value}`)
   };
 
   const debouncedSearch = useDebounce(handleSearch, 500);
+
+  const onChange = (e) => {
+    setKey(e.target.value);
+    debouncedSearch(e.target.value)
+  }
+
+  useEffect(() => {
+    if (key != keyword) setKey(keyword);
+  }, []);
 
   return (
     <div data-testid="searchbar-element" className="relative w-full">
@@ -18,7 +30,8 @@ const SearchBar = () => {
         <SearchIcon className="text-gray-500" />
       </div>
       <input
-        onChange={(e) => debouncedSearch(e.target.value)}
+        onChange={onChange}
+        value={key}
         type="text"
         className="w-full pl-10 pr-10 py-2 rounded-full bg-zinc-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500"
         placeholder="Search for songs, artists, albums..."

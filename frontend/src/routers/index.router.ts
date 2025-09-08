@@ -11,6 +11,7 @@ import PlaylistPage from '@/pages/playlist/PlaylistPage';
 import SessionPage from '@/pages/session/SessionPage';
 import ArtistPage from '@/pages/artist/ArtistPage'
 import SearchPage from '@/pages/search/SearchPage'
+import SongPage from '@/pages/song/SongPage'
 
 // Định nghĩa cấu trúc route
 export interface RouterConfig {
@@ -76,6 +77,11 @@ const routeConfigs: RouterConfig[] = [
         path: '/search/:keyword',
         name: 'Search Results',
         component: SearchPage
+      },
+      {
+        path: '/song/:songId',
+        name: 'Song Results',
+        component: SongPage
       },
       {
         path: '*',

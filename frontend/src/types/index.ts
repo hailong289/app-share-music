@@ -21,6 +21,7 @@ export interface Album {
 	total_songs: number;
 	songs: Song[];
 	banner_url: string;
+	artists: any;
 	name: string;
 }
 

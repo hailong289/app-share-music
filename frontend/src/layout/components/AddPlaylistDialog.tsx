@@ -55,6 +55,9 @@ const AddPlaylistDialog = () => {
         return toast.error("Please upload image file");
       }
 
+      if (newPlaylist.name.trim() === "" || newPlaylist.description.trim() === "") {
+        return toast.error("Please fill in all the data");
+      }
       const formData = new FormData();
 
       formData.append("name", newPlaylist.name);

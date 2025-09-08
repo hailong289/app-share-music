@@ -39,7 +39,7 @@ const LeftSidebar = () => {
 									className='p-2 hover:bg-zinc-800 rounded-md flex items-center gap-3 group cursor-pointer'
 								>
 									<img
-                    crossOrigin="anonymous"
+                    crossOrigin={album.banner_url.includes("uploads") ? "anonymous" : undefined}
 										src={album.banner_url}
 										alt='Playlist img'
 										className='size-12 rounded-md flex-shrink-0 object-cover'

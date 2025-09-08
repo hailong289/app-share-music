@@ -5,6 +5,7 @@ import { create } from "zustand";
 
 interface MusicStore {
   songs: Song[];
+  currentSongDetail: Song;
   searchSongData: Song[];
   searchAllData: SearchAll;
   albums: Album[];
@@ -25,6 +26,7 @@ interface MusicStore {
   fetchPlaylistById: (id: string) => Promise<void>;
   fetchSessionById: (id: string) => Promise<void>;
   fetchArtistById: (id: string) => Promise<void>;
+  fetchSongById: (id: string) => Promise<void>;
   fetchHomeData: () => Promise<void>;
   fetchStats: () => Promise<void>;
   fetchSongs: (params) => Promise<void>;
@@ -35,6 +37,9 @@ interface MusicStore {
   addSong: (data: any) => Promise<void>;
   addAlbum: (data: any) => Promise<void>;
   addPlaylist: (data: any) => Promise<void>;
+  editPlaylist: (id, data: any) => Promise<void>;
+  editSong: (id, data: any) => Promise<void>;
+  editAlbum: (id, data: any) => Promise<void>;
   addSongToPlaylist: (playlistId, songId) => Promise<void>;
   deleteSong: (id: string) => Promise<void>;
   deleteAlbum: (id: string) => Promise<void>;
@@ -65,6 +70,7 @@ export const useMusicStore = create<MusicStore>((set) => ({
     try {
       await ApiService.post(`/songs`, data);
       console.log("Song add successfully");
+      toast.success("Song updated successfully");
     } catch (error: any) {
       console.log("Error in addSong", error);
       toast.error("Error adding song");
@@ -81,6 +87,48 @@ export const useMusicStore = create<MusicStore>((set) => ({
     } catch (error: any) {
       console.log("Error in addPlaylist", error);
       toast.error("Error adding playlist");
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  editPlaylist: async (id, data) => {
+    set({ isLoading: true, error: null });
+    try {
+      await ApiService.patch(`/playlists/${id}`, data);
+      console.log("Playlist edit successfully");
+      toast.success("Playlist edited successfully");
+    } catch (error: any) {
+      console.log("Error in editPlaylist", error);
+      toast.error("Error editing playlist");
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  editSong: async (id, data) => {
+    set({ isLoading: true, error: null });
+    try {
+      await ApiService.patch(`/songs/${id}`, data);
+      console.log("Song edit successfully");
+      toast.success("Song edited successfully");
+    } catch (error: any) {
+      console.log("Error in editSong", error);
+      toast.error("Error editing song");
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  editAlbum: async (id, data) => {
+    set({ isLoading: true, error: null });
+    try {
+      await ApiService.patch(`/songs/${id}`, data);
+      console.log("Song edit successfully");
+      toast.success("Song edited successfully");
+    } catch (error: any) {
+      console.log("Error in editSong", error);
+      toast.error("Error editing song");
     } finally {
       set({ isLoading: false });
     }
@@ -267,6 +315,18 @@ export const useMusicStore = create<MusicStore>((set) => ({
     }
   },
 
+  fetchSongById: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await ApiService.get(`/songs/${id}`);
+      set({ currentSongDetail: response.data });
+    } catch (error: any) {
+      set({ error: error.response.data.message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
   fetchHomeData: async () => {
     set({ isLoading: true, error: null });
     try {
@@ -298,8 +358,6 @@ export const useMusicStore = create<MusicStore>((set) => ({
     try {
       const response = await ApiService.get(`/playlists/${id}`);
       set({ currentAlbum: response.data });
-      console.log("Fetched playlist by ID:", response.data);
-
     } catch (error: any) {
       set({ error: error.response.data.message });
     } finally {

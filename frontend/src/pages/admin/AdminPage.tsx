@@ -14,10 +14,10 @@ const AdminPage = () => {
 	const { fetchAlbums, fetchSongs, fetchStats } = useMusicStore();
 
 	useEffect(() => {
-		fetchAlbums();
-		fetchSongs();
+		fetchAlbums({});
+		fetchSongs({});
 		fetchStats();
-	}, [fetchAlbums, fetchSongs, fetchStats]);
+	}, []);
 
 	useEffect(() => {
 		loadFromStorage();

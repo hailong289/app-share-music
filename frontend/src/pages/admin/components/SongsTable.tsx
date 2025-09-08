@@ -1,11 +1,29 @@
+import PaginationCustom from "@/components/pagination/PaginationCustom";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useMusicStore } from "@/stores/useMusicStore";
 import { Calendar, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import AddSongDialog from "./AddSongDialog";
 
 const SongsTable = () => {
-	const { songs, isLoading, error, deleteSong } = useMusicStore();
-console.log("songs", songs);
+	const { songs = [], isLoading, error, deleteSong, fetchSongs } = useMusicStore();
+  const [songsPagination, setSongsPagination] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+  const totalPages = Math.ceil(songs.length / pageSize);
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+  useEffect(() => {
+    if (songs.length === 0) return;
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    setSongsPagination(songs.slice(startIndex, endIndex));
+  }, [currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [songs, fetchSongs]);
 
 	if (isLoading) {
 		return (
@@ -15,13 +33,13 @@ console.log("songs", songs);
 		);
 	}
 
-	// if (error) {
-	// 	return (
-	// 		<div className='flex items-center justify-center py-8'>
-	// 			<div className='text-red-400'>{error}</div>
-	// 		</div>
-	// 	);
-	// }
+	if (error) {
+		return (
+			<div className='flex items-center justify-center py-8'>
+				<div className='text-red-400'>{error}</div>
+			</div>
+		);
+	}
 
 	return (
 		<Table>
@@ -36,7 +54,7 @@ console.log("songs", songs);
 			</TableHeader>
 
 			<TableBody>
-				{songs.map((song) => (
+				{songsPagination.map((song) => (
 					<TableRow key={song._id} className='hover:bg-zinc-800/50'>
 						<TableCell>
 							<img crossOrigin="anonymous" src={song.banner_url} alt={song.title} className='size-10 rounded object-cover' />
@@ -60,11 +78,24 @@ console.log("songs", songs);
 								>
 									<Trash2 className='size-4' />
 								</Button>
+                <AddSongDialog isEdit={true} data={song} />
 							</div>
 						</TableCell>
 					</TableRow>
 				))}
 			</TableBody>
+      <TableFooter>
+        <tr>
+          <td colSpan={999}>
+            <PaginationCustom
+              currentPage={currentPage}
+              totalPages={totalPages}
+              handleChange={(page) => setCurrentPage(page)}
+              pageNumbers={pageNumbers}
+            />
+          </td>
+        </tr>
+      </TableFooter>
 		</Table>
 	);
 };

@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useMusicStore } from "@/stores/useMusicStore";
-import { Plus, Upload } from "lucide-react";
+import { Pencil, Plus, Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -28,8 +28,9 @@ interface NewSong {
   duration: string;
 }
 
-const AddSongDialog = () => {
-  const { albums, addSong, artists, fetchArtists } = useMusicStore();
+const AddSongDialog = (props) => {
+  const { isEdit = false, data = {} } = props;
+  const { albums, addSong, artists = [], editSong } = useMusicStore();
   const [songDialogOpen, setSongDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,9 +44,13 @@ const AddSongDialog = () => {
   const [files, setFiles] = useState<{
     audio: File | null;
     image: File | null;
+    previewUrl: string | null;
+    previewAudio: string | null;
   }>({
     audio: null,
     image: null,
+    previewUrl: null,
+    previewAudio: null,
   });
 
   const audioInputRef = useRef<HTMLInputElement>(null);
@@ -55,8 +60,11 @@ const AddSongDialog = () => {
     setIsLoading(true);
 
     try {
-      if (!files.audio || !files.image) {
+      if (!isEdit && (!files.audio || !files.image)) {
         return toast.error("Please upload both audio and image files");
+      }
+      if (!newSong.title || !newSong.duration || !newSong.artist) {
+        return toast.error("Please fill all required fields");
       }
 
       const formData = new FormData();
@@ -68,10 +76,14 @@ const AddSongDialog = () => {
         formData.append("album_id", newSong.album);
       }
 
-      formData.append("audio_url", files.audio);
-      formData.append("banner_url", files.image);
+      if (files.audio) formData.append("audio_url", files.audio);
+      if (files.image) formData.append("banner_url", files.image);
 
-      await addSong(formData);
+      if (isEdit) {
+        await editSong(data._id, formData);
+      } else {
+        await addSong(formData);
+      }
 
       setNewSong({
         title: "",
@@ -83,35 +95,64 @@ const AddSongDialog = () => {
       setFiles({
         audio: null,
         image: null,
+        previewUrl: null,
+        previewAudio: null,
       });
-      toast.success("Song added successfully");
     } catch (error: any) {
       toast.error("Failed to add song: " + error.message);
     } finally {
       setIsLoading(false);
+      setSongDialogOpen(false);
     }
   };
 
   useEffect(() => {
     if (songDialogOpen) {
-      fetchArtists();
+      if (isEdit) {
+        setNewSong({
+          title: data?.title || "",
+          artist: data?.artists?.[0]?._id || "",
+          album: data?.albumId || "",
+          duration: data?.duration ? String(data.duration) : "0",
+        });
+        setFiles({
+          audio: null,
+          image: null,
+          previewUrl: data?.banner_url || null,
+          previewAudio: data?.audio_url || null,
+        });
+      }
+      console.log("data",data);
+
     }
   }, [songDialogOpen]);
 
   return (
     <Dialog open={songDialogOpen} onOpenChange={setSongDialogOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-emerald-500 hover:bg-emerald-600 text-black">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Song
-        </Button>
+        {isEdit ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10"
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button className="bg-emerald-500 hover:bg-emerald-600 text-black">
+            <Plus className="mr-2 h-4 w-4" />
+            Add Song
+          </Button>
+        )}
       </DialogTrigger>
 
       <DialogContent className="bg-zinc-900 border-zinc-700 max-h-[80vh] overflow-auto text-zinc-400">
         <DialogHeader>
-          <DialogTitle>Add New Song</DialogTitle>
+          <DialogTitle>{isEdit ? "Edit Song" : "Add New Song"}</DialogTitle>
           <DialogDescription>
-            Add a new song to your music library
+            {isEdit
+              ? "Update song details"
+              : "Add a new song to your music library"}
           </DialogDescription>
         </DialogHeader>
 
@@ -122,7 +163,11 @@ const AddSongDialog = () => {
             ref={audioInputRef}
             hidden
             onChange={(e) =>
-              setFiles((prev) => ({ ...prev, audio: e.target.files![0] }))
+              setFiles((prev) => ({
+                ...prev,
+                audio: e.target.files![0],
+                previewAudio: URL.createObjectURL(e.target.files![0]),
+              }))
             }
           />
 
@@ -132,7 +177,11 @@ const AddSongDialog = () => {
             className="hidden"
             accept="image/*"
             onChange={(e) =>
-              setFiles((prev) => ({ ...prev, image: e.target.files![0] }))
+              setFiles((prev) => ({
+                ...prev,
+                image: e.target.files![0],
+                previewUrl: URL.createObjectURL(e.target.files![0]),
+              }))
             }
           />
 
@@ -141,30 +190,28 @@ const AddSongDialog = () => {
             className="flex items-center justify-center p-6 border-2 border-dashed border-zinc-700 rounded-lg cursor-pointer"
             onClick={() => imageInputRef.current?.click()}
           >
-            <div className="text-center">
-              {files.image ? (
-                <div className="space-y-2">
-                  <div className="text-sm text-emerald-500">
-                    Image selected:
-                  </div>
-                  <div className="text-xs text-zinc-400">
-                    {files.image.name.slice(0, 20)}
-                  </div>
+            {files.previewUrl ? (
+              <div className="space-y-2 text-center">
+                <img
+                  crossOrigin="anonymous"
+                  src={files.previewUrl}
+                  alt="preview"
+                  className="w-32 h-32 object-cover rounded-md mx-auto"
+                />
+                <div className="text-xs text-zinc-400 mt-2">
+                  {files.image
+                    ? files.image.name.slice(0, 20)
+                    : "Current Image"}
                 </div>
-              ) : (
-                <>
-                  <div className="p-3 bg-zinc-800 rounded-full inline-block mb-2">
-                    <Upload className="h-6 w-6 text-zinc-400" />
-                  </div>
-                  <div className="text-sm text-zinc-400 mb-2">
-                    Upload artwork
-                  </div>
-                  <Button variant="outline" size="sm" className="text-xs">
-                    Choose File
-                  </Button>
-                </>
-              )}
-            </div>
+              </div>
+            ) : (
+              <>
+                <div className="p-3 bg-zinc-800 rounded-full inline-block mb-2">
+                  <Upload className="h-6 w-6 text-zinc-400" />
+                </div>
+                <div className="text-sm text-zinc-400 mb-2">Upload artwork</div>
+              </>
+            )}
           </div>
 
           {/* Audio upload */}
@@ -178,6 +225,8 @@ const AddSongDialog = () => {
               >
                 {files.audio
                   ? files.audio.name.slice(0, 20)
+                  : files.previewAudio
+                  ? "Current Audio"
                   : "Choose Audio File"}
               </Button>
             </div>
@@ -206,9 +255,9 @@ const AddSongDialog = () => {
               <SelectTrigger className="bg-zinc-800 border-zinc-700">
                 <SelectValue placeholder="Select artist" />
               </SelectTrigger>
-              <SelectContent className="bg-zinc-800 border-zinc-700">
+              <SelectContent  className="max-h-60 overflow-y-auto bg-zinc-800 border-zinc-700">
                 {artists.map((artist) => (
-                  <SelectItem key={artist._id} value={artist._id}>
+                  <SelectItem key={artist._id} value={artist._id} className="text-zinc-400">
                     {artist.name}
                   </SelectItem>
                 ))}
@@ -240,10 +289,10 @@ const AddSongDialog = () => {
               <SelectTrigger className="bg-zinc-800 border-zinc-700">
                 <SelectValue placeholder="Select album" />
               </SelectTrigger>
-              <SelectContent className="bg-zinc-800 border-zinc-700">
-                <SelectItem value="none">No Album (Single)</SelectItem>
+              <SelectContent  className="max-h-60 overflow-y-auto bg-zinc-800 border-zinc-700">
+                <SelectItem value="none" className="text-zinc-400">No Album (Single)</SelectItem>
                 {albums.map((album) => (
-                  <SelectItem key={album._id} value={album._id}>
+                  <SelectItem key={album._id} value={album._id} className="text-zinc-400">
                     {album.title}
                   </SelectItem>
                 ))}
