@@ -26,7 +26,7 @@ class SongService extends BaseService<ISong> {
     if (data.artist_ids && Array.isArray(data.artist_ids)) {
       // Handle artist_ids if needed
       for (const artistId of data.artist_ids) {
-        await ArtistSong.create({ artist_id: artistId, song_id: song.id });
+        await ArtistSong.create({ artist_id: new Types.ObjectId(artistId), song_id: song.id });
       }
     } else if (data.artist_names) {
       const artistNames = data.artist_names.split(',').map(name => name.trim()).filter(name => name.length > 0);
