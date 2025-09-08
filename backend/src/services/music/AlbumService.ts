@@ -33,7 +33,8 @@ class AlbumService extends BaseService<IAlbum> {
               ]
             }
           }
-        }
+        },
+        { $sort: { created_at: -1 } }
       ])
     }
     return await this.model.aggregate([
@@ -47,15 +48,16 @@ class AlbumService extends BaseService<IAlbum> {
       },
       { $unwind: "$artist" },
       {
-          $addFields: {
-            cover_url: {
-              $concat: [
-                `${process.env.APP_URL}/`,
-                { $replaceAll: { input: "$cover_url", find: "\\", replacement: "/" } }
-              ]
-            }
+        $addFields: {
+          cover_url: {
+            $concat: [
+              `${process.env.APP_URL}/`,
+              { $replaceAll: { input: "$cover_url", find: "\\", replacement: "/" } }
+            ]
           }
         }
+      }, 
+      { $sort: { created_at: -1 } }
     ]);
   }
 

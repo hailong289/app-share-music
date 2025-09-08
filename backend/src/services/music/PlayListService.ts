@@ -181,7 +181,8 @@ class PlayListService extends BaseService<IPlaylist> {
             as: "user"
           }
         },
-        { $unwind: "$user" }
+        { $unwind: "$user" },
+        { $sort: { created_at: -1 } }
       ]);
     }
     return this.aggregate([
@@ -203,7 +204,8 @@ class PlayListService extends BaseService<IPlaylist> {
           as: "user"
         }
       },
-      { $unwind: "$user" }
+      { $unwind: "$user" },
+      { $sort: { created_at: -1 } }
     ]);
   }
 
