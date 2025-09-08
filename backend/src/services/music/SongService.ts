@@ -18,8 +18,7 @@ class SongService extends BaseService<ISong> {
   public async createSong(data: Partial<ISong & { artist_names?: string; artist_ids?: string[]; playlist_id?: string }>): Promise<ISong> {
     const playListId = data.playlist_id ?? null;
     data.playlist_id && delete data.playlist_id;
-    const playlist = await Playlist.findById(new Types.ObjectId(playListId ?? ''));
-    console.log('Creating song with data:', data, 'for playlist:', playlist);
+    const playlist = await Playlist.findById(playListId ? new Types.ObjectId(playListId) : null);
     data.banner_url = data.banner_url ?? playlist?.banner_url ?? '';
     const song = await this.create(data);
 
