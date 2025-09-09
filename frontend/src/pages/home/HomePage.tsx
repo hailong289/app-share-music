@@ -21,9 +21,9 @@ const HomePage = () => {
 			<ScrollArea className='h-[calc(100vh-180px)] w-full'>
 				<div className='p-4 sm:p-6'>
 					<div className='space-y-8'>
-					  <FeaturedSession title='Trending' session={featuredSession} isLoading={isLoading}/>
-					  <FeaturedSession title='Popular radio' session={popularRadio} isLoading={isLoading}/>
-					  <FeaturedSession title='Popular artist' session={popularArtist} isLoading={isLoading}/>
+					  <FeaturedSession title={featuredSession.name} session={featuredSession} isLoading={isLoading}/>
+					  <FeaturedSession title={popularRadio.name} session={popularRadio} isLoading={isLoading}/>
+					  <FeaturedSession title={popularArtist.name} session={popularArtist} isLoading={isLoading}/>
 					</div>
 				</div>
 			</ScrollArea>
