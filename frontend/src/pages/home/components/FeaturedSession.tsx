@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 
 const FeaturedSession = (props) => {
   const { title = "Featured Session", isLoading, session } = props;
-  const { user } = useAuthStore;
+  const { user } = useAuthStore();
   const { session_items = [], _id } = session || {};
 	if (isLoading) return <FeaturedGridSkeleton />;
 

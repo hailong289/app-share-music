@@ -37,13 +37,16 @@ interface MusicStore {
   addSong: (data: any) => Promise<void>;
   addAlbum: (data: any) => Promise<void>;
   addPlaylist: (data: any) => Promise<void>;
+  addSongToPlaylist: (playlistId, songId) => Promise<void>;
+  addArtist: (data: any) => Promise<void>;
   editPlaylist: (id, data: any) => Promise<void>;
   editSong: (id, data: any) => Promise<void>;
   editAlbum: (id, data: any) => Promise<void>;
-  addSongToPlaylist: (playlistId, songId) => Promise<void>;
+  editArtist: (id, data: any) => Promise<void>;
   deleteSong: (id: string) => Promise<void>;
   deleteAlbum: (id: string) => Promise<void>;
   deletePlaylist: (id: string) => Promise<void>;
+  deleteArtist: (id: string) => Promise<void>;
 }
 
 export const useMusicStore = create<MusicStore>((set) => ({
@@ -79,6 +82,19 @@ export const useMusicStore = create<MusicStore>((set) => ({
     }
   },
 
+  addSongToPlaylist: async (playlistId, songId) => {
+    set({ isLoading: true, error: null });
+    try {
+      await ApiService.post(`/playlists/${playlistId}/add-song`, {song_id : songId, order: 1});
+      console.log("Playlist add successfully");
+    } catch (error: any) {
+      console.log("Error in addPlaylist", error);
+      toast.error("Error adding playlist");
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
   addPlaylist: async (data) => {
     set({ isLoading: true, error: null });
     try {
@@ -87,6 +103,19 @@ export const useMusicStore = create<MusicStore>((set) => ({
     } catch (error: any) {
       console.log("Error in addPlaylist", error);
       toast.error("Error adding playlist");
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  addArtist: async (data) => {
+    set({ isLoading: true, error: null });
+    try {
+      await ApiService.post(`/users/create-artist`, data);
+      console.log("Artist add successfully");
+    } catch (error: any) {
+      console.log("Error in addArtist", error);
+      toast.error("Error adding Artist");
     } finally {
       set({ isLoading: false });
     }
@@ -134,14 +163,15 @@ export const useMusicStore = create<MusicStore>((set) => ({
     }
   },
 
-  addSongToPlaylist: async (playlistId, songId) => {
+  editArtist: async (id, data) => {
     set({ isLoading: true, error: null });
     try {
-      await ApiService.post(`/playlists/${playlistId}/add-song`, {song_id : songId, order: 1});
-      console.log("Playlist add successfully");
+      await ApiService.patch(`/users/update-artist/${id}`, data);
+      console.log("Artist edit successfully");
+      toast.success("Artist edited successfully");
     } catch (error: any) {
-      console.log("Error in addPlaylist", error);
-      toast.error("Error adding playlist");
+      console.log("Error in editArtist", error);
+      toast.error("Error editing artist");
     } finally {
       set({ isLoading: false });
     }
@@ -159,6 +189,23 @@ export const useMusicStore = create<MusicStore>((set) => ({
     } catch (error: any) {
       console.log("Error in deleteSong", error);
       toast.error("Error deleting song");
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  deleteArtist: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      await ApiService.delete(`/users/delete-artist/${id}`);
+
+      set((state) => ({
+        songs: state.songs.filter((song) => song._id !== id),
+      }));
+      toast.success("Artist deleted successfully");
+    } catch (error: any) {
+      console.log("Error in deleteArtist", error);
+      toast.error("Error deleting Artist");
     } finally {
       set({ isLoading: false });
     }

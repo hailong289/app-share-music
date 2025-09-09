@@ -7,6 +7,7 @@ import SongsTabContent from "./components/SongsTabContent";
 import AlbumsTabContent from "./components/AlbumsTabContent";
 import { useEffect } from "react";
 import { useMusicStore } from "@/stores/useMusicStore";
+import ArtistsTabContent from "./components/ArtistsTabContent";
 
 const AdminPage = () => {
 	const { loadFromStorage, isAdmin, isLoading } = useAuthStore();
@@ -37,13 +38,17 @@ const AdminPage = () => {
 
 			<Tabs defaultValue='songs' className='space-y-6'>
 				<TabsList className='p-1 bg-zinc-800/50'>
-					<TabsTrigger value='songs' className='data-[state=active]:bg-zinc-700'>
+					<TabsTrigger value='songs' className='text-zinc-100 data-[state=active]:bg-zinc-700 data-[state=active]:text-zinc-100'>
 						<Music className='mr-2 size-4' />
 						Songs
 					</TabsTrigger>
-					<TabsTrigger value='albums' className='data-[state=active]:bg-zinc-700'>
+					<TabsTrigger value='albums' className='text-zinc-100 data-[state=active]:bg-zinc-700 data-[state=active]:text-zinc-100'>
 						<Album className='mr-2 size-4' />
 						Albums
+					</TabsTrigger>
+					<TabsTrigger value='artists' className='text-zinc-100 data-[state=active]:bg-zinc-700 data-[state=active]:text-zinc-100'>
+						<Album className='mr-2 size-4' />
+						Artists
 					</TabsTrigger>
 				</TabsList>
 
@@ -52,6 +57,9 @@ const AdminPage = () => {
 				</TabsContent>
 				<TabsContent value='albums'>
 					<AlbumsTabContent />
+				</TabsContent>
+				<TabsContent value='artists'>
+					<ArtistsTabContent />
 				</TabsContent>
 			</Tabs>
 		</div>
