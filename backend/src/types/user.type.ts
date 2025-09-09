@@ -1,5 +1,6 @@
 import { Types, Document } from 'mongoose';
 export interface IUser extends Document {
+  getUpdate(): unknown;
   _id: Types.ObjectId;
   name: string;
   email: string;

@@ -170,6 +170,15 @@ export class UserService extends BaseService<IUser> {
       throw error;
     }
   }
+
+  async deleteArtist(id: string): Promise<IUser | null> {
+    try {
+      return await this.deleteById(id);
+    } catch (error) {
+      logger.error('Error deleting artist:', error);
+      throw error;
+    }
+  }
 }
 
 // Export singleton instance

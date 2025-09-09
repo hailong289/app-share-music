@@ -77,6 +77,16 @@ UserSchema.pre<IUser>('save', async function (next) {
   next();
 });
 
+UserSchema.pre<any>('findOneAndUpdate', async function (next) {
+  const update = this.getUpdate() as Partial<IUser>;
+  if (update && update.password) {
+    const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '12');
+    update.password = await bcrypt.hash(update.password as string, saltRounds);
+    this.setUpdate(update);
+  }
+  next();
+});
+
 UserSchema.pre('insertMany', async function (next, docs) {
   for (const user of docs) {
     if (user.password) {
