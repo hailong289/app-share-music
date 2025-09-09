@@ -30,7 +30,7 @@ interface NewSong {
 
 const AddSongDialog = (props) => {
   const { isEdit = false, data = {} } = props;
-  const { albums, addSong, artists = [], editSong } = useMusicStore();
+  const { albums, addSong, artists = [], editSong, fetchSongs } = useMusicStore();
   const [songDialogOpen, setSongDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -103,6 +103,7 @@ const AddSongDialog = (props) => {
     } finally {
       setIsLoading(false);
       setSongDialogOpen(false);
+      fetchSongs({});
     }
   };
 
@@ -122,8 +123,6 @@ const AddSongDialog = (props) => {
           previewAudio: data?.audio_url || null,
         });
       }
-      console.log("data",data);
-
     }
   }, [songDialogOpen]);
 
@@ -310,7 +309,7 @@ const AddSongDialog = (props) => {
             Cancel
           </Button>
           <Button onClick={handleSubmit} disabled={isLoading}>
-            {isLoading ? "Uploading..." : "Add Song"}
+            {isLoading ? "Uploading..." : isEdit ? "Update Song" : "Add Song"}
           </Button>
         </DialogFooter>
       </DialogContent>

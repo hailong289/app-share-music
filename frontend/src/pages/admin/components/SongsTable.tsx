@@ -16,14 +16,18 @@ const SongsTable = () => {
 
   useEffect(() => {
     if (songs.length === 0) return;
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    setSongsPagination(songs.slice(startIndex, endIndex));
+    if (currentPage > 0) {
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      setSongsPagination(songs.slice(startIndex, endIndex));
+    } else {
+      setCurrentPage(1);
+    }
   }, [currentPage]);
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [songs, fetchSongs]);
+    if (songs && !isLoading) setCurrentPage(0);
+  }, [songs]);
 
 	if (isLoading) {
 		return (
@@ -74,7 +78,10 @@ const SongsTable = () => {
 									variant={"ghost"}
 									size={"sm"}
 									className='text-red-400 hover:text-red-300 hover:bg-red-400/10'
-									onClick={() => deleteSong(song._id)}
+									onClick={async () => {
+                    await deleteSong(song._id)
+                    await fetchSongs({})
+                  }}
 								>
 									<Trash2 className='size-4' />
 								</Button>

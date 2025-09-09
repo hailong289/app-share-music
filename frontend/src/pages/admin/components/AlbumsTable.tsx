@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, Table
 import { useMusicStore } from "@/stores/useMusicStore";
 import { Calendar, Music, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import AddAlbumDialog from "./AddAlbumDialog";
 
 const AlbumsTable = () => {
 	const { albums = [], deleteAlbum, fetchAlbums } = useMusicStore();
@@ -15,10 +16,18 @@ const AlbumsTable = () => {
 
   useEffect(() => {
     if (albums.length === 0) return;
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    setAlbumsPagination(albums.slice(startIndex, endIndex));
+    if (currentPage > 0) {
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      setAlbumsPagination(albums.slice(startIndex, endIndex));
+    } else {
+      setCurrentPage(1);
+    }
   }, [currentPage]);
+
+  useEffect(() => {
+    if (albums) setCurrentPage(0)
+  }, [albums]);
 
 	return (
 		<Table>
@@ -62,6 +71,7 @@ const AlbumsTable = () => {
 								>
 									<Trash2 className='h-4 w-4' />
 								</Button>
+                <AddAlbumDialog isEdit={true} data={album} />
 							</div>
 						</TableCell>
 					</TableRow>

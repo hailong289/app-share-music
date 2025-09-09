@@ -3,9 +3,12 @@ import FeaturedGridSkeleton from "@/components/skeletons/FeaturedGridSkeleton";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/stores/useAuthStore";
+import toast from "react-hot-toast";
 
 const FeaturedSession = (props) => {
   const { title = "Featured Session", isLoading, session } = props;
+  const { user } = useAuthStore;
   const { session_items = [], _id } = session || {};
 	if (isLoading) return <FeaturedGridSkeleton />;
 
@@ -31,7 +34,7 @@ const FeaturedSession = (props) => {
 		<div className='grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 gap-4 mb-8 px-4'>
 			<div className='flex items-center justify-between mb-4'>
 				<h2 className='text-xl sm:text-2xl font-bold'>{title}</h2>
-				<Link to={`/session/${_id}`}>
+				<Link to={user ? `/session/${_id}` : null} onClick={user ? undefined : () => toast.error("Please register or login")}>
           <Button variant='link' className='text-sm text-zinc-400 hover:text-white'>
             Show all
           </Button>
@@ -41,9 +44,10 @@ const FeaturedSession = (props) => {
         {session_items.map((item) => item?.item ? (
           <div key={item.item_id} className="px-2"> {/* mỗi slide */}
             <Link
-              to={`/${item.item_type}/${item.item_id}`}
+              to={user ? `/${item.item_type}/${item.item_id}` : null}
               className="block bg-zinc-800/50 hover:bg-zinc-700/50
                          rounded-md overflow-hidden transition-colors"
+              onClick={user ? undefined : () => toast.error("Please register or login")}
             >
               <img
                 crossOrigin="anonymous"

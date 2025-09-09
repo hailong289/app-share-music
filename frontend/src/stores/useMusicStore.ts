@@ -123,12 +123,12 @@ export const useMusicStore = create<MusicStore>((set) => ({
   editAlbum: async (id, data) => {
     set({ isLoading: true, error: null });
     try {
-      await ApiService.patch(`/songs/${id}`, data);
-      console.log("Song edit successfully");
-      toast.success("Song edited successfully");
+      await ApiService.patch(`/albums/${id}`, data);
+      console.log("Album edit successfully");
+      toast.success("Album edited successfully");
     } catch (error: any) {
-      console.log("Error in editSong", error);
-      toast.error("Error editing song");
+      console.log("Error in editAlbum", error);
+      toast.error("Error editing album");
     } finally {
       set({ isLoading: false });
     }
