@@ -18,6 +18,7 @@ interface MusicStore {
   featuredSession: Session;
   popularRadio: Session;
   popularArtist: Session;
+  sessions: Session[];
   stats: Stats;
 
   fetchArtists: () => Promise<void>;
@@ -61,6 +62,7 @@ export const useMusicStore = create<MusicStore>((set) => ({
   popularRadio: {},
   featuredSession: {},
   popularArtist: {},
+  sessions: [],
   stats: {
     totalSong: 0,
     totalAlbum: 0,
@@ -329,7 +331,12 @@ export const useMusicStore = create<MusicStore>((set) => ({
       const { albums } = useMusicStore.getState();
       const currentAlbum: Album | null =
         albums.find((a) => a._id === id) ?? null;
-      console.log("albums", albums, currentAlbum);
+      if (!currentAlbum) {
+        const response = await ApiService.get(`/albums/${id}`);
+        console.log("Fetched currentAlbum:", response.data);
+        set({ currentAlbum: response.data });
+        return;
+      }
 
       set({ currentAlbum });
     } catch (error: any) {
@@ -380,7 +387,7 @@ export const useMusicStore = create<MusicStore>((set) => ({
     try {
       const response = await ApiService.get("/home");
       console.log("Home data:", response.data);
-      set({ featuredSession: response.data[0], popularArtist: response.data[1], popularRadio: response.data[3] });
+      set({ featuredSession: response.data[0], popularArtist: response.data[1], popularRadio: response.data[3], sessions: response.data });
 
     } catch (error: any) {
       set({ error: error.response.data.message });

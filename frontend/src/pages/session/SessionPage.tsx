@@ -41,14 +41,14 @@ const SessionPage = () => {
                 <div className='aspect-square rounded-md shadow-lg overflow-hidden'>
                   <img
                     crossOrigin="anonymous"
-                    src={item.item_detail.image_url ?? item.item_detail.banner_url}
+                    src={item.item_detail.image_url ?? item.item_detail.banner_url ?? item.item_detail.cover_url}
                     alt={item.item_detail.name}
                     className='w-full h-full object-cover transition-transform duration-300
                     group-hover:scale-105'
                   />
                 </div>
               </div>
-              <h3 className='font-medium mb-2 truncate'>{item.item_detail.name}</h3>
+              <h3 className='font-medium mb-2 truncate'>{item.item_detail.name ?? item.item_detail.title}</h3>
               <p className='text-sm text-zinc-400 truncate'>{item.item_detail?.artists ? item.item_detail.artists.map((x) => x.name) : null}</p>
             </div>
           </Link>

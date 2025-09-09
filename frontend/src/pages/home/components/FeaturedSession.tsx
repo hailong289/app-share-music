@@ -51,12 +51,12 @@ const FeaturedSession = (props) => {
             >
               <img
                 crossOrigin="anonymous"
-                src={item.item.banner_url ?? item.item.image_url}
+                src={item.item.banner_url ?? item.item.image_url ?? item.item.cover_url}
                 alt={item.item.name}
                 className="w-full h-40 object-cover" // đảm bảo ảnh full chiều ngang
               />
               <div className="p-3">
-                <p className="font-medium truncate">{item.item.name}</p>
+                <p className="font-medium truncate">{item.item.name ?? item.item.title}</p>
                 <p className="text-sm text-zinc-400 truncate">{item.item?.artists ? item.item.artists.map((x) => x.name) : null}</p>
               </div>
             </Link>

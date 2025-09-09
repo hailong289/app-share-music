@@ -18,7 +18,7 @@ class MiddlewareSetup {
         app.set('trust proxy', 1);
 
         // Rate limiting
-        app.use('/api', RateLimitMiddleware.applyRateLimit());
+        // app.use('/api', RateLimitMiddleware.applyRateLimit());
 
         // get static file
         app.use('/uploads', StaticFileMiddleware.serveUploads(), StaticFileMiddleware.handleFileNotFound());

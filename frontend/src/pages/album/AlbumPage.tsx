@@ -58,7 +58,7 @@ const AlbumPage = () => {
           <div className="relative z-10">
             <div className="flex p-6 gap-6 pb-8">
               <img
-                src={currentAlbum?.imageUrl}
+                src={currentAlbum?.imageUrl ?? currentAlbum?.cover_url}
                 alt={currentAlbum?.title}
                 className="w-[240px] h-[240px] shadow-xl rounded"
                 crossOrigin="anonymous"
@@ -70,7 +70,7 @@ const AlbumPage = () => {
                 </h1>
                 <div className="flex items-center gap-2 text-sm text-zinc-100">
                   <span className="font-medium text-white">
-                    {currentAlbum?.artist}
+                    {currentAlbum?.artist?.name || currentAlbum?.artist}
                   </span>
                   <span>• {currentAlbum?.songs.length} songs</span>
                   <span>• {currentAlbum?.releaseYear}</span>
@@ -141,7 +141,7 @@ const AlbumPage = () => {
 
                         <div className="flex items-center gap-3">
                           <img
-                            src={song.imageUrl}
+                            src={song.imageUrl ?? song.banner_url}
                             alt={song.title}
                             className="size-10"
                             crossOrigin="anonymous"
@@ -151,7 +151,7 @@ const AlbumPage = () => {
                             <div className={`font-medium text-white`}>
                               {song.title}
                             </div>
-                            <div>{song.artist}</div>
+                            <div>{Array.isArray(song.artists) ? song.artists.map(x => x.name).join(', ') : song.artists}</div>
                           </div>
                         </div>
                         <div className='flex items-center'>{song.createdAt.split("T")[0]}</div>
