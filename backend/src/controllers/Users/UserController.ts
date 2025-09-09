@@ -32,7 +32,7 @@ class UserController extends BaseController {
       if (req.files && Array.isArray(req.files)) {
         req.files.forEach((itemFile: Express.Multer.File) => {
           if (itemFile.fieldname !== 'image_url') return;
-          const filePath = uploadService.uploadSingle(itemFile, slug(name, '_'), slug(req.user?.name || ''));
+          const filePath = uploadService.uploadSingle(itemFile, slug(name, '_'), slug(req.user?.name || ''), true);
           req.body[itemFile.fieldname] = filePath;
         });
       }
@@ -65,7 +65,7 @@ class UserController extends BaseController {
       if (req.files && Array.isArray(req.files)) {
         req.files.forEach((itemFile: Express.Multer.File) => {
           if (itemFile.fieldname !== 'image_url') return;
-          const filePath = uploadService.uploadSingle(itemFile, slug(updateData.name, '_'), slug(req.user?.name || ''));
+          const filePath = uploadService.uploadSingle(itemFile, slug(updateData.name, '_'), slug(req.user?.name || ''), true);
           updateData[itemFile.fieldname] = filePath;
         });
       }
