@@ -73,9 +73,9 @@ const ArtistPage = () => {
                 </h1>
                 <div className="flex items-center gap-2 text-sm text-zinc-100">
                   <span className="font-medium text-white">
-                    {currentAlbum?.artist}
+                    {currentAlbum?.artists?.map((x: { name: string }) => x.name).join(', ') || currentAlbum?.name || ''}
                   </span>
-                  <span>• {currentAlbum?.songs?.length} songs</span>
+                  <span>• {currentAlbum?.songs?.length || 0} songs</span>
                 </div>
               </div>
             </div>

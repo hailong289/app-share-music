@@ -2,8 +2,9 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMusicStore } from "@/stores/useMusicStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
-import { Clock, Pause, Play } from "lucide-react";
+import { Clock, Pause, Play, Share2 } from "lucide-react";
 import { useEffect } from "react";
+import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
 export const formatDuration = (seconds: number) => {
@@ -42,6 +43,12 @@ const AlbumPage = () => {
     playAlbum(currentAlbum?.songs, index);
   };
 
+  const onCopyLinkPlaylist = async () => {
+    const currentUrl = `${window.location.origin}${location.pathname}${location.search}${location.hash}`;
+    await navigator.clipboard.writeText(currentUrl);
+    toast.success("Đã copy link!");
+  };
+
   return (
     <div className="h-full">
       <ScrollArea className="h-full rounded-md">
@@ -70,10 +77,10 @@ const AlbumPage = () => {
                 </h1>
                 <div className="flex items-center gap-2 text-sm text-zinc-100">
                   <span className="font-medium text-white">
-                    {currentAlbum?.artist?.name || currentAlbum?.artist}
+                    { currentAlbum?.artists?.map((x: { name: string }) => x.name).join(', ') || currentAlbum?.artist?.name || '' }
                   </span>
-                  <span>• {currentAlbum?.songs.length} songs</span>
-                  <span>• {currentAlbum?.releaseYear}</span>
+                  <span>• {currentAlbum?.songs.length || 0} songs</span>
+                  <span>• {currentAlbum?.releaseYear || ''}</span>
                 </div>
               </div>
             </div>
@@ -87,14 +94,23 @@ const AlbumPage = () => {
                 hover:scale-105 transition-all"
               >
                 {isPlaying &&
-                currentAlbum?.songs.some(
-                  (song) => song._id === currentSong?._id
-                ) ? (
+                  currentAlbum?.songs.some(
+                    (song) => song._id === currentSong?._id
+                  ) ? (
                   <Pause className="h-7 w-7 text-black" />
                 ) : (
                   <Play className="h-7 w-7 text-black" />
                 )}
               </Button>
+              <Button
+                onClick={onCopyLinkPlaylist}
+                size="icon"
+                className="w-14 h-14 rounded-full bg-blue-500 hover:bg-blue-400
+                          hover:scale-105 transition-all"
+              >
+                <Share2 className="h-7 w-7 text-white" />
+              </Button>
+
             </div>
 
             {/* Table Section */}

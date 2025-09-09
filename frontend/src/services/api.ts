@@ -1,7 +1,7 @@
 import axios, { type AxiosResponse } from "axios";
 
 const axiosClient = axios.create({
-  baseURL: import.meta.env.APP_API_URL || "https://app-share-music-be.onrender.com/api",
+  baseURL: import.meta.env.APP_API_URL || "http://localhost:5001/api",
   headers: {
     "Content-Type": "application/json",
   },

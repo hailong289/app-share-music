@@ -117,10 +117,10 @@ const PlaylistPage = () => {
                 </h1>
                 <div className="flex items-center gap-2 text-sm text-zinc-100">
                   <span className="font-medium text-white">
-                    {currentAlbum?.artist}
+                    {currentAlbum?.artists?.map((x: { name: string }) => x.name).join(', ') || ''}
                   </span>
-                  <span>• {currentAlbum?.songs?.length} songs</span>
-                  <span>• {currentAlbum?.releaseYear}</span>
+                  <span>• {currentAlbum?.songs?.length || 0} songs</span>
+                  {/* Release year info removed as it doesn't exist in the Album type */}
                 </div>
               </div>
             </div>
@@ -143,7 +143,7 @@ const PlaylistPage = () => {
                 )}
               </Button>
               {
-                isCreator && (
+                isCreator ? (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -184,6 +184,15 @@ const PlaylistPage = () => {
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
+                ) : (
+                  <Button
+                    onClick={onCopyLinkPlaylist}
+                    size="icon"
+                    className="w-14 h-14 rounded-full bg-blue-500 hover:bg-blue-400
+                          hover:scale-105 transition-all"
+                  >
+                    <Share2 className="h-7 w-7 text-white" />
+                  </Button>
                 )
               }
             </div>
@@ -243,7 +252,7 @@ const PlaylistPage = () => {
                             <div className={`font-medium text-white`}>
                               {song.title}
                             </div>
-                            <div>{song.artist}</div>
+                            <div>{song.artists?.[0]?.name || ''}</div>
                           </div>
                         </div>
                         <div className='flex items-center'>{song.createdAt.split("T")[0]}</div>
@@ -296,7 +305,7 @@ const PlaylistPage = () => {
               {/* songs list */}
               <div className="px-6">
                 <div className="space-y-2 py-4">
-                  {searchSongData?.map((song, index) => {
+                  {searchSongData?.map((song) => {
                     return (
                       <div
                         key={song._id}
@@ -316,7 +325,7 @@ const PlaylistPage = () => {
                             <div className={`font-medium text-white`}>
                               {song.title}
                             </div>
-                            <div>{song.artists.map((x) => x.name)}</div>
+                            <div>{song.artists?.map((x: { name: string }) => x.name).join(', ') || ''}</div>
                           </div>
                         </div>
                         <div className="flex items-center">
