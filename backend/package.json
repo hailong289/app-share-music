@@ -15,7 +15,9 @@
     "seed:clear": "ts-node -r tsconfig-paths/register src/scripts/seed.ts clear",
     "queue": "ts-node -r tsconfig-paths/register src/scripts/queue.ts",
     "seed:users": "ts-node -r tsconfig-paths/register src/scripts/seed.ts seed:specific users",
-    "queue:start": "node dist/scripts/queue.js"
+    "queue:start": "node dist/scripts/queue.js",
+    "vercel:login": "vercel login",
+    "build:deploy": "tsc && tsc-alias && vercel --prod --confirm"
   },
   "keywords": [
     "app-share-music-backend",
@@ -40,6 +42,7 @@
     "mongoose": "^8.0.3",
     "multer": "^2.0.2",
     "nodemailer": "^7.0.5",
+    "vercel": "^47.0.6",
     "winston": "^3.11.0",
     "winston-mongodb": "^7.0.0"
   },

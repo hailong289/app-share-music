@@ -127,7 +127,7 @@ const AccountBar = (props: any) => {
                     <img src={form?.image_url || user?.image_url || 'https://placehold.co/600x400/png'} alt="Avatar" crossOrigin={user?.image_url.includes("uploads") ? "anonymous" : undefined} />
                   ) : (
                     form?.image_url && (
-                      <img src={URL.createObjectURL(form?.image_url)} alt="Avatar" crossOrigin={form?.image_url.includes("uploads") ? "anonymous" : undefined} />
+                      <img src={URL.createObjectURL(form?.image_url)} alt="Avatar" crossOrigin={typeof form?.image_url == 'string' ? "anonymous" : undefined} />
                     )
                   )}
                 </div>
