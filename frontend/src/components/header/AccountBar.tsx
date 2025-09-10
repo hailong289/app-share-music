@@ -1,13 +1,14 @@
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { Bell, ExternalLink, Upload, UsersRound } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { buttonVariants } from "../ui/button";
 import { Input } from "../ui/input";
 import { useState } from "react";
 
 const AccountBar = (props: any) => {
   const { color = '', type = 'homePage' } = props;
+  const navigate = useNavigate();
   const { logout, user, updateProfile } = useAuthStore();
   const [form, setForm] = useState<any>({
     name: user?.name || '',
@@ -18,7 +19,7 @@ const AccountBar = (props: any) => {
 
   const handleLogout = () => {
     logout();
-    window.location.reload();
+    navigate('/');
   };
   const isPending = false;
 

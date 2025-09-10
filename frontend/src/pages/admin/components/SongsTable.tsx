@@ -29,6 +29,10 @@ const SongsTable = () => {
     if (songs && !isLoading) setCurrentPage(0);
   }, [songs]);
 
+  useEffect(() => {
+    fetchSongs({});
+  }, []);
+
 	if (isLoading) {
 		return (
 			<div className='flex items-center justify-center py-8'>
