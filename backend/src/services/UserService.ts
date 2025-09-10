@@ -162,9 +162,10 @@ export class UserService extends BaseService<IUser> {
    */
   async getArtist(query: Record<string, any>): Promise<IUser[]> {
     try {
-      return await this.find({ name: {
-        $regex: query.name || '', $options: 'i'
-      }, role: 'artist' });
+      return await this.find(
+        { name: { $regex: query.name || '', $options: 'i' }, role: 'artist' },
+        { createdAt: -1 }
+      );
     } catch (error) {
       logger.error('Error getting all users:', error);
       throw error;

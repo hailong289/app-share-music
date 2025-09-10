@@ -175,10 +175,10 @@ class SongService extends BaseService<ISong> {
             as: 'artists'
           }
         },
+        { $sort: { createdAt: -1 } },
         { $skip: (Number(page) - 1) * Number(limit) },
         { $limit: Number(limit) },
         { $match: { title: { $regex: search, $options: 'i' } } },
-        { $sort: { created_at: -1 } }
       ]);
       return await this.convertObject(result);
     }
@@ -221,8 +221,8 @@ class SongService extends BaseService<ISong> {
           as: 'artists'
         }
       },
+      { $sort: { createdAt: -1 } },
       { $match: { title: { $regex: search, $options: 'i' } } },
-      { $sort: { created_at: -1 } }
     ]);
     return await this.convertObject(result);
   }

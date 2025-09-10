@@ -205,7 +205,7 @@ class PlayListService extends BaseService<IPlaylist> {
             as: "user"
           }
         },
-        { $sort: { created_at: -1 } }
+        { $sort: { createdAt: -1 } }
       ]);
     }
     return this.aggregate([
@@ -251,7 +251,7 @@ class PlayListService extends BaseService<IPlaylist> {
           as: "user"
         }
       },
-      { $sort: { created_at: -1 } }
+      { $sort: { createdAt: -1 } }
     ]);
   }
 

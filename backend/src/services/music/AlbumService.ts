@@ -58,7 +58,7 @@ class AlbumService extends BaseService<IAlbum> {
             }
           }
         },
-        { $sort: { created_at: -1 } }
+        { $sort: { createdAt: -1 } }
       ])
     }
     return await this.model.aggregate([
@@ -105,7 +105,7 @@ class AlbumService extends BaseService<IAlbum> {
           }
         }
       },
-      { $sort: { created_at: -1 } }
+      { $sort: { createdAt: -1 } }
     ]);
   }
 
